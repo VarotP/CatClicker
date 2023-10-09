@@ -9,13 +9,16 @@ public class Player {
     private String special;
     private List<Upgrade> upgrades;
     private List<Upgrade> availUpgrades;
+    private List<Animal> animals;
+    private List<Animal> availAnimals;
 
     //REQUIRES:
     //EFFECTS: creates upgradable
-    public void location(String name, int perclick, String special) {
+    public Player(String name, int perclick, String special) {
         this.name = name;
         this.perClick = perclick;
         this.special = special;
+        this.money = 0;
     }
 
     //MODIFIES: this
@@ -24,11 +27,28 @@ public class Player {
         money += perClick;
     }
 
-    //REQUIRES: Upgrade is in availUpgrades
+    //REQUIRES: Upgrade is in availUpgrades, money >= upgrade cost
     //MODIFIES: this
     //EFFECTS: adds upgrade to upgrades, subtracts money, returns true if animal is bought, false if isnt,
-    public boolean buyUpgrades() {
-        return false;
+    public boolean buyUpgrades(Upgrade upgrade) {
+        if (money >= upgrade.getCost()) {
+            upgrades.add(upgrade);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //REQUIRES: Animal is in availUpgrades, money >= animal cost
+    //MODIFIES: this
+    //EFFECTS: adds Animal to animals, subtracts money, returns true if animal is bought, false if isnt,
+    public boolean buyAnimal(Animal animal) {
+        if (money >= animal.getCost()) {
+            animals.add(animal);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     //get and set methods
@@ -80,5 +100,21 @@ public class Player {
 
     public void setMoney(int money) {
         this.money = money;
+    }
+
+    public List<Animal> getAnimals() {
+        return animals;
+    }
+
+    public void setAnimals(List<Animal> animals) {
+        this.animals = animals;
+    }
+
+    public List<Animal> getAvailAnimals() {
+        return availAnimals;
+    }
+
+    public void setAvailAnimals(List<Animal> availAnimals) {
+        this.availAnimals = availAnimals;
     }
 }

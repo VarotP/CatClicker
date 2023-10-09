@@ -9,7 +9,7 @@ public class Upgrade {
 
     //REQUIRES: cost >= 0
 
-    public void upgrade(String name, int cost, int persec, int perclick, String special) {
+    public Upgrade(String name, int cost, int persec, int perclick, String special) {
         this.name = name;
         this.cost = cost;
         this.perSec = persec;

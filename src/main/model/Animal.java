@@ -13,7 +13,7 @@ public class Animal {
 
     //REQUIRES:
     //EFFECTS: creates upgradable
-    public void location(String name, int cost, int persec, int perclick, String special) {
+    public Animal(String name, int cost, int persec, int perclick, String special) {
         this.name = name;
         this.cost = cost;
         this.perSec = persec;
@@ -21,11 +21,12 @@ public class Animal {
         this.special = special;
     }
 
-    //REQUIRES: Upgrade is in availUpgrades
+    //REQUIRES: Upgrade is in availUpgrades, money >= upgrade.getCost
     //MODIFIES: this
-    //EFFECTS: adds upgrade to upgrades, subtracts money, returns true if animal is bought, false if isnt,
-    public boolean buyUpgrades() {
-        return false;
+    //EFFECTS: adds upgrade to upgrades, subtracts money, returns amount of remaining money
+    public int buyUpgrades(int money, Upgrade upgrade) {
+        upgrades.add(upgrade);
+        return money - upgrade.getCost();
     }
 
     //get and set methods

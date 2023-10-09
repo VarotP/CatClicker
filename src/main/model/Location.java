@@ -4,7 +4,6 @@ import java.util.List;
 
 public class Location {
     private String name;
-    private int cost;
     private int perSec;
     private int perClick;
     private String special;
@@ -15,25 +14,26 @@ public class Location {
 
     //REQUIRES:
     //EFFECTS: creates upgradable
-    public void location(String name, int cost, int persec, int perclick, String special) {
+    public Location(String name, int persec, int perclick, String special) {
         this.name = name;
-        this.cost = cost;
         this.perSec = persec;
         this.perClick = perclick;
         this.special = special;
     }
 
-    //REQUIRES: Upgrade is in availUpgrades
+    //REQUIRES: Upgrade is in availUpgrades, money >= upgrade.cost
     //MODIFIES: this
-    //EFFECTS: adds upgrade to upgrades, subtracts money, returns true if animal is bought, false if isnt,
-    public boolean buyUpgrades() {
-        return false;
+    //EFFECTS: adds upgrade to upgrades, subtracts money, returns remaining monney
+    public int buyUpgrades(int money, Upgrade upgrade) {
+        upgrades.add(upgrade);
+        return money - upgrade.getCost();
     }
 
-    //REQUIRES: Animal is in availAnimals
-    //EFFECTS: adds animal to animals, subtracts money, returns true if animal is bought, false if isnt,
-    public boolean buyAnimal() {
-        return false;
+    //REQUIRES: Animal is in availAnimals, money >= animal cost
+    //EFFECTS: adds animal to animals, subtracts money, returns remaining monney
+    public int buyAnimal(int money, Animal animal) {
+        animals.add(animal);
+        return money - animal.getCost();
     }
 
     //get and set methods
@@ -44,14 +44,6 @@ public class Location {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getCost() {
-        return cost;
-    }
-
-    public void setCost(int cost) {
-        this.cost = cost;
     }
 
     public int getPerSec() {
