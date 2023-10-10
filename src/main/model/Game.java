@@ -65,6 +65,7 @@ public class Game {
     }
 
     //EFFECTS: display current upgrades, animals, and locations
+    @SuppressWarnings("methodlength")
     public List<String> displayStats() {
         List<String> output = new ArrayList<>();
 
@@ -74,8 +75,6 @@ public class Game {
                 output.add(u.getName());
             }
         }
-
-
         output.add("Owned Animals:");
         if (player1.getAnimals() != null) {
             for (Animal a: player1.getAnimals()) {
@@ -86,7 +85,6 @@ public class Game {
                 }
             }
         }
-
         output.add("Owned Locations:");
         if (locations != null) {
             for (Location l: locations) {
