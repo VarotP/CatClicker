@@ -74,20 +74,50 @@ public class GameTest {
         List<Upgrade> uaList = new ArrayList<>();
         uaList.add(animalBuff);
         cat.setAvailUpgrades(uaList);
+
+        List<String> output = new ArrayList<>();
+        output.add("Player Upgrades:");
+        output.add(animalBuff.getName());
+        output.add(cat.getName() + " Upgrades:");
+        output.add(animalBuff.getName());
         newGame.getPlayer1().setAvailUpgrades(uaList);
         newGame.setScore(1000);
         newGame.getPlayer1().buyAnimal(newGame.getScore(), cat);
-        assertEquals("", newGame.displayAvailUpgrades());
+        assertEquals(output, newGame.displayAvailUpgrades());
     }
 
     @Test
     public void displayStatsTest() {
         Animal cat = new Animal("Cat", 50, 1, 0, null);
+        Animal dog = new Animal("Dog", 75, 2, 0, null);
+        Location cafe = new Location("Animal Cafe", 10, 50, null);
         Upgrade onePerClickU = new Upgrade("OnePerClick", 5, 0, 1, null);
         Upgrade animalBuff = new Upgrade("AnimalBuff", 50, 5, 0, null);
         cat.addUpgrade(onePerClickU);
+
+        List<String> output = new ArrayList<>();
+        output.add("Owned Upgrades:");
+        output.add(onePerClickU.getName());
+        output.add("Owned Animals:");
+        output.add(cat.getName());
+        output.add(cat.getName() + " Upgrades:");
+        output.add(onePerClickU.getName());
+        output.add("Owned Locations:");
+
         newGame.getPlayer1().addAnimal(cat);
         newGame.getPlayer1().addUpgrade(onePerClickU);
-        assertEquals("", newGame.displayStats());
+        assertEquals(output, newGame.displayStats());
+
+        dog.addUpgrade(animalBuff);
+        newGame.getPlayer1().addAnimal(dog);
+        output.add(6, dog.getName());
+        output.add(7, dog.getName() + " Upgrades:");
+        output.add(8, animalBuff.getName());
+        assertEquals(output, newGame.displayStats());
+
+        newGame.addLocation(cafe);
+        output.add(cafe.getName());
+        output.add(cafe.getName() + " Upgrades:");
+        assertEquals(output, newGame.displayStats());
     }
 }

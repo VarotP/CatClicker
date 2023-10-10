@@ -37,6 +37,14 @@ public class LocationTest {
     }
 
     @Test
+    public void constructorTest() {
+        assertEquals("Animal Cafe", cafe.getName());
+        assertEquals(10, cafe.getPerSec());
+        assertEquals(10, cafe.getPerClick());
+        assertNull(cafe.getSpecial());
+    }
+
+    @Test
     public void buyUpgradeTest() {
         List<Upgrade> empty = new ArrayList<>();
         assertEquals(empty, cafe.getUpgrades());
@@ -108,6 +116,28 @@ public class LocationTest {
         empty.add(capybara);
         assertEquals(empty, cafe.getAnimals());
 
+    }
+
+    @Test
+    void addUpgradeTest() {
+        List<Upgrade> empty = new ArrayList<>();
+        assertEquals(empty, cafe.getUpgrades());
+        cafe.addUpgrade(testUpgrade);
+        cafe.addUpgrade(testUpgrade2);
+        empty.add(testUpgrade);
+        empty.add(testUpgrade2);
+        assertEquals(empty, cafe.getUpgrades());
+    }
+
+    @Test
+    void addAnimalTest() {
+        List<Animal> empty = new ArrayList<>();
+        assertEquals(empty, cafe.getAnimals());
+        cafe.addAnimal(monkey);
+        cafe.addAnimal(capybara);
+        empty.add(monkey);
+        empty.add(capybara);
+        assertEquals(empty, cafe.getAnimals());
     }
 
     @Test

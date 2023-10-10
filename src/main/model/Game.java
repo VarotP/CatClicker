@@ -97,6 +97,12 @@ public class Game {
         return output;
     }
 
+    //MODIFIES: this
+    //EFFECTS: adds location to list of locations
+    public void addLocation(Location location) {
+        locations.add(location);
+    }
+
     //getter and setters
 
     public int getScore() {
