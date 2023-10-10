@@ -195,5 +195,15 @@ public class LocationTest {
         assertEquals(empty2, cafe.getAvailAnimals());
     }
 
+    @Test
+    void setAnimalTest() {
+        List<Animal> empty = new ArrayList<>();
+        empty.add(tiger);
+        cafe.setAnimals(empty);
+        List<Animal> empty2 = new ArrayList<>();
+        empty2.add(tiger);
+        assertEquals(empty2, cafe.getAnimals());
+    }
+
 
 }

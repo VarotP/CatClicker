@@ -78,8 +78,10 @@ public class GameTest {
         List<String> output = new ArrayList<>();
         output.add("Player Upgrades:");
         output.add(animalBuff.getName());
+        output.add("Available Animals:");
         output.add(cat.getName() + " Upgrades:");
         output.add(animalBuff.getName());
+
         newGame.getPlayer1().setAvailUpgrades(uaList);
         newGame.setScore(1000);
         newGame.getPlayer1().buyAnimal(newGame.getScore(), cat);
@@ -98,7 +100,7 @@ public class GameTest {
         List<String> output = new ArrayList<>();
         output.add("Owned Upgrades:");
         output.add(onePerClickU.getName());
-        output.add("Owned Animals:");
+        output.add("Player Animals:");
         output.add(cat.getName());
         output.add(cat.getName() + " Upgrades:");
         output.add(onePerClickU.getName());
@@ -118,6 +120,7 @@ public class GameTest {
         newGame.addLocation(cafe);
         output.add(cafe.getName());
         output.add(cafe.getName() + " Upgrades:");
+        output.add(cafe.getName() + " Animals:");
         assertEquals(output, newGame.displayStats());
     }
 }

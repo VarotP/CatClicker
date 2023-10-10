@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
-    public static final int TICKS_PER_SECOND = 1;
+    public static final int TICKS_PER_SECOND = 2;
     private Player player1 = new Player("Placeholder", 1, null);
     private int score = 0;
     private List<Location> locations = new ArrayList<>();
@@ -38,19 +38,16 @@ public class Game {
     //EFFECT: returns list of available upgrades for player, locations, and animals
     public List<String> displayAvailUpgrades() {
         List<String> output = new ArrayList<>();
-        List<Upgrade> upgrades = new ArrayList<>();
         output.add("Player Upgrades:");
         for (Upgrade u: player1.getAvailUpgrades()) {
             output.add(u.getName());
         }
 
+        output.add("Available Animals:");
+        output.addAll(returnAnimals(player1.getAvailAnimals()));
+
         if (player1.getAnimals() != null) {
-            for (Animal a: player1.getAnimals()) {
-                output.add(a.getName() + " Upgrades:");
-                for (Upgrade u: a.getAvailUpgrades()) {
-                    output.add(u.getName());
-                }
-            }
+            output.addAll(returnAnimalUpgrades(player1.getAnimals()));
         }
         if (locations != null) {
             for (Location l: locations) {
@@ -58,32 +55,45 @@ public class Game {
                 for (Upgrade u: l.getAvailUpgrades()) {
                     output.add(u.getName());
                 }
+                output.add("Available Animals in" + l.getName() + ": ");
+                output.addAll(returnAnimals(l.getAvailAnimals()));
             }
         }
         return output;
     }
 
+    private List<String> returnAnimals(List<Animal> a) {
+        List<String> output = new ArrayList<>();
+        for (Animal ani: a) {
+            output.add(ani.getName());
+        }
+        return output;
+    }
+
+    //EFFECTS: returns all animals and their respective upgrades
+    private List<String> returnAnimalUpgrades(List<Animal> a) {
+        List<String> output = new ArrayList<>();
+        for (Animal thisone: a) {
+            output.add(thisone.getName() + " Upgrades:");
+            for (Upgrade u: thisone.getAvailUpgrades()) {
+                output.add(u.getName());
+            }
+        }
+        return output;
+    }
+
+
     //EFFECTS: display current upgrades, animals, and locations
-    @SuppressWarnings("methodlength")
     public List<String> displayStats() {
         List<String> output = new ArrayList<>();
 
         output.add("Owned Upgrades:");
-        if (player1.getUpgrades() != null) {
-            for (Upgrade u: player1.getUpgrades()) {
-                output.add(u.getName());
-            }
-        }
-        output.add("Owned Animals:");
-        if (player1.getAnimals() != null) {
-            for (Animal a: player1.getAnimals()) {
-                output.add(a.getName());
-                output.add(a.getName() + " Upgrades:");
-                for (Upgrade u: a.getUpgrades()) {
-                    output.add(u.getName());
-                }
-            }
-        }
+        output.addAll(returnOwnedUpgrades(player1));
+
+        output.add("Player Animals:");
+        output.addAll(returnOwnedAnimals(player1));
+
+
         output.add("Owned Locations:");
         if (locations != null) {
             for (Location l: locations) {
@@ -92,6 +102,33 @@ public class Game {
                 for (Upgrade u: l.getUpgrades()) {
                     output.add(u.getName());
                 }
+                output.add(l.getName() + " Animals:");
+                output.addAll(returnOwnedAnimals(l));
+            }
+        }
+        return output;
+    }
+
+
+    //EFFECTS: returns owned upgrades
+    private List<String> returnOwnedUpgrades(Upgradable u) {
+        List<String> output = new ArrayList<>();
+        if (u.getUpgrades() != null) {
+            for (Upgrade s: u.getUpgrades()) {
+                output.add(s.getName());
+            }
+        }
+        return output;
+    }
+
+    //EFFECTS: returns owned animals
+    private List<String> returnOwnedAnimals(Location l) {
+        List<String> output = new ArrayList<>();
+        if (l.getAnimals() != null) {
+            for (Animal a: l.getAnimals()) {
+                output.add(a.getName());
+                output.add(a.getName() + " Upgrades:");
+                output.addAll(returnOwnedUpgrades(a));
             }
         }
         return output;
@@ -125,7 +162,4 @@ public class Game {
         return player1;
     }
 
-    public void setPlayer1(Player player1) {
-        this.player1 = player1;
-    }
 }
