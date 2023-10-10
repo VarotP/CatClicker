@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
@@ -12,13 +13,16 @@ public class Player {
     private List<Animal> animals;
     private List<Animal> availAnimals;
 
-    //REQUIRES:
     //EFFECTS: creates upgradable
     public Player(String name, int perclick, String special) {
         this.name = name;
         this.perClick = perclick;
         this.special = special;
         this.money = 0;
+        this.availUpgrades = new ArrayList<>();
+        this.upgrades = new ArrayList<>();
+        this.availAnimals = new ArrayList<>();
+        this.animals = new ArrayList<>();
     }
 
     //MODIFIES: this
@@ -33,6 +37,8 @@ public class Player {
     public boolean buyUpgrades(Upgrade upgrade) {
         if (money >= upgrade.getCost()) {
             upgrades.add(upgrade);
+            this.perClick += upgrade.getPerClick();
+            money -= upgrade.getCost();
             return true;
         } else {
             return false;
@@ -45,6 +51,7 @@ public class Player {
     public boolean buyAnimal(Animal animal) {
         if (money >= animal.getCost()) {
             animals.add(animal);
+            money -= animal.getCost();
             return true;
         } else {
             return false;

@@ -17,7 +17,7 @@ public class ZooGame {
     private Game game;
     private Screen screen;
 
-    //
+    //EFFECTS: runs the game
     public void runGame() throws InterruptedException, IOException {
         initGame();
         while (keepGoing) {   // (*)
@@ -50,7 +50,13 @@ public class ZooGame {
     private void handleUserInput() throws IOException {
         KeyStroke stroke = screen.pollInput();
         if (stroke != null) {
+            //get money
             if (stroke.getKeyType() == KeyType.Enter) {
+                game.click();
+            }
+
+            //view list of avail upgrades
+            if (stroke.getKeyType() == KeyType.Backspace) {
                 game.click();
             }
         }

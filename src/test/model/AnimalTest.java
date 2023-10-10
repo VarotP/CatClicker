@@ -29,7 +29,8 @@ class AnimalTest {
         List<Upgrade> empty = new ArrayList<>();
         assertEquals(empty, monkey.getUpgrades());
         assertEquals(0, monkey.buyUpgrades(10, testUpgrade));
-        assertEquals(upgrades, monkey.getUpgrades());
+        empty.add(testUpgrade);
+        assertEquals(empty, monkey.getUpgrades());
         assertEquals(2, monkey.getPerSec());
         assertEquals(0, monkey.getPerClick());
         assertNull(monkey.getSpecial());
@@ -40,7 +41,8 @@ class AnimalTest {
         List<Upgrade> empty = new ArrayList<>();
         assertEquals(empty, monkey.getUpgrades());
         assertEquals(10, monkey.buyUpgrades(20, testUpgrade));
-        assertEquals(upgrades, monkey.getUpgrades());
+        empty.add(testUpgrade);
+        assertEquals(empty, monkey.getUpgrades());
         assertEquals(2, monkey.getPerSec());
         assertEquals(0, monkey.getPerClick());
         assertNull(monkey.getSpecial());
@@ -69,7 +71,7 @@ class AnimalTest {
 
     @Test
     void costTest() {
-        assertEquals(10, monkey.getCost());
+        assertEquals(100, monkey.getCost());
         monkey.setCost(20);
         assertEquals(20, monkey.getCost());
     }

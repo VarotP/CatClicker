@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Animal {
@@ -19,6 +20,8 @@ public class Animal {
         this.perSec = persec;
         this.perClick = perclick;
         this.special = special;
+        this.availUpgrades = new ArrayList<>();
+        this.upgrades = new ArrayList<>();
     }
 
     //REQUIRES: Upgrade is in availUpgrades, money >= upgrade.getCost
@@ -26,6 +29,8 @@ public class Animal {
     //EFFECTS: adds upgrade to upgrades, subtracts money, returns amount of remaining money
     public int buyUpgrades(int money, Upgrade upgrade) {
         upgrades.add(upgrade);
+        this.perSec += upgrade.getPerSec();
+        this.perClick += upgrade.getPerClick();
         return money - upgrade.getCost();
     }
 

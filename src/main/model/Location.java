@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Location {
@@ -19,20 +20,29 @@ public class Location {
         this.perSec = persec;
         this.perClick = perclick;
         this.special = special;
+        this.availUpgrades = new ArrayList<>();
+        this.upgrades = new ArrayList<>();
+        this.availAnimals = new ArrayList<>();
+        this.animals = new ArrayList<>();
     }
 
     //REQUIRES: Upgrade is in availUpgrades, money >= upgrade.cost
     //MODIFIES: this
-    //EFFECTS: adds upgrade to upgrades, subtracts money, returns remaining monney
+    //EFFECTS: adds upgrade to upgrades, subtracts money, returns remaining money
     public int buyUpgrades(int money, Upgrade upgrade) {
         upgrades.add(upgrade);
+        this.perSec += upgrade.getPerSec();
+        this.perClick += upgrade.getPerClick();
         return money - upgrade.getCost();
     }
 
     //REQUIRES: Animal is in availAnimals, money >= animal cost
-    //EFFECTS: adds animal to animals, subtracts money, returns remaining monney
+    //EFFECTS: adds animal to animals, subtracts money, returns remaining money
     public int buyAnimal(int money, Animal animal) {
         animals.add(animal);
+        this.perSec += animal.getPerSec();
+        this.perClick += animal.getPerClick();
+
         return money - animal.getCost();
     }
 

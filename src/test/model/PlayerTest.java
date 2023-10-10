@@ -59,8 +59,9 @@ class PlayerTest {
         player1.earnMoney();
         player1.earnMoney();
         player1.earnMoney();
+        empty.add(testUpgrade);
         assertTrue(player1.buyUpgrades(testUpgrade));
-        assertEquals(upgrades, player1.getUpgrades());
+        assertEquals(empty, player1.getUpgrades());
         assertEquals(2, player1.getPerClick());
         assertNull(player1.getSpecial());
         assertEquals(0, player1.getMoney());
@@ -92,7 +93,7 @@ class PlayerTest {
         List<Animal> empty = new ArrayList<>();
         assertEquals(empty, player1.getAnimals());
         assertFalse(player1.buyAnimal(monkey));
-        player1.setMoney(10);
+        player1.setMoney(100);
         assertTrue(player1.buyAnimal(monkey));
         assertEquals(0, player1.getMoney());
         empty.add(monkey);
@@ -115,7 +116,7 @@ class PlayerTest {
         assertTrue(player1.buyAnimal(capybara));
         empty.add(capybara);
         assertEquals(empty, player1.getAnimals());
-        assertEquals(0, player1.getMoney());
+        assertEquals(100, player1.getMoney());
     }
 
     @Test

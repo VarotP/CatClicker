@@ -41,9 +41,10 @@ public class LocationTest {
         List<Upgrade> empty = new ArrayList<>();
         assertEquals(empty, cafe.getUpgrades());
         assertEquals(0, cafe.buyUpgrades(10, testUpgrade));
-        assertEquals(upgrades, cafe.getUpgrades());
-        assertEquals(2, cafe.getPerSec());
-        assertEquals(0, cafe.getPerClick());
+        empty.add(testUpgrade);
+        assertEquals(empty, cafe.getUpgrades());
+        assertEquals(10, cafe.getPerSec());
+        assertEquals(11, cafe.getPerClick());
         assertNull(cafe.getSpecial());
     }
 
@@ -52,9 +53,10 @@ public class LocationTest {
         List<Upgrade> empty = new ArrayList<>();
         assertEquals(empty, cafe.getUpgrades());
         assertEquals(10, cafe.buyUpgrades(20, testUpgrade));
-        assertEquals(upgrades, cafe.getUpgrades());
-        assertEquals(2, cafe.getPerSec());
-        assertEquals(0, cafe.getPerClick());
+        empty.add(testUpgrade);
+        assertEquals(empty, cafe.getUpgrades());
+        assertEquals(10, cafe.getPerSec());
+        assertEquals(11, cafe.getPerClick());
         assertNull(cafe.getSpecial());
     }
 
@@ -65,7 +67,7 @@ public class LocationTest {
         assertEquals(20, cafe.buyUpgrades(30, testUpgrade));
         empty.add(testUpgrade);
         assertEquals(empty, cafe.getUpgrades());
-        assertEquals(0, cafe.buyUpgrades(20, testUpgrade));
+        assertEquals(0, cafe.buyUpgrades(20, testUpgrade2));
         empty.add(testUpgrade2);
         assertEquals(empty, cafe.getUpgrades());
 
@@ -91,7 +93,7 @@ public class LocationTest {
         empty.add(monkey);
         assertEquals(empty, cafe.getAnimals());
         assertEquals(11, cafe.getPerSec());
-        assertEquals(0, cafe.getPerClick());
+        assertEquals(10, cafe.getPerClick());
         assertNull(cafe.getSpecial());
     }
 
@@ -102,7 +104,7 @@ public class LocationTest {
         assertEquals(250, cafe.buyAnimal(350, monkey));
         empty.add(monkey);
         assertEquals(empty, cafe.getAnimals());
-        assertEquals(0, cafe.buyAnimal(250, capybara));
+        assertEquals(50, cafe.buyAnimal(250, capybara));
         empty.add(capybara);
         assertEquals(empty, cafe.getAnimals());
 
