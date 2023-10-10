@@ -11,27 +11,7 @@ public class Game {
 
     //EFFECTS: init game object
     public Game() {
-        Upgrade onePerClickU = new Upgrade("OnePerClick", 5, 0, 1, null);
-        Upgrade fivePerClickU = new Upgrade("FivePerClick", 25, 0, 5, null);
-        Upgrade animalBuff = new Upgrade("AnimalBuff", 50, 5, 0, null);
-        Animal cat = new Animal("Cat", 50, 1, 0, null);
-        Animal dog = new Animal("Dog", 75, 2, 0, null);
-        Location cafe = new Location("Animal Cafe", 10, 50, null);
-        Location zoo = new Location("Zoo", 100, 100, null);
-        List<Upgrade> uplist = new ArrayList<>();
-        uplist.add(onePerClickU);
-        uplist.add(fivePerClickU);
-        player1.setAvailUpgrades(uplist);
-        List<Animal> anList = new ArrayList<>();
-        List<Upgrade> uaList = new ArrayList<>();
-        uaList.add(animalBuff);
-        cat.setAvailUpgrades(uaList);
-        dog.setAvailUpgrades(uaList);
-        anList.add(cat);
-        anList.add(dog);
-        player1.setAvailAnimals(anList);
-        locations.add(cafe);
-        locations.add(zoo);
+
     }
 
     //MODIFIES: this
@@ -57,7 +37,7 @@ public class Game {
     }
 
     //EFFECT: returns list of available upgrades for player, locations, and animals
-    public List<String> displayUpgrades() {
+    public List<String> displayAvailUpgrades() {
         List<String> output = new ArrayList<>();
         List<Upgrade> upgrades = new ArrayList<>();
         output.add("Player Upgrades:");
@@ -77,6 +57,42 @@ public class Game {
             for (Location l: locations) {
                 output.add(l.getName() + " Upgrades:");
                 for (Upgrade u: l.getAvailUpgrades()) {
+                    output.add(u.getName());
+                }
+            }
+        }
+        return output;
+    }
+
+    //EFFECTS: display current upgrades, animals, and locations
+    public List<String> displayStats() {
+        List<String> output = new ArrayList<>();
+
+        output.add("Owned Upgrades:");
+        if (player1.getUpgrades() != null) {
+            for (Upgrade u: player1.getUpgrades()) {
+                output.add(u.getName());
+            }
+        }
+
+
+        output.add("Owned Animals:");
+        if (player1.getAnimals() != null) {
+            for (Animal a: player1.getAnimals()) {
+                output.add(a.getName());
+                output.add(a.getName() + " Upgrades:");
+                for (Upgrade u: a.getUpgrades()) {
+                    output.add(u.getName());
+                }
+            }
+        }
+
+        output.add("Owned Locations:");
+        if (locations != null) {
+            for (Location l: locations) {
+                output.add(l.getName());
+                output.add(l.getName() + " Upgrades:");
+                for (Upgrade u: l.getUpgrades()) {
                     output.add(u.getName());
                 }
             }

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
-    private int money;
     private String name;
     private int perClick;
+    private int perSec;
     private String special;
     private List<Upgrade> upgrades;
     private List<Upgrade> availUpgrades;
@@ -16,46 +16,33 @@ public class Player {
     //EFFECTS: creates upgradable
     public Player(String name, int perclick, String special) {
         this.name = name;
+        this.perSec = 0;
         this.perClick = perclick;
         this.special = special;
-        this.money = 0;
         this.availUpgrades = new ArrayList<>();
         this.upgrades = new ArrayList<>();
         this.availAnimals = new ArrayList<>();
         this.animals = new ArrayList<>();
     }
 
+    //REQUIRES: Upgrade is in availUpgrades, money >= upgrade.getCost
     //MODIFIES: this
-    //EFFECTS: earns money equal to perclick
-    public void earnMoney() {
-        money += perClick;
+    //EFFECTS: adds upgrade to upgrades, subtracts money, returns amount of remaining money
+    public int buyUpgrades(int money, Upgrade upgrade) {
+        upgrades.add(upgrade);
+        this.perSec += upgrade.getPerSec();
+        this.perClick += upgrade.getPerClick();
+        return money - upgrade.getCost();
     }
 
-    //REQUIRES: Upgrade is in availUpgrades, money >= upgrade cost
-    //MODIFIES: this
-    //EFFECTS: adds upgrade to upgrades, subtracts money, returns true if animal is bought, false if isnt,
-    public boolean buyUpgrades(Upgrade upgrade) {
-        if (money >= upgrade.getCost()) {
-            upgrades.add(upgrade);
-            this.perClick += upgrade.getPerClick();
-            money -= upgrade.getCost();
-            return true;
-        } else {
-            return false;
-        }
-    }
+    //REQUIRES: Animal is in availAnimals, money >= animal cost
+    //EFFECTS: adds animal to animals, subtracts money, returns remaining money
+    public int buyAnimal(int money, Animal animal) {
+        animals.add(animal);
+        this.perSec += animal.getPerSec();
+        this.perClick += animal.getPerClick();
 
-    //REQUIRES: Animal is in availUpgrades, money >= animal cost
-    //MODIFIES: this
-    //EFFECTS: adds Animal to animals, subtracts money, returns true if animal is bought, false if isnt,
-    public boolean buyAnimal(Animal animal) {
-        if (money >= animal.getCost()) {
-            animals.add(animal);
-            money -= animal.getCost();
-            return true;
-        } else {
-            return false;
-        }
+        return money - animal.getCost();
     }
 
     //get and set methods
@@ -101,14 +88,6 @@ public class Player {
         this.availUpgrades = thislist;
     }
 
-    public int getMoney() {
-        return money;
-    }
-
-    public void setMoney(int money) {
-        this.money = money;
-    }
-
     public List<Animal> getAnimals() {
         return animals;
     }
@@ -123,5 +102,13 @@ public class Player {
 
     public void setAvailAnimals(List<Animal> availAnimals) {
         this.availAnimals = availAnimals;
+    }
+
+    public int getPerSec() {
+        return perSec;
+    }
+
+    public void setPerSec(int perSec) {
+        this.perSec = perSec;
     }
 }

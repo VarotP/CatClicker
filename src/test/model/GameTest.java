@@ -38,14 +38,19 @@ public class GameTest {
     }
 
     @Test
-    public void displayTest() {
+    public void displayAvailTest() {
         Animal cat = new Animal("Cat", 50, 1, 0, null);
         Upgrade animalBuff = new Upgrade("AnimalBuff", 50, 5, 0, null);
         List<Upgrade> uaList = new ArrayList<>();
         uaList.add(animalBuff);
         cat.setAvailUpgrades(uaList);
-        newGame.getPlayer1().setMoney(10000);
-        newGame.getPlayer1().buyAnimal(cat);
-        assertEquals("", newGame.displayUpgrades());
+        newGame.setScore(1000);
+        newGame.getPlayer1().buyAnimal(newGame.getScore(), cat);
+        assertEquals("", newGame.displayAvailUpgrades());
+    }
+
+    @Test
+    public void displayStatsTest() {
+        assertEquals("", newGame.displayStats());
     }
 }

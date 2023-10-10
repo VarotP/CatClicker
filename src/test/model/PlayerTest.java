@@ -22,8 +22,8 @@ class PlayerTest {
     @BeforeEach
     public void setup() {
         player1 = new Player("Gom", 1, null);
-        testUpgrade = new Upgrade("one", 3, 0, 1, null);
-        testUpgrade2 = new Upgrade("two", 4, 0, 2, null);
+        testUpgrade = new Upgrade("one", 10, 0, 1, null);
+        testUpgrade2 = new Upgrade("two", 20, 0, 2, null);
         upgrades.add(testUpgrade);
         upgrades.add(testUpgrade2);
         monkey = new Animal("Monkey", 100, 1, 0, null);
@@ -37,86 +37,77 @@ class PlayerTest {
     }
 
     @Test
-    void earnMoneyTest() {
-        assertEquals(0, player1.getMoney());
-        player1.earnMoney();
-        assertEquals(1, player1.getMoney());
-    }
-
-    @Test
-    void earnMoney2PerClickTest() {
-        player1.setPerClick(2);
-        assertEquals(0, player1.getMoney());
-        player1.earnMoney();
-        assertEquals(2, player1.getMoney());
-    }
-
-    @Test
     public void buyUpgradeTest() {
         List<Upgrade> empty = new ArrayList<>();
         assertEquals(empty, player1.getUpgrades());
-        assertFalse(player1.buyUpgrades(testUpgrade));
-        player1.earnMoney();
-        player1.earnMoney();
-        player1.earnMoney();
+        assertEquals(0, player1.buyUpgrades(10, testUpgrade));
         empty.add(testUpgrade);
-        assertTrue(player1.buyUpgrades(testUpgrade));
         assertEquals(empty, player1.getUpgrades());
+        assertEquals(0, player1.getPerSec());
         assertEquals(2, player1.getPerClick());
         assertNull(player1.getSpecial());
-        assertEquals(0, player1.getMoney());
+    }
 
-        player1.setMoney(0);
-        player1.earnMoney();
-        assertEquals(2, player1.getMoney());
+    @Test
+    public void buyUpgradeMoneyRemainTest() {
+        List<Upgrade> empty = new ArrayList<>();
+        assertEquals(empty, player1.getUpgrades());
+        assertEquals(10, player1.buyUpgrades(20, testUpgrade));
+        empty.add(testUpgrade);
+        assertEquals(empty, player1.getUpgrades());
+        assertEquals(0, player1.getPerSec());
+        assertEquals(2, player1.getPerClick());
+        assertNull(player1.getSpecial());
     }
 
     @Test
     public void buyUpgradeMultiple() {
         List<Upgrade> empty = new ArrayList<>();
         assertEquals(empty, player1.getUpgrades());
-        assertFalse(player1.buyUpgrades(testUpgrade));
-        player1.setMoney(30);
-        assertTrue(player1.buyUpgrades(testUpgrade));
+        assertEquals(20, player1.buyUpgrades(30, testUpgrade));
         empty.add(testUpgrade);
         assertEquals(empty, player1.getUpgrades());
-        assertEquals(27, player1.getMoney());
-
-        assertTrue(player1.buyUpgrades(testUpgrade2));
-        empty.add(testUpgrade2);
-        assertEquals(23, player1.getMoney());
+        assertEquals(10, player1.buyUpgrades(20, testUpgrade));
+        empty.add(testUpgrade);
         assertEquals(empty, player1.getUpgrades());
+
     }
 
     @Test
-    void buyAnimalTest() {
+    public void buyAnimalTest() {
         List<Animal> empty = new ArrayList<>();
         assertEquals(empty, player1.getAnimals());
-        assertFalse(player1.buyAnimal(monkey));
-        player1.setMoney(100);
-        assertTrue(player1.buyAnimal(monkey));
-        assertEquals(0, player1.getMoney());
+        assertEquals(0, player1.buyAnimal(100, monkey));
         empty.add(monkey);
         assertEquals(empty, player1.getAnimals());
+        assertEquals(2, player1.getPerSec());
+        assertEquals(1, player1.getPerClick());
+        assertNull(player1.getSpecial());
+    }
+
+    @Test
+    public void buyAnimalMoneyRemainTest() {
+        List<Animal> empty = new ArrayList<>();
+        assertEquals(empty, player1.getAnimals());
+        assertEquals(250, player1.buyAnimal(350, monkey));
+        empty.add(monkey);
+        assertEquals(empty, player1.getAnimals());
+        assertEquals(1, player1.getPerSec());
+        assertEquals(1, player1.getPerClick());
+        assertNull(player1.getSpecial());
     }
 
     @Test
     public void buyAnimalMultiple() {
         List<Animal> empty = new ArrayList<>();
         assertEquals(empty, player1.getAnimals());
-        assertFalse(player1.buyAnimal(monkey));
-        player1.setMoney(400);
-        assertTrue(player1.buyAnimal(monkey));
-
+        assertEquals(250, player1.buyAnimal(350, monkey));
         empty.add(monkey);
-        assertEquals(300, player1.getMoney());
         assertEquals(empty, player1.getAnimals());
-
-        assertFalse(player1.buyAnimal(tiger));
-        assertTrue(player1.buyAnimal(capybara));
+        assertEquals(50, player1.buyAnimal(250, capybara));
         empty.add(capybara);
         assertEquals(empty, player1.getAnimals());
-        assertEquals(100, player1.getMoney());
+
     }
 
     @Test
