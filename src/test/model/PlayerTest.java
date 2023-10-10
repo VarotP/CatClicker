@@ -80,7 +80,7 @@ class PlayerTest {
         assertEquals(0, player1.buyAnimal(100, monkey));
         empty.add(monkey);
         assertEquals(empty, player1.getAnimals());
-        assertEquals(2, player1.getPerSec());
+        assertEquals(1, player1.getPerSec());
         assertEquals(1, player1.getPerClick());
         assertNull(player1.getSpecial());
     }
@@ -104,9 +104,11 @@ class PlayerTest {
         assertEquals(250, player1.buyAnimal(350, monkey));
         empty.add(monkey);
         assertEquals(empty, player1.getAnimals());
+        assertEquals(1, player1.getPerSec());
         assertEquals(50, player1.buyAnimal(250, capybara));
         empty.add(capybara);
         assertEquals(empty, player1.getAnimals());
+        assertEquals(3, player1.getPerSec());
 
     }
 

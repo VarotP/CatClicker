@@ -46,6 +46,7 @@ public class ZooGame {
         System.exit(0); // game is over, we can exit the app
     }
 
+
     //EFFECTS: initializes initial game state
     private void initGame() throws IOException {
         game = new Game();
@@ -70,6 +71,8 @@ public class ZooGame {
      * Handles one cycle in the game by taking user input,
      * ticking the game internally, and rendering the effects
      */
+
+    //EFFECTS: handles a single tick of the game and renders it
     private void tick() throws IOException {
 
         handleUserInput();
@@ -77,6 +80,7 @@ public class ZooGame {
         render();
     }
 
+    //MODIFIES: this
     //EFFECTS: Handles user input (clicks)
     private void handleUserInput() throws IOException {
         KeyStroke stroke = screen.pollInput();
