@@ -111,5 +111,18 @@ public class Location {
     public void setAvailAnimals(List<Animal> availAnimals) {
         this.availAnimals = availAnimals;
     }
+
+    //MODIFIES: this
+    //EFFECTS: adds upgrade to upgrade list
+    public void addUpgrade(Upgrade upgrade) {
+        this.upgrades.add(upgrade);
+    }
+
+    //MODIFIES: this
+    //EFFECTS: adds animal to animal list
+    public void addAnimal(Animal animal) {
+        this.animals.add(animal);
+    }
+
 }
 

@@ -94,4 +94,10 @@ public class Animal {
     }
 
 
+    //MODIFIES: this
+    //EFFECTS: adds upgrade to upgrade list
+    public void addUpgrade(Upgrade upgrade) {
+        this.upgrades.add(upgrade);
+    }
+
 }

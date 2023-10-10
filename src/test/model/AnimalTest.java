@@ -113,4 +113,15 @@ class AnimalTest {
         empty.add(testUpgrade2);
         assertEquals(empty, monkey.getAvailUpgrades());
     }
+
+    @Test
+    void addUpgradeTest() {
+        List<Upgrade> empty = new ArrayList<>();
+        assertEquals(empty, monkey.getUpgrades());
+        monkey.addUpgrade(testUpgrade);
+        monkey.addUpgrade(testUpgrade2);
+        empty.add(testUpgrade);
+        empty.add(testUpgrade2);
+        assertEquals(empty, monkey.getUpgrades());
+    }
 }

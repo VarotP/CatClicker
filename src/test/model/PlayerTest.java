@@ -109,7 +109,28 @@ class PlayerTest {
         empty.add(capybara);
         assertEquals(empty, player1.getAnimals());
         assertEquals(3, player1.getPerSec());
+    }
 
+    @Test
+    void addUpgradeTest() {
+        List<Upgrade> empty = new ArrayList<>();
+        assertEquals(empty, player1.getUpgrades());
+        player1.addUpgrade(testUpgrade);
+        player1.addUpgrade(testUpgrade2);
+        empty.add(testUpgrade);
+        empty.add(testUpgrade2);
+        assertEquals(empty, player1.getUpgrades());
+    }
+
+    @Test
+    void addAnimalTest() {
+        List<Animal> empty = new ArrayList<>();
+        assertEquals(empty, player1.getAnimals());
+        player1.addAnimal(monkey);
+        player1.addAnimal(capybara);
+        empty.add(monkey);
+        empty.add(capybara);
+        assertEquals(empty, player1.getAnimals());
     }
 
     @Test

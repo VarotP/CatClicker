@@ -9,11 +9,6 @@ public class Game {
     private int score = 0;
     private List<Location> locations = new ArrayList<>();
 
-    //EFFECTS: init game object
-    public Game() {
-
-    }
-
     //MODIFIES: this
     //EFFECTS: adds up all the money per sec and ocassionally spawns specials
     public void tick() {
@@ -23,11 +18,15 @@ public class Game {
             }
         }
 
-        for (Location l: locations) {
-            for (Animal a: l.getAnimals()) {
-                score += a.getPerSec();
+        if (locations.size() > 0) {
+            for (Location l: locations) {
+                score += l.getPerSec();
+                for (Animal a: l.getAnimals()) {
+                    score += a.getPerSec();
+                }
             }
         }
+
     }
 
     //MODIFIES: This

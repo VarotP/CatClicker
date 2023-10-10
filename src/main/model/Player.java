@@ -111,4 +111,16 @@ public class Player {
     public void setPerSec(int perSec) {
         this.perSec = perSec;
     }
+
+    //MODIFIES: this
+    //EFFECTS: adds upgrade to upgrade list
+    public void addUpgrade(Upgrade upgrade) {
+        this.upgrades.add(upgrade);
+    }
+
+    //MODIFIES: this
+    //EFFECTS: adds animal to animal list
+    public void addAnimal(Animal animal) {
+        this.animals.add(animal);
+    }
 }
