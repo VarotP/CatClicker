@@ -12,7 +12,7 @@ class AnimalTest {
     private Animal monkey;
     private Upgrade testUpgrade;
     private Upgrade testUpgrade2;
-    private List<Upgrade> upgrades = new ArrayList<>();
+    private final List<Upgrade> upgrades = new ArrayList<>();
 
     @BeforeEach
     public void setup() {

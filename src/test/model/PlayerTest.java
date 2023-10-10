@@ -16,8 +16,8 @@ class PlayerTest {
     private Animal monkey;
     private Animal capybara;
     private Animal tiger;
-    private List<Upgrade> upgrades = new ArrayList<>();
-    private List<Animal> animals = new ArrayList<>();
+    private final List<Upgrade> upgrades = new ArrayList<>();
+    private final List<Animal> animals = new ArrayList<>();
 
     @BeforeEach
     public void setup() {
