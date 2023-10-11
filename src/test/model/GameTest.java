@@ -9,12 +9,23 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GameTest {
+    Animal cat;
+    Animal dog;
+    Location cafe;
+    Upgrade onePerClickU;
+    Upgrade animalBuff;
+
     Game newGame;
     List<Location> loclist;
     @BeforeEach
     public void setup() {
         newGame = new Game();
         loclist = new ArrayList<>();
+        cat = new Animal("Cat", 50, 1, 0, null);
+        dog = new Animal("Dog", 75, 2, 0, null);
+        cafe = new Location("Animal Cafe", 10, 50, null);
+        onePerClickU = new Upgrade("OnePerClick", 5, 0, 1, null);
+        animalBuff = new Upgrade("AnimalBuff", 50, 5, 0, null);
     }
 
     @Test
@@ -42,21 +53,19 @@ public class GameTest {
         newGame.tick();
         assertEquals(0, newGame.getScore());
 
-        Animal cat = new Animal("Cat", 50, 1, 0, null);
         newGame.getPlayer1().addAnimal(cat);
 
         assertEquals(0, newGame.getScore());
         newGame.tick();
         assertEquals(1, newGame.getScore());
 
-        Animal dog = new Animal("Dog", 75, 2, 0, null);
         newGame.getPlayer1().addAnimal(dog);
 
         assertEquals(1, newGame.getScore());
         newGame.tick();
         assertEquals(4, newGame.getScore());
 
-        Location cafe = new Location("Animal Cafe", 10, 50, null);
+
         List<Location> dummy = new ArrayList<>();
         dummy.add(cafe);
         newGame.setLocations(dummy);
@@ -68,9 +77,60 @@ public class GameTest {
     }
 
     @Test
+    public void tickNoAnimalYesLocTest() {
+        assertEquals(0, newGame.getScore());
+        newGame.tick();
+        assertEquals(0, newGame.getScore());
+
+        List<Location> dummy = new ArrayList<>();
+        dummy.add(cafe);
+        newGame.setLocations(dummy);
+
+        assertEquals(0, newGame.getScore());
+        newGame.tick();
+        assertEquals(10, newGame.getScore());
+
+        assertEquals(10, newGame.getScore());
+        newGame.tick();
+        assertEquals(20, newGame.getScore());
+    }
+
+    @Test
+    public void tickYesAnimalNoLocTest() {
+        assertEquals(0, newGame.getScore());
+        newGame.tick();
+        assertEquals(0, newGame.getScore());
+
+        newGame.getPlayer1().addAnimal(cat);
+
+        assertEquals(0, newGame.getScore());
+        newGame.tick();
+        assertEquals(1, newGame.getScore());
+    }
+
+    @Test
+    public void tickNoAnimalYesLocTestYesAnimalInLoc() {
+        assertEquals(0, newGame.getScore());
+        newGame.tick();
+        assertEquals(0, newGame.getScore());
+
+        cafe.addAnimal(cat);
+        List<Location> dummy = new ArrayList<>();
+        dummy.add(cafe);
+        newGame.setLocations(dummy);
+
+        assertEquals(0, newGame.getScore());
+        newGame.tick();
+        assertEquals(11, newGame.getScore());
+
+        assertEquals(11, newGame.getScore());
+        newGame.tick();
+        assertEquals(22, newGame.getScore());
+    }
+
+
+    @Test
     public void displayAvailTest() {
-        Animal cat = new Animal("Cat", 50, 1, 0, null);
-        Upgrade animalBuff = new Upgrade("AnimalBuff", 50, 5, 0, null);
         List<Upgrade> uaList = new ArrayList<>();
         uaList.add(animalBuff);
         cat.setAvailUpgrades(uaList);
@@ -90,11 +150,7 @@ public class GameTest {
 
     @Test
     public void displayStatsTest() {
-        Animal cat = new Animal("Cat", 50, 1, 0, null);
-        Animal dog = new Animal("Dog", 75, 2, 0, null);
-        Location cafe = new Location("Animal Cafe", 10, 50, null);
-        Upgrade onePerClickU = new Upgrade("OnePerClick", 5, 0, 1, null);
-        Upgrade animalBuff = new Upgrade("AnimalBuff", 50, 5, 0, null);
+
         cat.addUpgrade(onePerClickU);
 
         List<String> output = new ArrayList<>();
@@ -122,5 +178,49 @@ public class GameTest {
         output.add(cafe.getName() + " Upgrades:");
         output.add(cafe.getName() + " Animals:");
         assertEquals(output, newGame.displayStats());
+    }
+
+    @Test
+    public void displayAvailNoAnimalsNoLocationsTest() {
+        List<String> output = new ArrayList<>();
+        output.add("Player Upgrades:");
+        output.add("Available Animals:");
+        assertEquals(output, newGame.displayAvailUpgrades());
+    }
+
+    @Test
+    public void displayAvailYesAnimalsNoLocTest() {
+        List<String> output = new ArrayList<>();
+        newGame.getPlayer1().addAnimal(cat);
+        output.add("Player Upgrades:");
+        output.add("Available Animals:");
+        output.add(cat.getName() + " Upgrades:");
+        assertEquals(output, newGame.displayAvailUpgrades());
+    }
+
+    @Test
+    public void displayAvailNoAnimalsYesLocTest() {
+        List<String> output = new ArrayList<>();
+        newGame.addLocation(cafe);
+        output.add("Player Upgrades:");
+        output.add("Available Animals:");
+        output.add(cafe.getName() + " Upgrades:");
+        output.add("Available Animals in " + cafe.getName() + ": ");
+        assertEquals(output, newGame.displayAvailUpgrades());
+    }
+
+    @Test
+    public void displayAvailLocwithUpgradeTest() {
+        List<String> output = new ArrayList<>();
+        List<Upgrade> uList = new ArrayList<>();
+        uList.add(onePerClickU);
+        cafe.setAvailUpgrades(uList);
+        newGame.addLocation(cafe);
+        output.add("Player Upgrades:");
+        output.add("Available Animals:");
+        output.add(cafe.getName() + " Upgrades:");
+        output.add(onePerClickU.getName());
+        output.add("Available Animals in " + cafe.getName() + ": ");
+        assertEquals(output, newGame.displayAvailUpgrades());
     }
 }
