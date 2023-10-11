@@ -181,6 +181,31 @@ public class GameTest {
     }
 
     @Test
+    void displayStatsLocationUpgradeTest() {
+        List<String> output = new ArrayList<>();
+        output.add("Owned Upgrades:");
+        output.add("Player Animals:");
+        output.add("Owned Locations:");
+        output.add(cafe.getName());
+        output.add(cafe.getName() + " Upgrades:");
+        output.add(onePerClickU.getName());
+        output.add(cafe.getName() + " Animals:");
+
+        cafe.addUpgrade(onePerClickU);
+        newGame.addLocation(cafe);
+        assertEquals(output, newGame.displayStats());
+    }
+
+    @Test
+    void displayStatsNoAnimalsNoUpgradesTest() {
+        List<String> output = new ArrayList<>();
+        output.add("Owned Upgrades:");
+        output.add("Player Animals:");
+        output.add("Owned Locations:");
+        assertEquals(output, newGame.displayStats());
+    }
+
+    @Test
     public void displayAvailNoAnimalsNoLocationsTest() {
         List<String> output = new ArrayList<>();
         output.add("Player Upgrades:");
@@ -191,9 +216,13 @@ public class GameTest {
     @Test
     public void displayAvailYesAnimalsNoLocTest() {
         List<String> output = new ArrayList<>();
+        List<Animal> test = new ArrayList<>();
+        test.add(dog);
         newGame.getPlayer1().addAnimal(cat);
+        newGame.getPlayer1().setAvailAnimals(test);
         output.add("Player Upgrades:");
         output.add("Available Animals:");
+        output.add(dog.getName());
         output.add(cat.getName() + " Upgrades:");
         assertEquals(output, newGame.displayAvailUpgrades());
     }
@@ -223,4 +252,5 @@ public class GameTest {
         output.add("Available Animals in " + cafe.getName() + ": ");
         assertEquals(output, newGame.displayAvailUpgrades());
     }
+
 }

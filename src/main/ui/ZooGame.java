@@ -150,7 +150,7 @@ public class ZooGame {
 
     //EFFECTS: Renders the scores and availUpgrades and everything
     private void render() {
-        System.out.println("Score =" + game.getScore());
+        System.out.println("Score = " + game.getScore());
     }
 
 
