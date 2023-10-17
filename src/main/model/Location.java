@@ -15,14 +15,17 @@ public class Location extends Upgradable {
         this.availAnimals = new ArrayList<>();
     }
 
-    //REQUIRES: animal is in availAnimals and money >= animal cost
+    //REQUIRES: Upgrade is in availAnimals, money >= animal.getCost
     //MODIFIES: this
-    //EFFECTS: adds animal to owned animal list, increases perSec and perClick by Animal stats
+    //EFFECTS: adds animal to animals if not owned, otherwise add 1 to count
+    //subtracts money, returns amount of remaining money
     public int buyAnimal(int money, Animal animal) {
-        animals.add(animal);
+        if (!animals.contains(animal)) {
+            animals.add(animal);
+        }
+        animal.setCount(animal.getCount() + 1);
         setPerSec(getPerSec() + animal.getPerSec());
         setPerClick(getPerClick() + animal.getPerClick());
-
         return money - animal.getCost();
     }
 

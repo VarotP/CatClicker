@@ -1,13 +1,16 @@
 package ui;
 
 //import com.googlecode.lanterna.TerminalPosition;
+import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.TextCharacter;
+import com.googlecode.lanterna.graphics.TextGraphics;
+import com.googlecode.lanterna.screen.TerminalScreen;
+import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-import model.Animal;
-import model.Game;
+import model.*;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
-import model.Upgrade;
 
 
 import java.io.IOException;
@@ -28,11 +31,14 @@ public class ZooGame {
     private final Upgrade animalBuff = new Upgrade("AnimalBuff", 50, 5, 0, null);
     private final Animal cat = new Animal("Cat", 50, 1, 0, null);
     private final Animal dog = new Animal("Dog", 75, 2, 0, null);
-    // private final Location cafe = new Location("Animal Cafe", 10, 50, null);
-    // private final Location zoo = new Location("Zoo", 100, 100, null);
     private final List<Upgrade> uplist = new ArrayList<>();
     private final List<Animal> anList = new ArrayList<>();
     private final List<Upgrade> uaList = new ArrayList<>();
+    TextGraphics scoreGraphic;
+    TextGraphics availUpgradeGraphic;
+    TextGraphics ownedUpgradeGraphic;
+    TextGraphics perClickGraphic;
+    TextGraphics perSecGraphic;
 
     //EFFECTS: runs the game
     public void runGame() throws InterruptedException, IOException {
@@ -49,7 +55,9 @@ public class ZooGame {
     //EFFECTS: initializes initial game state
     private void initGame() throws IOException {
         game = new Game();
-        screen = new DefaultTerminalFactory().createScreen();
+        Terminal terminal = new DefaultTerminalFactory().setInitialTerminalSize(
+                new TerminalSize(150, 50)).createTerminal();
+        screen = new TerminalScreen(terminal);
         screen.startScreen();
 
         //init upgrade relationships
@@ -64,6 +72,7 @@ public class ZooGame {
         game.getPlayer1().setAvailAnimals(anList);
 
 
+
     }
 
     /**
@@ -73,10 +82,14 @@ public class ZooGame {
 
     //EFFECTS: handles a single tick of the game and renders it
     private void tick() throws IOException {
+        try {
+            handleUserInput();
+            game.tick();
+            render();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        handleUserInput();
-        game.tick();
-        render();
     }
 
     //MODIFIES: this
@@ -102,46 +115,25 @@ public class ZooGame {
 
             //buy upgrade1
             if (stroke.getCharacter() == '1') {
-                if (game.getPlayer1().getAvailUpgrades().contains(onePerClickU)
-                        && game.getScore() >= onePerClickU.getCost()) {
-                    System.out.println("Upgrade 1 bought");
-                    game.setScore(game.getPlayer1().buyUpgrades(game.getScore(), onePerClickU));
-                } else {
-                    System.out.println("Insufficient Money");
-                }
+                buyUpgrade(game.getPlayer1(), onePerClickU);
             }
 
             //buy upgrade2
             if (stroke.getCharacter() == '2') {
-                if (game.getPlayer1().getAvailUpgrades().contains(fivePerClickU)
-                        && game.getScore() >= fivePerClickU.getCost()) {
-                    System.out.println("Upgrade 2 bought");
-                    game.setScore(game.getPlayer1().buyUpgrades(game.getScore(), fivePerClickU));
-                } else {
-                    System.out.println("Insufficient Money");
-                }
+                buyUpgrade(game.getPlayer1(), fivePerClickU);
+                render();
             }
 
             //buy monkey
             if (stroke.getCharacter() == '3') {
-                if (game.getPlayer1().getAvailAnimals().contains(cat)
-                        && game.getScore() >= cat.getCost()) {
-                    System.out.println("Cat bought");
-                    game.setScore(game.getPlayer1().buyAnimal(game.getScore(), cat));
-                } else {
-                    System.out.println("Insufficient Money");
-                }
+                buyAnimal(game.getPlayer1(), cat);
+                render();
             }
 
             //buy monkey
             if (stroke.getCharacter() == '4') {
-                if (game.getPlayer1().getAvailAnimals().contains(dog)
-                        && game.getScore() >= dog.getCost()) {
-                    System.out.println("Dog bought");
-                    game.setScore(game.getPlayer1().buyAnimal(game.getScore(), dog));
-                } else {
-                    System.out.println("Insufficient Money");
-                }
+                buyAnimal(game.getPlayer1(), dog);
+                render();
             }
         }
 
@@ -149,9 +141,47 @@ public class ZooGame {
 
 
     //EFFECTS: Renders the scores and availUpgrades and everything
-    private void render() {
-        System.out.println("Score = " + game.getScore());
+    private void render() throws IOException {
+        TextGraphics scoreGraphic = screen.newTextGraphics();
+        TextGraphics availUpgradeGraphic = screen.newTextGraphics();
+        TextGraphics ownedUpgradeGraphic = screen.newTextGraphics();
+        TextGraphics perClickGraphic = screen.newTextGraphics();
+        TextGraphics perSecGraphic = screen.newTextGraphics();
+
+        scoreGraphic.putString(5,5, "Score = " + game.getScore());
+        perSecGraphic.putString(5,7, "Score per second: " + game.getPerSec());
+        perClickGraphic.putString(5,8, "Score per click: " + game.getPlayer1().getPerClick());
+        ownedUpgradeGraphic.putString(5,9, game.displayStats());
+        availUpgradeGraphic.putString(5, 10, game.displayAvailUpgrades());
+
+
+        screen.refresh();
     }
+
+    //MODIFIES: this
+    //EFFECTS: adds upgrade to list of animals if never owned, +1 to upgrade's count if already owned
+    private void buyUpgrade(Upgradable who, Upgrade thisupgrade) {
+        if (who.getAvailUpgrades().contains(thisupgrade)
+                && game.getScore() >= thisupgrade.getCost()) {
+            System.out.println(thisupgrade.getName() + " upgrade bought");
+            game.setScore(who.buyUpgrades(game.getScore(), thisupgrade));
+        } else {
+            System.out.println("Insufficient Money");
+        }
+    }
+
+    //MODIFIES: this
+    //EFFECTS: adds animal to list of animals if never owned, +1 to animal's count if already owned
+    private void buyAnimal(Location who, Animal thisanimal) {
+        if (who.getAvailAnimals().contains(thisanimal)
+                && game.getScore() >= thisanimal.getCost()) {
+            System.out.println(thisanimal.getName() + " bought");
+            game.setScore(who.buyAnimal(game.getScore(), thisanimal));
+        } else {
+            System.out.println("Insufficient Money");
+        }
+    }
+
 
 
 }

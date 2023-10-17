@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Upgradable {
     private String name;
+    private int count;
     private int cost;
     private int perSec;
     private int perClick;
@@ -17,6 +18,7 @@ public class Upgradable {
     //EFFECTS: creates upgradable
     public Upgradable(String name, int cost, int persec, int perclick, String special) {
         this.name = name;
+        this.count = 0;
         this.cost = cost;
         this.perSec = persec;
         this.perClick = perclick;
@@ -29,7 +31,10 @@ public class Upgradable {
     //MODIFIES: this
     //EFFECTS: adds upgrade to upgrades, subtracts money, returns amount of remaining money
     public int buyUpgrades(int money, Upgrade upgrade) {
-        upgrades.add(upgrade);
+        if (!upgrades.contains(upgrade)) {
+            upgrades.add(upgrade);
+        }
+        upgrade.setCount(upgrade.getCount() + 1);
         this.perSec += upgrade.getPerSec();
         this.perClick += upgrade.getPerClick();
         return money - upgrade.getCost();
@@ -94,6 +99,13 @@ public class Upgradable {
         this.availUpgrades = thislist;
     }
 
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
 
     //MODIFIES: this
     //EFFECTS: adds upgrade to upgrade list

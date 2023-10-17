@@ -7,14 +7,23 @@ public class Game {
     public static final int TICKS_PER_SECOND = 10;
     private Player player1 = new Player("Placeholder", 1, null);
     private int score = 0;
+    private int perSec = 0;
     private List<Location> locations = new ArrayList<>();
+    private final int unlockCafe = 1000;
+    private boolean unlockedCafe = false;
+    private final int unlockZoo = 10000;
+    private boolean unlockedZoo = false;
+    private final Location cafe = new Location("Animal Cafe", 10, 50, null);
+    private final Location zoo = new Location("Zoo", 100, 100, null);
 
     //MODIFIES: this
-    //EFFECTS: adds up all the money per sec and ocassionally spawns specials
+    //EFFECTS: adds up all the money per sec and ocassionally spawns specials,
+    // also checks for unlocks and makes them available to player
     public void tick() {
+        checkUnlocks();
         if (player1.getAnimals().size() != 0) {
             for (Animal a: player1.getAnimals()) {
-                score += a.getPerSec();
+                score += a.getPerSec() * a.getCount();
             }
         }
 
@@ -22,11 +31,10 @@ public class Game {
             for (Location l: locations) {
                 score += l.getPerSec();
                 for (Animal a: l.getAnimals()) {
-                    score += a.getPerSec();
+                    score += a.getPerSec() * a.getCount();
                 }
             }
         }
-
     }
 
     //MODIFIES: This
@@ -36,16 +44,14 @@ public class Game {
     }
 
     //EFFECT: returns list of available upgrades for player, locations, and animals
-    public List<String> displayAvailUpgrades() {
+    public String displayAvailUpgrades() {
         List<String> output = new ArrayList<>();
         output.add("Player Upgrades:");
         for (Upgrade u: player1.getAvailUpgrades()) {
             output.add(u.getName());
         }
-
         output.add("Available Animals:");
         output.addAll(returnAnimals(player1.getAvailAnimals()));
-
         if (player1.getAnimals().size() != 0) {
             output.addAll(returnAnimalUpgrades(player1.getAnimals()));
         }
@@ -59,11 +65,20 @@ public class Game {
                 output.addAll(returnAnimals(l.getAvailAnimals()));
             }
         }
-        return output;
+        return listToString(output);
+    }
+
+    private String listToString(List<String> input) {
+        String newOutput = "";
+        for (String i: input) {
+            newOutput += i;
+            newOutput += ' ';
+        }
+        return newOutput;
     }
 
     //EFFECTS: display current upgrades, animals, and locations
-    public List<String> displayStats() {
+    public String displayStats() {
         List<String> output = new ArrayList<>();
 
         output.add("Owned Upgrades:");
@@ -85,10 +100,50 @@ public class Game {
                 output.addAll(returnOwnedAnimals(l));
             }
         }
-        return output;
+        String newOutput = "";
+        for (String i: output) {
+            newOutput += i;
+            newOutput += ' ';
+        }
+        return newOutput;
+    }
+
+    //MODIFIES: this
+    //EFFECT: adds more upgradables to availUpgrades/animals/locations when score reaches a threshold
+    private void checkUnlocks() {
+        if (score >= unlockCafe && (!unlockedCafe)) {
+            System.out.println("Unlocked Cafe");
+            locations.add(cafe);
+            unlockedCafe = true;
+        }
+        if (score >= unlockZoo && (!unlockedZoo)) {
+            System.out.println("Unlocked Zoo");
+            locations.add(zoo);
+            unlockedZoo = true;
+        }
     }
 
 
+    //MODIFIES: this
+    //EFFECTS: calculates the perSec of entire game
+    public int getPerSec() {
+        perSec = 0;
+        if (player1.getAnimals().size() != 0) {
+            for (Animal a: player1.getAnimals()) {
+                perSec += a.getPerSec() * a.getCount();
+            }
+        }
+
+        if (locations.size() > 0) {
+            for (Location l: locations) {
+                perSec += l.getPerSec();
+                for (Animal a: l.getAnimals()) {
+                    perSec += a.getPerSec() * a.getCount();
+                }
+            }
+        }
+        return perSec;
+    }
 
     //EFFECTS: returns all animals in list as list of String
     private List<String> returnAnimals(List<Animal> a) {
@@ -117,7 +172,7 @@ public class Game {
         List<String> output = new ArrayList<>();
         if (u.getUpgrades().size() != 0) {
             for (Upgrade s: u.getUpgrades()) {
-                output.add(s.getName());
+                output.add(s.getName() + " x" + s.getCount());
             }
         }
         return output;
@@ -128,7 +183,7 @@ public class Game {
         List<String> output = new ArrayList<>();
         if (l.getAnimals().size() != 0) {
             for (Animal a: l.getAnimals()) {
-                output.add(a.getName());
+                output.add(a.getName() + " x" + a.getCount());
                 output.add(a.getName() + " Upgrades:");
                 output.addAll(returnOwnedUpgrades(a));
             }
@@ -163,5 +218,4 @@ public class Game {
     public Player getPlayer1() {
         return player1;
     }
-
 }

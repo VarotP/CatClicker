@@ -2,6 +2,7 @@ package model;
 
 public class Upgrade {
     private String name;
+    private int count;
     private int cost;
     private int perSec;
     private int perClick;
@@ -11,6 +12,7 @@ public class Upgrade {
 
     public Upgrade(String name, int cost, int persec, int perclick, String special) {
         this.name = name;
+        this.count = 0;
         this.cost = cost;
         this.perSec = persec;
         this.perClick = perclick;
@@ -55,5 +57,13 @@ public class Upgrade {
 
     public void setSpecial(String special) {
         this.special = special;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 }
