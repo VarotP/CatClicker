@@ -19,7 +19,7 @@ public class Location extends Upgradable {
     //MODIFIES: this
     //EFFECTS: adds animal to animals if not owned, otherwise add 1 to count
     //subtracts money, returns amount of remaining money
-    public int buyAnimal(int money, Animal animal) {
+    public double buyAnimal(double money, Animal animal) {
         if (!animals.contains(animal)) {
             animals.add(animal);
         }

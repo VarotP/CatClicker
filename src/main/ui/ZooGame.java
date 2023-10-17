@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.System.exit;
+
 
 public class ZooGame {
     //fields
@@ -26,11 +28,11 @@ public class ZooGame {
 
     //Upgrades and Animals
 
-    private final Upgrade onePerClickU = new Upgrade("OnePerClick", 5, 0, 1, null);
-    private final Upgrade fivePerClickU = new Upgrade("FivePerClick", 25, 0, 5, null);
+    private final Upgrade onePerClickU = new Upgrade("OnePerClick", 200, 0, 1, null);
+    private final Upgrade fivePerClickU = new Upgrade("FivePerClick", 5000, 0, 5, null);
     private final Upgrade animalBuff = new Upgrade("AnimalBuff", 50, 5, 0, null);
-    private final Animal cat = new Animal("Cat", 50, 1, 0, null);
-    private final Animal dog = new Animal("Dog", 75, 2, 0, null);
+    private final Animal cat = new Animal("Cat", 100, 1, 0, null);
+    private final Animal dog = new Animal("Dog", 200, 2, 0, null);
     private final List<Upgrade> uplist = new ArrayList<>();
     private final List<Animal> anList = new ArrayList<>();
     private final List<Upgrade> uaList = new ArrayList<>();
@@ -48,7 +50,7 @@ public class ZooGame {
             Thread.sleep(1000L / Game.TICKS_PER_SECOND);                // (**)
         }
 
-        System.exit(0); // game is over, we can exit the app
+        exit(0); // game is over, we can exit the app
     }
 
 
@@ -98,19 +100,15 @@ public class ZooGame {
     private void handleUserInput() throws IOException {
         KeyStroke stroke = screen.pollInput();
         if (stroke != null) {
-            //get money
+            //Close game
+            if (stroke.getKeyType() == KeyType.Escape) {
+                screen.close();
+                exit(0);
+            }
+
+            // SPACE BAR: get money
             if (stroke.getCharacter() == ' ') {
                 game.click();
-            }
-
-            //view list of avail upgrades
-            if (stroke.getKeyType() == KeyType.Enter) {
-                System.out.println(game.displayAvailUpgrades());
-            }
-
-            //view list of owned upgrades
-            if (stroke.getKeyType() == KeyType.Backspace) {
-                System.out.println(game.displayStats());
             }
 
             //buy upgrade1
@@ -148,7 +146,7 @@ public class ZooGame {
         TextGraphics perClickGraphic = screen.newTextGraphics();
         TextGraphics perSecGraphic = screen.newTextGraphics();
 
-        scoreGraphic.putString(5,5, "Score = " + game.getScore());
+        scoreGraphic.putString(5,5, "Score = " + game.getScoreInt());
         perSecGraphic.putString(5,7, "Score per second: " + game.getPerSec());
         perClickGraphic.putString(5,8, "Score per click: " + game.getPlayer1().getPerClick());
         ownedUpgradeGraphic.putString(5,9, game.displayStats());

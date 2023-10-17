@@ -6,7 +6,7 @@ import java.util.List;
 public class Game {
     public static final int TICKS_PER_SECOND = 10;
     private Player player1 = new Player("Placeholder", 1, null);
-    private int score = 0;
+    private double score = 0;
     private int perSec = 0;
     private List<Location> locations = new ArrayList<>();
     private final int unlockCafe = 1000;
@@ -23,15 +23,15 @@ public class Game {
         checkUnlocks();
         if (player1.getAnimals().size() != 0) {
             for (Animal a: player1.getAnimals()) {
-                score += a.getPerSec() * a.getCount();
+                score += ((double) (a.getPerSec() * a.getCount()) / 10);
             }
         }
 
         if (locations.size() > 0) {
             for (Location l: locations) {
-                score += l.getPerSec();
+                score += ((double) l.getPerSec() / 10);
                 for (Animal a: l.getAnimals()) {
-                    score += a.getPerSec() * a.getCount();
+                    score += ((double) a.getPerSec() * a.getCount() / 10);
                 }
             }
         }
@@ -199,11 +199,15 @@ public class Game {
 
     //getter and setters
 
-    public int getScore() {
+    public double getScore() {
         return score;
     }
 
-    public void setScore(int score) {
+    public int getScoreInt() {
+        return (int) score;
+    }
+
+    public void setScore(double score) {
         this.score = score;
     }
 

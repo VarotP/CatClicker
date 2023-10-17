@@ -30,7 +30,7 @@ public class Upgradable {
     //REQUIRES: Upgrade is in availUpgrades, money >= upgrade.getCost
     //MODIFIES: this
     //EFFECTS: adds upgrade to upgrades, subtracts money, returns amount of remaining money
-    public int buyUpgrades(int money, Upgrade upgrade) {
+    public double buyUpgrades(double money, Upgrade upgrade) {
         if (!upgrades.contains(upgrade)) {
             upgrades.add(upgrade);
         }
