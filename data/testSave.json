@@ -1,0 +1,11 @@
+{
+  "player-name": "",
+  "score": 0,
+  "player-upgrades": [],
+  "player-animals": [],
+  "animal-upgrades": [],
+  "unlocked-cafe": false,
+  "unlocked-zoo": false,
+  "cafe-animals": [],
+  "zoo-animals": []
+}
