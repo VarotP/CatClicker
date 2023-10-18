@@ -48,7 +48,7 @@ public class Game {
         List<String> output = new ArrayList<>();
         output.add("Player Upgrades:");
         for (Upgrade u: player1.getAvailUpgrades()) {
-            output.add(u.getName());
+            output.add(u.getName() + ": " + u.getCost());
         }
         output.add("Available Animals:");
         output.addAll(returnAnimals(player1.getAvailAnimals()));
@@ -59,7 +59,7 @@ public class Game {
             for (Location l: locations) {
                 output.add(l.getName() + " Upgrades:");
                 for (Upgrade u: l.getAvailUpgrades()) {
-                    output.add(u.getName());
+                    output.add(u.getName() + ": " + u.getCost());
                 }
                 output.add("Available Animals in " + l.getName() + ": ");
                 output.addAll(returnAnimals(l.getAvailAnimals()));
@@ -149,7 +149,7 @@ public class Game {
     private List<String> returnAnimals(List<Animal> a) {
         List<String> output = new ArrayList<>();
         for (Animal ani: a) {
-            output.add(ani.getName());
+            output.add(ani.getName()  + ": " + ani.getCost());
         }
         return output;
     }

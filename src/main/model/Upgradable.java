@@ -9,6 +9,7 @@ public class Upgradable {
     private int cost;
     private int perSec;
     private int perClick;
+    private double scalingFactor;
     private String special;
     private List<Upgrade> upgrades;
     private List<Upgrade> availUpgrades;
@@ -16,12 +17,13 @@ public class Upgradable {
 
     //REQUIRES:
     //EFFECTS: creates upgradable
-    public Upgradable(String name, int cost, int persec, int perclick, String special) {
+    public Upgradable(String name, int cost, int persec, int perclick, double scalingfactor,  String special) {
         this.name = name;
         this.count = 0;
         this.cost = cost;
         this.perSec = persec;
         this.perClick = perclick;
+        this.scalingFactor = scalingfactor;
         this.special = special;
         this.availUpgrades = new ArrayList<>();
         this.upgrades = new ArrayList<>();
@@ -34,10 +36,11 @@ public class Upgradable {
         if (!upgrades.contains(upgrade)) {
             upgrades.add(upgrade);
         }
+        double returnChange = money - upgrade.getCost();
         upgrade.setCount(upgrade.getCount() + 1);
         this.perSec += upgrade.getPerSec();
         this.perClick += upgrade.getPerClick();
-        return money - upgrade.getCost();
+        return returnChange;
     }
 
     //get and set methods
@@ -51,7 +54,8 @@ public class Upgradable {
     }
 
     public int getCost() {
-        return cost;
+
+        return (int) (cost * Math.pow(scalingFactor, count));
     }
 
     public void setCost(int cost) {

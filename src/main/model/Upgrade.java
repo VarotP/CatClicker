@@ -6,16 +6,18 @@ public class Upgrade {
     private int cost;
     private int perSec;
     private int perClick;
+    private double scalingFactor;
     private String special;
 
     //REQUIRES: cost >= 0
 
-    public Upgrade(String name, int cost, int persec, int perclick, String special) {
+    public Upgrade(String name, int cost, int persec, int perclick, double scalingFactor, String special) {
         this.name = name;
         this.count = 0;
         this.cost = cost;
         this.perSec = persec;
         this.perClick = perclick;
+        this.scalingFactor = scalingFactor;
         this.special = special;
     }
 
@@ -28,7 +30,7 @@ public class Upgrade {
     }
 
     public int getCost() {
-        return cost;
+        return (int) (cost * Math.pow(scalingFactor, count));
     }
 
     public void setCost(int cost) {

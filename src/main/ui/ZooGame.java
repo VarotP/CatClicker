@@ -28,11 +28,11 @@ public class ZooGame {
 
     //Upgrades and Animals
 
-    private final Upgrade onePerClickU = new Upgrade("OnePerClick", 200, 0, 1, null);
-    private final Upgrade fivePerClickU = new Upgrade("FivePerClick", 5000, 0, 5, null);
-    private final Upgrade animalBuff = new Upgrade("AnimalBuff", 50, 5, 0, null);
-    private final Animal cat = new Animal("Cat", 100, 1, 0, null);
-    private final Animal dog = new Animal("Dog", 200, 2, 0, null);
+    private final Upgrade onePerClickU = new Upgrade("OnePerClick", 200, 0, 1, 1.4,null);
+    private final Upgrade fivePerClickU = new Upgrade("FivePerClick", 5000, 0, 5, 1.4, null);
+    private final Upgrade animalBuff = new Upgrade("AnimalBuff", 50, 5, 0, 1.4, null);
+    private final Animal cat = new Animal("Cat", 50, 1, 0, 1.2, null);
+    private final Animal dog = new Animal("Dog", 200, 2, 0,  1.2, null);
     private final List<Upgrade> uplist = new ArrayList<>();
     private final List<Animal> anList = new ArrayList<>();
     private final List<Upgrade> uaList = new ArrayList<>();

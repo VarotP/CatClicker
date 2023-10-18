@@ -10,7 +10,7 @@ public class Location extends Upgradable {
     //REQUIRES:
     //EFFECTS: creates upgradable
     public Location(String name, int persec, int perclick, String special) {
-        super(name, 0, persec, perclick, special);
+        super(name, 0, persec, perclick, 0, special);
         this.animals = new ArrayList<>();
         this.availAnimals = new ArrayList<>();
     }
@@ -23,10 +23,11 @@ public class Location extends Upgradable {
         if (!animals.contains(animal)) {
             animals.add(animal);
         }
+        double returnChange = money - animal.getCost();
         animal.setCount(animal.getCount() + 1);
         setPerSec(getPerSec() + animal.getPerSec());
         setPerClick(getPerClick() + animal.getPerClick());
-        return money - animal.getCost();
+        return returnChange;
     }
 
     //get and set methods
