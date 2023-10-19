@@ -11,11 +11,14 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import model.*;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
+import persistence.JsonReader;
+import persistence.JsonWriter;
 
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import static java.lang.System.exit;
 
@@ -25,6 +28,17 @@ public class ZooGame {
     boolean keepGoing = true;
     private Game game;
     private Screen screen;
+    private Scanner input;
+    private JsonWriter jsonWriter;
+    private JsonReader jsonReader;
+    private static final String JSON_STORE = "./data/testSave,json";
+
+    //graphic fields
+    TextGraphics scoreGraphic;
+    TextGraphics availUpgradeGraphic;
+    TextGraphics ownedUpgradeGraphic;
+    TextGraphics perClickGraphic;
+    TextGraphics perSecGraphic;
 
     //Upgrades and Animals
 
@@ -36,27 +50,28 @@ public class ZooGame {
     private final List<Upgrade> uplist = new ArrayList<>();
     private final List<Animal> anList = new ArrayList<>();
     private final List<Upgrade> uaList = new ArrayList<>();
-    TextGraphics scoreGraphic;
-    TextGraphics availUpgradeGraphic;
-    TextGraphics ownedUpgradeGraphic;
-    TextGraphics perClickGraphic;
-    TextGraphics perSecGraphic;
+
 
     //EFFECTS: runs the game
     public void runGame() throws InterruptedException, IOException {
-        initGame();
+        jsonReader = new JsonReader(JSON_STORE);
+        jsonWriter = new JsonWriter(JSON_STORE);
+        mainMenu();
+        exit(0); // game is over, we can exit the app
+    }
+
+    private void startGame(Game game) throws IOException, InterruptedException {
+        initGame(game);
         while (keepGoing) {   // (*)
             tick();                                                     // update the game
             Thread.sleep(1000L / Game.TICKS_PER_SECOND);                // (**)
         }
-
-        exit(0); // game is over, we can exit the app
     }
 
 
     //EFFECTS: initializes initial game state
-    private void initGame() throws IOException {
-        game = new Game();
+    private void initGame(Game game) throws IOException {
+
         Terminal terminal = new DefaultTerminalFactory().setInitialTerminalSize(
                 new TerminalSize(150, 50)).createTerminal();
         screen = new TerminalScreen(terminal);
@@ -75,6 +90,54 @@ public class ZooGame {
 
 
 
+    }
+
+
+    //MODIFIES: this
+    //EFFECTS: displays main menu
+    private void mainMenu() throws IOException, InterruptedException {
+
+        boolean keepGoing = true;
+        String command = null;
+        input = new Scanner(System.in);
+
+        while (keepGoing) {
+            System.out.println("New = n, Load = l, Exit = e");
+            command = input.next();
+            command = command.toLowerCase();
+            if (command.equals("e")) {
+                keepGoing = false;
+            } else {
+                processCommand(command);
+            }
+        }
+        System.out.println("See you again!");
+    }
+
+    //MODIFIES: this
+    //EFFECTS: processes user command
+    private void processCommand(String command) throws IOException, InterruptedException {
+        if (command.equals("n")) {
+            game = new Game();
+            startGame(game);
+        } else if (command.equals("l")) {
+            loadGame();
+        } else {
+            System.out.println("invalid selection");
+        }
+    }
+
+    private void loadGame() throws IOException, InterruptedException {
+        try {
+            game = jsonReader.read();
+            System.out.println("Loaded " + game.getPlayer1().getName() + "from " + JSON_STORE);
+            startGame(game);
+        } finally {
+            System.out.println("Placeholder");
+        }
+//        catch (IOException e) {
+//            System.out.println("Unable to read from file: " + JSON_STORE);
+//        }
     }
 
     /**
