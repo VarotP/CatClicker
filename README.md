@@ -1,5 +1,5 @@
-# Unnamed Idle Game
-## Fun while not doing too much
+# Irwin's Enterprise
+## Create your animal empire
 
 
 - ### What will the application do?
@@ -14,4 +14,7 @@
     - As a user, I want to earn points while doing a simple action
     - As a user, I want to be able to view the list of available upgrades
     - As a user, I want to be able to spend those points in a shop and buy upgrades / teammates / helpers
+  - Phase 1
     - As a user, I want to be able to view the list of owned upgrades on a particular save.
+    - As a user, I want to be able to save my game to file (if I choose)
+    - As a user, I want to be able to load my game from file (or new game if I choose)
