@@ -15,6 +15,7 @@ import persistence.JsonReader;
 import persistence.JsonWriter;
 
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,10 +43,10 @@ public class ZooGame {
 
     //Upgrades and Animals
 
-    private final Upgrade onePerClickU = new Upgrade("OnePerClick", 200, 0, 1, 1.4,null);
+    private final Upgrade onePerClickU = new Upgrade("OnePerClick", 10, 0, 1, 1.4,null);
     private final Upgrade fivePerClickU = new Upgrade("FivePerClick", 5000, 0, 5, 1.4, null);
     private final Upgrade animalBuff = new Upgrade("AnimalBuff", 50, 5, 0, 1.4, null);
-    private final Animal cat = new Animal("Cat", 50, 1, 0, 1.2, null);
+    private final Animal cat = new Animal("Cat", 20, 1, 0, 1.2, null);
     private final Animal dog = new Animal("Dog", 200, 2, 0,  1.2, null);
     private final List<Upgrade> uplist = new ArrayList<>();
     private final List<Animal> anList = new ArrayList<>();
@@ -54,14 +55,14 @@ public class ZooGame {
 
     //EFFECTS: runs the game
     public void runGame() throws InterruptedException, IOException {
-        jsonReader = new JsonReader(JSON_STORE);
+        jsonReader = new JsonReader(this, JSON_STORE);
         jsonWriter = new JsonWriter(JSON_STORE);
         mainMenu();
         exit(0); // game is over, we can exit the app
     }
 
     private void startGame(Game game) throws IOException, InterruptedException {
-        initGame(game);
+        startScreen(game);
         while (keepGoing) {   // (*)
             tick();                                                     // update the game
             Thread.sleep(1000L / Game.TICKS_PER_SECOND);                // (**)
@@ -70,15 +71,25 @@ public class ZooGame {
 
 
     //EFFECTS: initializes initial game state
-    private void initGame(Game game) throws IOException {
-
+    private void startScreen(Game game) throws IOException {
         Terminal terminal = new DefaultTerminalFactory().setInitialTerminalSize(
                 new TerminalSize(150, 50)).createTerminal();
         screen = new TerminalScreen(terminal);
         screen.startScreen();
+    }
 
-
-
+    public Game initGame(String name) {
+        game = new Game(name);
+        uplist.add(onePerClickU);
+        uplist.add(fivePerClickU);
+        game.getPlayer1().setAvailUpgrades(uplist);
+        uaList.add(animalBuff);
+        cat.setAvailUpgrades(uaList);
+        dog.setAvailUpgrades(uaList);
+        anList.add(cat);
+        anList.add(dog);
+        game.getPlayer1().setAvailAnimals(anList);
+        return game;
     }
 
 
@@ -109,7 +120,7 @@ public class ZooGame {
         if (command.equals("n")) {
             System.out.println("Enter your name");
             String name = input.next();
-            game = new Game(name);
+            game = initGame(name);
             startGame(game);
         } else if (command.equals("l")) {
             loadGame();
@@ -121,7 +132,7 @@ public class ZooGame {
     private void loadGame() throws IOException, InterruptedException {
         try {
             game = jsonReader.read();
-            System.out.println("Loaded " + game.getPlayer1().getName() + " from " + JSON_STORE);
+            System.out.println("Loaded " + game.getName() + " from " + JSON_STORE);
             startGame(game);
         } finally {
             System.out.println("Placeholder");
@@ -129,6 +140,18 @@ public class ZooGame {
 //        catch (IOException e) {
 //            System.out.println("Unable to read from file: " + JSON_STORE);
 //        }
+    }
+
+    private void saveGame() {
+        try {
+            jsonWriter.open();
+            jsonWriter.write(game);
+            jsonWriter.close();
+            System.out.println("Saved " + game.getName() + " to " + JSON_STORE);
+        } catch (FileNotFoundException e) {
+            System.out.println("Unable to write to file: " + JSON_STORE);
+        }
+
     }
 
     /**
@@ -157,6 +180,7 @@ public class ZooGame {
             //Close game
             if (stroke.getKeyType() == KeyType.Escape) {
                 screen.close();
+                saveGame();
                 exit(0);
             }
 
@@ -215,8 +239,7 @@ public class ZooGame {
     //MODIFIES: this
     //EFFECTS: adds upgrade to list of animals if never owned, +1 to upgrade's count if already owned
     private void buyUpgrade(Upgradable who, Upgrade thisupgrade) {
-        if (who.getAvailUpgrades().contains(thisupgrade)
-                && game.getScore() >= thisupgrade.getCost()) {
+        if (game.getScore() >= thisupgrade.getCost()) {
             System.out.println(thisupgrade.getName() + " upgrade bought");
             game.setScore(who.buyUpgrades(game.getScore(), thisupgrade));
         } else {
@@ -227,8 +250,7 @@ public class ZooGame {
     //MODIFIES: this
     //EFFECTS: adds animal to list of animals if never owned, +1 to animal's count if already owned
     private void buyAnimal(Location who, Animal thisanimal) {
-        if (who.getAvailAnimals().contains(thisanimal)
-                && game.getScore() >= thisanimal.getCost()) {
+        if (game.getScore() >= thisanimal.getCost()) {
             System.out.println(thisanimal.getName() + " bought");
             game.setScore(who.buyAnimal(game.getScore(), thisanimal));
         } else {

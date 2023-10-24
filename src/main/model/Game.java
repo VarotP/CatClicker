@@ -1,9 +1,12 @@
 package model;
 
+import org.json.JSONObject;
+import persistence.Writable;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Game {
+public class Game implements Writable {
     private String name;
     public static final int TICKS_PER_SECOND = 10;
     private Player player1 = new Player(1, null);
@@ -30,17 +33,6 @@ public class Game {
 
     public Game(String name) {
         this.name = name;
-
-        //init upgrade relationships
-        uplist.add(onePerClickU);
-        uplist.add(fivePerClickU);
-        getPlayer1().setAvailUpgrades(uplist);
-        uaList.add(animalBuff);
-        cat.setAvailUpgrades(uaList);
-        dog.setAvailUpgrades(uaList);
-        anList.add(cat);
-        anList.add(dog);
-        getPlayer1().setAvailAnimals(anList);
     }
 
     //MODIFIES: this
@@ -216,6 +208,27 @@ public class Game {
             }
         }
         return output;
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("name", name);
+        json.put("player", player1.toJson());
+        json.put("score", score);
+        json.put("perSec", perSec);
+        json.put("unlocked-cafe", unlockedCafe);
+        json.put("unlocked-zoo", unlockedZoo);
+        return json;
+    }
+
+    public void calculateCostsForAvails() {
+        uplist.add(onePerClickU);
+        uplist.add(fivePerClickU);
+        getPlayer1().setAvailUpgrades(uplist);
+        anList.add(cat);
+        anList.add(dog);
+        getPlayer1().setAvailAnimals(anList);
     }
 
     //MODIFIES: this

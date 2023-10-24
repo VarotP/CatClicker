@@ -1,5 +1,6 @@
 package model;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,14 +34,30 @@ public class Upgradable {
     //MODIFIES: this
     //EFFECTS: adds upgrade to upgrades, subtracts money, returns amount of remaining money
     public double buyUpgrades(double money, Upgrade upgrade) {
-        if (!upgrades.contains(upgrade)) {
+        if (!checkContainsUpgrade(upgrade)) {
             upgrades.add(upgrade);
+        } else {
+            try {
+                upgrade = findUpgrade(upgrade, upgrades);
+            } catch (IOException e) {
+                System.out.println("FUCK");
+            }
+
         }
         double returnChange = money - upgrade.getCost();
         upgrade.setCount(upgrade.getCount() + 1);
         this.perSec += upgrade.getPerSec();
         this.perClick += upgrade.getPerClick();
         return returnChange;
+    }
+
+    public Upgrade findUpgrade(Upgrade toFind, List<Upgrade> upgradeList) throws IOException {
+        for (Upgrade currentUpgrade : upgradeList) {
+            if (currentUpgrade.getName().equals(toFind.getName())) {
+                return currentUpgrade;
+            }
+        }
+        throw new IOException();
     }
 
     //get and set methods
@@ -54,7 +71,6 @@ public class Upgradable {
     }
 
     public int getCost() {
-
         return (int) (cost * Math.pow(scalingFactor, count));
     }
 
@@ -117,4 +133,20 @@ public class Upgradable {
         this.upgrades.add(upgrade);
     }
 
+    public double getScalingFactor() {
+        return scalingFactor;
+    }
+
+    public void setScalingFactor(double scalingFactor) {
+        this.scalingFactor = scalingFactor;
+    }
+
+    public boolean checkContainsUpgrade(Upgrade u) {
+        for (Upgrade currentUpgrade : upgrades) {
+            if (currentUpgrade.getName().equals(u.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

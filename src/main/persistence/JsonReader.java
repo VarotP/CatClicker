@@ -3,6 +3,7 @@ package persistence;
 import model.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import ui.ZooGame;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -21,9 +22,11 @@ public class JsonReader {
     private final Animal cat = new Animal("Cat", 50, 1, 0, 1.2, null);
     private final Animal dog = new Animal("Dog", 200, 2, 0,  1.2, null);
     private String source;
+    private ZooGame papa;
 
-    public JsonReader(String source) {
+    public JsonReader(ZooGame papa, String source) {
         this.source = source;
+        this.papa = papa;
     }
 
     public Game read() throws IOException {
@@ -44,7 +47,7 @@ public class JsonReader {
 
     private Game parseGameFile(JSONObject jsonObject) {
         String gameName = jsonObject.getString("name");
-        Game thisGame = new Game(gameName);
+        Game thisGame = papa.initGame(gameName);
         buildGame(thisGame, jsonObject);
         return thisGame;
     }
@@ -53,7 +56,8 @@ public class JsonReader {
         JSONObject playerObject = jsonObject.getJSONObject("player");
         JSONArray upgradeList = playerObject.getJSONArray("upgrades");
         JSONArray animalList = playerObject.getJSONArray("player-animals");
-        Player newPlayer = new Player(jsonObject.getInt("perSec"), null);
+        Player newPlayer = game.getPlayer1();
+        newPlayer.setPerSec(jsonObject.getInt("perSec"));
         addUpgradesAndAnimals(game, newPlayer, playerObject);
 
         game.setScore(jsonObject.getDouble("score"));
@@ -67,12 +71,14 @@ public class JsonReader {
         JSONArray jsonUpgradeList = playerObject.getJSONArray("upgrades");
         JSONArray jsonAnimalList = playerObject.getJSONArray("player-animals");
 
-        player.setUpgrades(getUpgradesFromJson(jsonUpgradeList));
-        player.setAnimals(getAnimalsFromJson(jsonAnimalList));
+        player.setPerClick(playerObject.getInt("perClick"));
+        player.setUpgrades(getUpgradesFromJson(game, jsonUpgradeList));
+        player.setAnimals(getAnimalsFromJson(game, jsonAnimalList));
         game.setPlayer1(player);
     }
 
-    private List<Upgrade> getUpgradesFromJson(JSONArray jsonUpgradeList) {
+
+    private List<Upgrade> getUpgradesFromJson(Game game, JSONArray jsonUpgradeList) {
         List<Upgrade> upgrades = new ArrayList<>();
         for (Object json : jsonUpgradeList) {
             JSONObject nextUpgrade = (JSONObject) json;
@@ -86,11 +92,18 @@ public class JsonReader {
             Upgrade newUpgrade = new Upgrade(upgradeName, cost, perSec, perClick, scalingFactor, null);
             newUpgrade.setCount(count);
             upgrades.add(newUpgrade);
+
+            //sets availAnimal to cost of animal from saved game
+            try {
+                game.getPlayer1().findUpgrade(newUpgrade, game.getPlayer1().getAvailUpgrades()).setCost(cost);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         return upgrades;
     }
 
-    private List<Animal> getAnimalsFromJson(JSONArray jsonAnimalList) {
+    private List<Animal> getAnimalsFromJson(Game game, JSONArray jsonAnimalList) {
         List<Animal> animals = new ArrayList<>();
         for (Object json : jsonAnimalList) {
             JSONObject nextAnimal = (JSONObject) json;
@@ -104,8 +117,17 @@ public class JsonReader {
             Animal newAnimal = new Animal(animalName, cost, perSec, perClick, scalingFactor, null);
             newAnimal.setCount(count);
             animals.add(newAnimal);
+
+            //sets availAnimal to cost of animal from saved game
+            try {
+                game.getPlayer1().findAnimal(newAnimal, game.getPlayer1().getAvailAnimals()).setCost(cost);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         return animals;
     }
+
+
 
 }

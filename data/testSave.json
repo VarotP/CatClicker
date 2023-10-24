@@ -1,47 +1,26 @@
 {
-  "name": "Deez",
-  "player":
-    {
-      "perClick": 1,
-      "upgrades": [
-        {
-          "name": "OnePerClick",
-          "count": 2,
-          "cost": 200,
-          "perSec": 0,
-          "perClick": 1,
-          "scalingFactor": 1.4
-        },
-        {
-          "name": "FivePerClick",
-          "count": 1,
-          "cost": 5000,
-          "perSec": 0,
-          "perClick": 5,
-          "scalingFactor": 1.4
-        }
-      ],
-      "player-animals": [
-        {
-          "name": "Cat",
-          "count": 2,
-          "cost": 50,
-          "perSec": 1,
-          "perClick": 0,
-          "scalingFactor": 1.2
-        },
-        {
-          "name": "Dog",
-          "count": 1,
-          "cost": 200,
-          "perSec": 2,
-          "perClick": 0,
-          "scalingFactor": 1.2
-        }
-      ]
-    },
-  "score": 1000,
-  "perSec": 0,
-  "unlocked-cafe": false,
-  "unlocked-zoo": false
+    "score": 111.60000000000021,
+    "unlocked-cafe": false,
+    "perSec": 2,
+    "name": "Val",
+    "unlocked-zoo": false,
+    "player": {
+        "player-animals": [{
+            "cost": 40,
+            "perSec": 1,
+            "name": "Cat",
+            "count": 2,
+            "scalingFactor": 1.2,
+            "perClick": 0
+        }],
+        "upgrades": [{
+            "cost": 37,
+            "perSec": 0,
+            "name": "OnePerClick",
+            "count": 2,
+            "scalingFactor": 1.4,
+            "perClick": 1
+        }],
+        "perClick": 3
+    }
 }

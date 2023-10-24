@@ -1,6 +1,9 @@
 package model;
 
-public class Upgrade {
+import org.json.JSONObject;
+import persistence.Writable;
+
+public class Upgrade implements Writable {
     private String name;
     private int count;
     private int cost;
@@ -19,6 +22,17 @@ public class Upgrade {
         this.perClick = perclick;
         this.scalingFactor = scalingFactor;
         this.special = special;
+    }
+
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("name", getName());
+        json.put("count", getCount());
+        json.put("cost", getCost());
+        json.put("perSec", getPerSec());
+        json.put("perClick", getPerClick());
+        json.put("scalingFactor", scalingFactor);
+        return json;
     }
 
     public String getName() {

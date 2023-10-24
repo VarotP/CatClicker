@@ -1,5 +1,6 @@
 package model;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +21,15 @@ public class Location extends Upgradable {
     //EFFECTS: adds animal to animals if not owned, otherwise add 1 to count
     //subtracts money, returns amount of remaining money
     public double buyAnimal(double money, Animal animal) {
-        if (!animals.contains(animal)) {
+        if (!checkContainsAnimal(animal)) {
             animals.add(animal);
+        } else {
+            try {
+                animal = findAnimal(animal, animals);
+            } catch (IOException e) {
+                System.out.println("FUCK");
+            }
+
         }
         double returnChange = money - animal.getCost();
         animal.setCount(animal.getCount() + 1);
@@ -54,6 +62,34 @@ public class Location extends Upgradable {
     public void addAnimal(Animal animal) {
         this.animals.add(animal);
     }
+
+    public boolean checkContainsAnimal(Animal a) {
+        for (Animal currentAnimal : animals) {
+            if (currentAnimal.getName().equals(a.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Animal findAnimal(Animal toFind, List<Animal> animalList) throws IOException {
+        for (Animal currentAnimal : animalList) {
+            if (currentAnimal.getName().equals(toFind.getName())) {
+                return currentAnimal;
+            }
+        }
+        throw new IOException();
+    }
+
+    public Upgrade findUpgrade(Upgrade toFind, List<Upgrade> animalList) throws IOException {
+        for (Upgrade currentUpgrade : animalList) {
+            if (currentUpgrade.getName().equals(toFind.getName())) {
+                return currentUpgrade;
+            }
+        }
+        throw new IOException();
+    }
+
 
 }
 
