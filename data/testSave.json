@@ -1,11 +1,15 @@
 {
-  "player-name": "",
+  "player":
+    {
+      "name": "Deez",
+      "perClick": 1,
+      "upgrades": [],
+      "availUpgrades": [],
+      "player-animals": [],
+      "availAnimals" : []
+    },
   "score": 0,
-  "player-upgrades": [],
-  "player-animals": [],
-  "animal-upgrades": [],
+  "perSec": 0,
   "unlocked-cafe": false,
-  "unlocked-zoo": false,
-  "cafe-animals": [],
-  "zoo-animals": []
+  "unlocked-zoo": false
 }
