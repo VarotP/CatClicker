@@ -118,7 +118,9 @@ public class ZooGame {
     //EFFECTS: processes user command
     private void processCommand(String command) throws IOException, InterruptedException {
         if (command.equals("n")) {
-            game = new Game();
+            System.out.println("Enter your name");
+            String name = input.next();
+            game = new Game(name);
             startGame(game);
         } else if (command.equals("l")) {
             loadGame();
@@ -203,12 +205,14 @@ public class ZooGame {
 
     //EFFECTS: Renders the scores and availUpgrades and everything
     private void render() throws IOException {
+        TextGraphics nameGraphic = screen.newTextGraphics();
         TextGraphics scoreGraphic = screen.newTextGraphics();
         TextGraphics availUpgradeGraphic = screen.newTextGraphics();
         TextGraphics ownedUpgradeGraphic = screen.newTextGraphics();
         TextGraphics perClickGraphic = screen.newTextGraphics();
         TextGraphics perSecGraphic = screen.newTextGraphics();
 
+        nameGraphic.putString(5,3, game.getName());
         scoreGraphic.putString(5,5, "Score = " + game.getScoreInt());
         perSecGraphic.putString(5,7, "Score per second: " + game.getPerSec());
         perClickGraphic.putString(5,8, "Score per click: " + game.getPlayer1().getPerClick());

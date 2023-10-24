@@ -1,7 +1,7 @@
 {
+  "name": "Deez",
   "player":
     {
-      "name": "Deez",
       "perClick": 1,
       "upgrades": [],
       "availUpgrades": [],

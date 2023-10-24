@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
+    private String name;
     public static final int TICKS_PER_SECOND = 10;
-    private Player player1 = new Player("Placeholder", 1, null);
+    private Player player1 = new Player(1, null);
     private double score = 0;
     private int perSec = 0;
     private List<Location> locations = new ArrayList<>();
@@ -15,6 +16,10 @@ public class Game {
     private boolean unlockedZoo = false;
     private final Location cafe = new Location("Animal Cafe", 10, 50, null);
     private final Location zoo = new Location("Zoo", 100, 100, null);
+
+    public Game(String name) {
+        this.name = name;
+    }
 
     //MODIFIES: this
     //EFFECTS: adds up all the money per sec and ocassionally spawns specials,
@@ -221,5 +226,9 @@ public class Game {
 
     public Player getPlayer1() {
         return player1;
+    }
+
+    public String getName() {
+        return name;
     }
 }
