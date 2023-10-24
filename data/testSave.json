@@ -3,12 +3,44 @@
   "player":
     {
       "perClick": 1,
-      "upgrades": [],
-      "availUpgrades": [],
-      "player-animals": [],
-      "availAnimals" : []
+      "upgrades": [
+        {
+          "name": "OnePerClick",
+          "count": 2,
+          "cost": 200,
+          "perSec": 0,
+          "perClick": 1,
+          "scalingFactor": 1.4
+        },
+        {
+          "name": "FivePerClick",
+          "count": 1,
+          "cost": 5000,
+          "perSec": 0,
+          "perClick": 5,
+          "scalingFactor": 1.4
+        }
+      ],
+      "player-animals": [
+        {
+          "name": "Cat",
+          "count": 2,
+          "cost": 50,
+          "perSec": 1,
+          "perClick": 0,
+          "scalingFactor": 1.2
+        },
+        {
+          "name": "Dog",
+          "count": 1,
+          "cost": 200,
+          "perSec": 2,
+          "perClick": 0,
+          "scalingFactor": 1.2
+        }
+      ]
     },
-  "score": 0,
+  "score": 1000,
   "perSec": 0,
   "unlocked-cafe": false,
   "unlocked-zoo": false

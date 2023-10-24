@@ -31,7 +31,7 @@ public class ZooGame {
     private Scanner input;
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
-    private static final String JSON_STORE = "./data/testSave,json";
+    private static final String JSON_STORE = "./data/testSave.json";
 
     //graphic fields
     TextGraphics scoreGraphic;
@@ -77,17 +77,6 @@ public class ZooGame {
         screen = new TerminalScreen(terminal);
         screen.startScreen();
 
-        //init upgrade relationships
-        uplist.add(onePerClickU);
-        uplist.add(fivePerClickU);
-        game.getPlayer1().setAvailUpgrades(uplist);
-        uaList.add(animalBuff);
-        cat.setAvailUpgrades(uaList);
-        dog.setAvailUpgrades(uaList);
-        anList.add(cat);
-        anList.add(dog);
-        game.getPlayer1().setAvailAnimals(anList);
-
 
 
     }
@@ -132,7 +121,7 @@ public class ZooGame {
     private void loadGame() throws IOException, InterruptedException {
         try {
             game = jsonReader.read();
-            System.out.println("Loaded " + game.getPlayer1().getName() + "from " + JSON_STORE);
+            System.out.println("Loaded " + game.getPlayer1().getName() + " from " + JSON_STORE);
             startGame(game);
         } finally {
             System.out.println("Placeholder");

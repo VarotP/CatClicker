@@ -17,8 +17,30 @@ public class Game {
     private final Location cafe = new Location("Animal Cafe", 10, 50, null);
     private final Location zoo = new Location("Zoo", 100, 100, null);
 
+    //Upgrades and Animals
+
+    private final Upgrade onePerClickU = new Upgrade("OnePerClick", 200, 0, 1, 1.4,null);
+    private final Upgrade fivePerClickU = new Upgrade("FivePerClick", 5000, 0, 5, 1.4, null);
+    private final Upgrade animalBuff = new Upgrade("AnimalBuff", 50, 5, 0, 1.4, null);
+    private final Animal cat = new Animal("Cat", 50, 1, 0, 1.2, null);
+    private final Animal dog = new Animal("Dog", 200, 2, 0,  1.2, null);
+    private final List<Upgrade> uplist = new ArrayList<>();
+    private final List<Animal> anList = new ArrayList<>();
+    private final List<Upgrade> uaList = new ArrayList<>();
+
     public Game(String name) {
         this.name = name;
+
+        //init upgrade relationships
+        uplist.add(onePerClickU);
+        uplist.add(fivePerClickU);
+        getPlayer1().setAvailUpgrades(uplist);
+        uaList.add(animalBuff);
+        cat.setAvailUpgrades(uaList);
+        dog.setAvailUpgrades(uaList);
+        anList.add(cat);
+        anList.add(dog);
+        getPlayer1().setAvailAnimals(anList);
     }
 
     //MODIFIES: this
@@ -230,5 +252,29 @@ public class Game {
 
     public String getName() {
         return name;
+    }
+
+    public void setPerSec(int perSec) {
+        this.perSec = perSec;
+    }
+
+    public boolean isUnlockedCafe() {
+        return unlockedCafe;
+    }
+
+    public void setUnlockedCafe(boolean unlockedCafe) {
+        this.unlockedCafe = unlockedCafe;
+    }
+
+    public boolean isUnlockedZoo() {
+        return unlockedZoo;
+    }
+
+    public void setUnlockedZoo(boolean unlockedZoo) {
+        this.unlockedZoo = unlockedZoo;
+    }
+
+    public void setPlayer1(Player player1) {
+        this.player1 = player1;
     }
 }
