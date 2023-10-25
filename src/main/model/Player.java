@@ -12,6 +12,7 @@ public class Player extends Location implements Writable {
     }
 
     @Override
+    //EFFECTS: returns player object as json object
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
 
@@ -21,6 +22,7 @@ public class Player extends Location implements Writable {
         return json;
     }
 
+    //EFFECTS: returns all upgrades as json objects in a json array
     public JSONArray upgradesToJson() {
         JSONArray upgradesJson = new JSONArray();
         for (Upgrade u: getUpgrades()) {
@@ -29,6 +31,7 @@ public class Player extends Location implements Writable {
         return upgradesJson;
     }
 
+    //EFFECTS: returns all animals as json objects in a json array
     public JSONArray animalsToJson() {
         JSONArray animalsJson = new JSONArray();
         for (Animal a: getAnimals()) {

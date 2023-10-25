@@ -46,6 +46,7 @@ public class Upgradable {
         return returnChange;
     }
 
+    //EFFECTS: searches for upgrade with same String name and returns it, if not found return null
     public Upgrade findUpgrade(Upgrade toFind, List<Upgrade> upgradeList) {
         for (Upgrade currentUpgrade : upgradeList) {
             if (currentUpgrade.getName().equals(toFind.getName())) {
@@ -53,6 +54,22 @@ public class Upgradable {
             }
         }
         return null;
+    }
+
+    //MODIFIES: this
+    //EFFECTS: adds upgrade to upgrade list
+    public void addUpgrade(Upgrade upgrade) {
+        this.upgrades.add(upgrade);
+    }
+
+    //EFFECTS: returns true if there is a upgrade with same name in upgrades, else return false
+    public boolean checkContainsUpgrade(Upgrade u) {
+        for (Upgrade currentUpgrade : upgrades) {
+            if (currentUpgrade.getName().equals(u.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     //get and set methods
@@ -122,26 +139,11 @@ public class Upgradable {
         this.count = count;
     }
 
-    //MODIFIES: this
-    //EFFECTS: adds upgrade to upgrade list
-    public void addUpgrade(Upgrade upgrade) {
-        this.upgrades.add(upgrade);
-    }
-
     public double getScalingFactor() {
         return scalingFactor;
     }
 
     public void setScalingFactor(double scalingFactor) {
         this.scalingFactor = scalingFactor;
-    }
-
-    public boolean checkContainsUpgrade(Upgrade u) {
-        for (Upgrade currentUpgrade : upgrades) {
-            if (currentUpgrade.getName().equals(u.getName())) {
-                return true;
-            }
-        }
-        return false;
     }
 }

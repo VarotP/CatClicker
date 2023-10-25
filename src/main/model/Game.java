@@ -87,6 +87,7 @@ public class Game implements Writable {
         return listToString(output);
     }
 
+    //EFFECTS: changes list of string to a single string
     private String listToString(List<String> input) {
         String newOutput = "";
         for (String i: input) {
@@ -211,6 +212,7 @@ public class Game implements Writable {
     }
 
     @Override
+    //EFFECTS: returns Game as a Json object
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         json.put("name", name);

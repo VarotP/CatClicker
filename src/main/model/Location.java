@@ -8,7 +8,6 @@ public class Location extends Upgradable {
     private List<Animal> animals;
     private List<Animal> availAnimals;
 
-    //REQUIRES:
     //EFFECTS: creates upgradable
     public Location(String name, int persec, int perclick, String special) {
         super(name, 0, persec, perclick, 0, special);
@@ -33,6 +32,31 @@ public class Location extends Upgradable {
         return returnChange;
     }
 
+    public boolean checkContainsAnimal(Animal a) {
+        for (Animal currentAnimal : animals) {
+            if (currentAnimal.getName().equals(a.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //EFFECTS: finds animal with same string name and returns it, if no animal is found return null
+    public Animal findAnimal(Animal toFind, List<Animal> animalList) {
+        for (Animal currentAnimal : animalList) {
+            if (currentAnimal.getName().equals(toFind.getName())) {
+                return currentAnimal;
+            }
+        }
+        return null;
+    }
+
+    //MODIFIES: this
+    //EFFECTS: adds animal to animal list
+    public void addAnimal(Animal animal) {
+        this.animals.add(animal);
+    }
+
     //get and set methods
 
     public List<Animal> getAnimals() {
@@ -51,30 +75,5 @@ public class Location extends Upgradable {
     public void setAvailAnimals(List<Animal> availAnimals) {
         this.availAnimals = availAnimals;
     }
-
-    //MODIFIES: this
-    //EFFECTS: adds animal to animal list
-    public void addAnimal(Animal animal) {
-        this.animals.add(animal);
-    }
-
-    public boolean checkContainsAnimal(Animal a) {
-        for (Animal currentAnimal : animals) {
-            if (currentAnimal.getName().equals(a.getName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public Animal findAnimal(Animal toFind, List<Animal> animalList) {
-        for (Animal currentAnimal : animalList) {
-            if (currentAnimal.getName().equals(toFind.getName())) {
-                return currentAnimal;
-            }
-        }
-        return null;
-    }
-
 }
 
