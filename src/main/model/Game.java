@@ -222,15 +222,6 @@ public class Game implements Writable {
         return json;
     }
 
-    public void calculateCostsForAvails() {
-        uplist.add(onePerClickU);
-        uplist.add(fivePerClickU);
-        getPlayer1().setAvailUpgrades(uplist);
-        anList.add(cat);
-        anList.add(dog);
-        getPlayer1().setAvailAnimals(anList);
-    }
-
     //MODIFIES: this
     //EFFECTS: adds location to list of locations
     public void addLocation(Location location) {

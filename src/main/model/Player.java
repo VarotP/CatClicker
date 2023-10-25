@@ -21,7 +21,7 @@ public class Player extends Location implements Writable {
         return json;
     }
 
-    private JSONArray upgradesToJson() {
+    public JSONArray upgradesToJson() {
         JSONArray upgradesJson = new JSONArray();
         for (Upgrade u: getUpgrades()) {
             upgradesJson.put(u.toJson());
@@ -29,7 +29,7 @@ public class Player extends Location implements Writable {
         return upgradesJson;
     }
 
-    private JSONArray animalsToJson() {
+    public JSONArray animalsToJson() {
         JSONArray animalsJson = new JSONArray();
         for (Animal a: getAnimals()) {
             animalsJson.put(a.toJson());

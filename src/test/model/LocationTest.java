@@ -22,13 +22,13 @@ public class LocationTest {
     @BeforeEach
     public void setup() {
         cafe = new Location("Animal Cafe", 10, 10, null);
-        testUpgrade = new Upgrade("one", 10, 0, 1, null);
-        testUpgrade2 = new Upgrade("two", 20, 0, 2, null);
+        testUpgrade = new Upgrade("one", 10, 0, 1,1.4, null);
+        testUpgrade2 = new Upgrade("two", 20, 0, 2, 1.4, null);
         upgrades.add(testUpgrade);
         upgrades.add(testUpgrade2);
-        monkey = new Animal("Monkey", 100, 1, 0, null);
-        capybara = new Animal("Capybara", 200, 2, 1, null);
-        tiger = new Animal("Tiger", 1200, 2, 1, null);
+        monkey = new Animal("Monkey", 100, 1, 0,1.2, null);
+        capybara = new Animal("Capybara", 200, 2, 1, 1.2,null);
+        tiger = new Animal("Tiger", 1200, 2, 1, 1.2, null);
         animals.add(monkey);
         animals.add(capybara);
         animals.add(tiger);
@@ -203,6 +203,22 @@ public class LocationTest {
         List<Animal> empty2 = new ArrayList<>();
         empty2.add(tiger);
         assertEquals(empty2, cafe.getAnimals());
+    }
+
+    @Test
+    void containAnimalTest() {
+        cafe.buyAnimal(10000, capybara);
+        assertTrue(cafe.checkContainsAnimal(capybara));
+    }
+
+    @Test
+    void findAnimalTest() {
+        Animal capyimposter = new Animal("Capybara", 0,0,0,0, null);
+        cafe.addAnimal(capybara);
+        assertEquals(9800,  cafe.buyAnimal(10000, capyimposter));
+        assertEquals(capybara, cafe.findAnimal(capyimposter, animals));
+        Animal yourmom = new Animal("Yourmom", 0,0,0,0, null);
+        assertNull(cafe.findAnimal(yourmom, animals));
     }
 
 

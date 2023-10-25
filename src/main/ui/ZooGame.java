@@ -238,7 +238,7 @@ public class ZooGame {
 
     //MODIFIES: this
     //EFFECTS: adds upgrade to list of animals if never owned, +1 to upgrade's count if already owned
-    private void buyUpgrade(Upgradable who, Upgrade thisupgrade) {
+    private void buyUpgrade(Upgradable who, Upgrade thisupgrade) throws IOException {
         if (game.getScore() >= thisupgrade.getCost()) {
             System.out.println(thisupgrade.getName() + " upgrade bought");
             game.setScore(who.buyUpgrades(game.getScore(), thisupgrade));

@@ -24,12 +24,7 @@ public class Location extends Upgradable {
         if (!checkContainsAnimal(animal)) {
             animals.add(animal);
         } else {
-            try {
-                animal = findAnimal(animal, animals);
-            } catch (IOException e) {
-                System.out.println("FUCK");
-            }
-
+            animal = findAnimal(animal, animals);
         }
         double returnChange = money - animal.getCost();
         animal.setCount(animal.getCount() + 1);
@@ -72,24 +67,14 @@ public class Location extends Upgradable {
         return false;
     }
 
-    public Animal findAnimal(Animal toFind, List<Animal> animalList) throws IOException {
+    public Animal findAnimal(Animal toFind, List<Animal> animalList) {
         for (Animal currentAnimal : animalList) {
             if (currentAnimal.getName().equals(toFind.getName())) {
                 return currentAnimal;
             }
         }
-        throw new IOException();
+        return null;
     }
-
-    public Upgrade findUpgrade(Upgrade toFind, List<Upgrade> animalList) throws IOException {
-        for (Upgrade currentUpgrade : animalList) {
-            if (currentUpgrade.getName().equals(toFind.getName())) {
-                return currentUpgrade;
-            }
-        }
-        throw new IOException();
-    }
-
 
 }
 

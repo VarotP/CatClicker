@@ -11,6 +11,8 @@ public class Animal extends Upgradable implements Writable {
         super(name, cost, persec, perclick, scalingfactor, special);
     }
 
+
+    //EFFECTS: returns animal object as JSON
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         json.put("name", getName());

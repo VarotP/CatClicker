@@ -37,12 +37,7 @@ public class Upgradable {
         if (!checkContainsUpgrade(upgrade)) {
             upgrades.add(upgrade);
         } else {
-            try {
-                upgrade = findUpgrade(upgrade, upgrades);
-            } catch (IOException e) {
-                System.out.println("FUCK");
-            }
-
+            upgrade = findUpgrade(upgrade, upgrades);
         }
         double returnChange = money - upgrade.getCost();
         upgrade.setCount(upgrade.getCount() + 1);
@@ -51,13 +46,13 @@ public class Upgradable {
         return returnChange;
     }
 
-    public Upgrade findUpgrade(Upgrade toFind, List<Upgrade> upgradeList) throws IOException {
+    public Upgrade findUpgrade(Upgrade toFind, List<Upgrade> upgradeList) {
         for (Upgrade currentUpgrade : upgradeList) {
             if (currentUpgrade.getName().equals(toFind.getName())) {
                 return currentUpgrade;
             }
         }
-        throw new IOException();
+        return null;
     }
 
     //get and set methods

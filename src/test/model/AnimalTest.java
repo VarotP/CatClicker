@@ -1,5 +1,6 @@
 package model;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,9 +17,9 @@ class AnimalTest {
 
     @BeforeEach
     public void setup() {
-        monkey = new Animal("Monkey", 100, 1, 0, null);
-        testUpgrade = new Upgrade("one", 10, 1, 0, null);
-        testUpgrade2 = new Upgrade("two", 20, 0, 2, null);
+        monkey = new Animal("Monkey", 100, 1, 0, 1.2,null);
+        testUpgrade = new Upgrade("one", 10, 1, 0, 1.4, null);
+        testUpgrade2 = new Upgrade("two", 20, 0, 2, 1.4,null);
         upgrades.add(testUpgrade);
         upgrades.add(testUpgrade2);
         monkey.setAvailUpgrades(upgrades);
@@ -55,8 +56,8 @@ class AnimalTest {
         assertEquals(20, monkey.buyUpgrades(30, testUpgrade));
         empty.add(testUpgrade);
         assertEquals(empty, monkey.getUpgrades());
-        assertEquals(10, monkey.buyUpgrades(20, testUpgrade));
-        empty.add(testUpgrade);
+        assertEquals(6, monkey.buyUpgrades(20, testUpgrade));
+        empty.get(0).setCount(2);
         assertEquals(empty, monkey.getUpgrades());
 
     }
@@ -123,5 +124,23 @@ class AnimalTest {
         empty.add(testUpgrade);
         empty.add(testUpgrade2);
         assertEquals(empty, monkey.getUpgrades());
+    }
+
+    @Test
+    void toJsonTest() {
+        JSONObject json = new JSONObject();
+        json.put("name", "Monkey");
+        json.put("count", 0);
+        json.put("cost", 100);
+        json.put("perSec", 1);
+        json.put("perClick", 0);
+        json.put("scalingFactor", 1.2);
+        assertEquals(json.getString("name"), monkey.toJson().getString("name"));
+        assertEquals(json.getInt("count"), monkey.toJson().getInt("count"));
+        assertEquals(json.getInt("cost"), monkey.toJson().getInt("cost"));
+        assertEquals(json.getInt("perSec"), monkey.toJson().getInt("perSec"));
+        assertEquals(json.getInt("perClick"), monkey.toJson().getInt("perClick"));
+        assertEquals(json.getDouble("scalingFactor"), monkey.toJson().getDouble("scalingFactor"));
+
     }
 }

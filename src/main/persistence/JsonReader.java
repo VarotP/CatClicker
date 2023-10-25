@@ -94,11 +94,7 @@ public class JsonReader {
             upgrades.add(newUpgrade);
 
             //sets availAnimal to cost of animal from saved game
-            try {
-                game.getPlayer1().findUpgrade(newUpgrade, game.getPlayer1().getAvailUpgrades()).setCost(cost);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            game.getPlayer1().findUpgrade(newUpgrade, game.getPlayer1().getAvailUpgrades()).setCost(cost);
         }
         return upgrades;
     }
@@ -119,11 +115,7 @@ public class JsonReader {
             animals.add(newAnimal);
 
             //sets availAnimal to cost of animal from saved game
-            try {
-                game.getPlayer1().findAnimal(newAnimal, game.getPlayer1().getAvailAnimals()).setCost(cost);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            game.getPlayer1().findAnimal(newAnimal, game.getPlayer1().getAvailAnimals()).setCost(cost);
         }
         return animals;
     }

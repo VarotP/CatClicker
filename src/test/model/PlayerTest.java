@@ -1,5 +1,7 @@
 package model;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,14 +23,14 @@ class PlayerTest {
 
     @BeforeEach
     public void setup() {
-        player1 = new Player("Gom", 1, null);
-        testUpgrade = new Upgrade("one", 10, 0, 1, null);
-        testUpgrade2 = new Upgrade("two", 20, 0, 2, null);
+        player1 = new Player(1, null);
+        testUpgrade = new Upgrade("one", 10, 0, 1, 1.4,null);
+        testUpgrade2 = new Upgrade("two", 20, 0, 2, 1.4, null);
         upgrades.add(testUpgrade);
         upgrades.add(testUpgrade2);
-        monkey = new Animal("Monkey", 100, 1, 0, null);
-        capybara = new Animal("Capybara", 200, 2, 1, null);
-        tiger = new Animal("Tiger", 1200, 2, 1, null);
+        monkey = new Animal("Monkey", 100, 1, 0,1.2, null);
+        capybara = new Animal("Capybara", 200, 2, 1,1.2, null);
+        tiger = new Animal("Tiger", 1200, 2, 1, 1.2, null);
         animals.add(monkey);
         animals.add(capybara);
         animals.add(tiger);
@@ -67,8 +69,8 @@ class PlayerTest {
         assertEquals(20, player1.buyUpgrades(30, testUpgrade));
         empty.add(testUpgrade);
         assertEquals(empty, player1.getUpgrades());
-        assertEquals(10, player1.buyUpgrades(20, testUpgrade));
-        empty.add(testUpgrade);
+        assertEquals(6, player1.buyUpgrades(20, testUpgrade));
+        empty.get(0).setCount(2);
         assertEquals(empty, player1.getUpgrades());
 
     }
@@ -134,13 +136,6 @@ class PlayerTest {
     }
 
     @Test
-    void nameTest() {
-        assertEquals("Gom", player1.getName());
-        player1.setName("Mika");
-        assertEquals("Mika", player1.getName());
-    }
-
-    @Test
     void perClickTest() {
         assertEquals(1, player1.getPerClick());
         player1.setPerClick(2);
@@ -179,5 +174,18 @@ class PlayerTest {
         empty2.add(tiger);
         assertEquals(empty2, player1.getAvailAnimals());
     }
+
+    @Test
+    void toJsonTest() {
+        JSONObject json = new JSONObject();
+        player1.addUpgrade(testUpgrade);
+        player1.addAnimal(monkey);
+        json.put("perClick", 1);
+        json.put("upgrades", player1.upgradesToJson());
+        json.put("player-animals", player1.animalsToJson());
+        assertEquals(json.getInt("perClick"), player1.toJson().getInt("perClick"));
+    }
+
+
 
 }

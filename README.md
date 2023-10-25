@@ -16,5 +16,5 @@
     - As a user, I want to be able to spend those points in a shop and buy upgrades / teammates / helpers
   - Phase 1
     - As a user, I want to be able to view the list of owned upgrades on a particular save.
-    - As a user, I want to be able to save my game to file (if I choose)
+    - As a user, I want to be able to save my game to automatically when I close the file
     - As a user, I want to be able to load my game from file (or new game if I choose)
