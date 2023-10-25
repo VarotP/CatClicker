@@ -1,12 +1,12 @@
 {
-    "score": 111.60000000000021,
+    "score": 25.7,
     "unlocked-cafe": false,
     "perSec": 2,
     "name": "Val",
     "unlocked-zoo": false,
     "player": {
         "player-animals": [{
-            "cost": 40,
+            "cost": 28,
             "perSec": 1,
             "name": "Cat",
             "count": 2,
@@ -14,13 +14,13 @@
             "perClick": 0
         }],
         "upgrades": [{
-            "cost": 37,
+            "cost": 14,
             "perSec": 0,
             "name": "OnePerClick",
-            "count": 2,
+            "count": 1,
             "scalingFactor": 1.4,
             "perClick": 1
         }],
-        "perClick": 3
+        "perClick": 2
     }
 }

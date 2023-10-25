@@ -1,9 +1,7 @@
 package model;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +21,12 @@ public class UpgradableTest {
     void findUpgradeFailTest() {
         List<Upgrade> ulist = new ArrayList<>();
         assertNull(testUpgradable.findUpgrade(testUpgrade, ulist));
+    }
+
+    @Test
+    void findUpgradeSuccessTest() {
+        testUpgradable.addUpgrade(testUpgrade);
+        assertEquals(testUpgrade, testUpgradable.findUpgrade(testUpgrade, testUpgradable.getUpgrades()));
     }
 
     @Test

@@ -11,18 +11,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 public class JsonReader {
     //Upgrades and Animals
-    private final Upgrade onePerClickU = new Upgrade("OnePerClick", 200, 0, 1, 1.4,null);
-    private final Upgrade fivePerClickU = new Upgrade("FivePerClick", 5000, 0, 5, 1.4, null);
-    private final Upgrade animalBuff = new Upgrade("AnimalBuff", 50, 5, 0, 1.4, null);
-    private final Animal cat = new Animal("Cat", 50, 1, 0, 1.2, null);
-    private final Animal dog = new Animal("Dog", 200, 2, 0,  1.2, null);
-    private String source;
-    private ZooGame papa;
+    private final String source;
+    private final ZooGame papa;
 
     public JsonReader(ZooGame papa, String source) {
         this.source = source;
@@ -54,8 +48,6 @@ public class JsonReader {
 
     private void buildGame(Game game, JSONObject jsonObject) {
         JSONObject playerObject = jsonObject.getJSONObject("player");
-        JSONArray upgradeList = playerObject.getJSONArray("upgrades");
-        JSONArray animalList = playerObject.getJSONArray("player-animals");
         Player newPlayer = game.getPlayer1();
         newPlayer.setPerSec(jsonObject.getInt("perSec"));
         addUpgradesAndAnimals(game, newPlayer, playerObject);
