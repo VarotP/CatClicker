@@ -13,7 +13,6 @@ public class Upgrade implements Writable {
     private String special;
 
     //REQUIRES: cost >= 0
-
     public Upgrade(String name, int cost, int persec, int perclick, double scalingFactor, String special) {
         this.name = name;
         this.count = 0;
@@ -24,6 +23,7 @@ public class Upgrade implements Writable {
         this.special = special;
     }
 
+    //EFFECTS: returns upgrade object as json object
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         json.put("name", getName());

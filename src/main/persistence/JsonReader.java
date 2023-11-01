@@ -18,17 +18,20 @@ public class JsonReader {
     private final String source;
     private final ZooGame papa;
 
+    //EFFECTS: constructs jsonReader object
     public JsonReader(ZooGame papa, String source) {
         this.source = source;
         this.papa = papa;
     }
 
+    //EFFECTS: read file driver
     public Game read() throws IOException {
         String jsonData = readFile(source);
         JSONObject jsonObject = new JSONObject(jsonData);
         return parseGameFile(jsonObject);
     }
 
+    //EFFECTS: reads file from source
     private String readFile(String source) throws IOException {
         StringBuilder contentBuilder = new StringBuilder();
 
@@ -39,6 +42,7 @@ public class JsonReader {
         return contentBuilder.toString();
     }
 
+    //EFFECTS: parses json object and creates game object
     private Game parseGameFile(JSONObject jsonObject) {
         String gameName = jsonObject.getString("name");
         Game thisGame = papa.initGame(gameName);
@@ -46,6 +50,7 @@ public class JsonReader {
         return thisGame;
     }
 
+    //EFFECTS: builds game object from json file
     private void buildGame(Game game, JSONObject jsonObject) {
         JSONObject playerObject = jsonObject.getJSONObject("player");
         Player newPlayer = game.getPlayer1();
@@ -58,6 +63,7 @@ public class JsonReader {
         game.setUnlockedZoo(jsonObject.getBoolean("unlocked-zoo"));
     }
 
+    //EFFECTS: adds animals and upgrades from json file to game object
     private void addUpgradesAndAnimals(Game game, Player player, JSONObject playerObject) {
 
         JSONArray jsonUpgradeList = playerObject.getJSONArray("upgrades");
@@ -69,7 +75,7 @@ public class JsonReader {
         game.setPlayer1(player);
     }
 
-
+    //EFFECTS: creates upgrades list and sets it to playerobject
     private List<Upgrade> getUpgradesFromJson(Game game, JSONArray jsonUpgradeList) {
         List<Upgrade> upgrades = new ArrayList<>();
         for (Object json : jsonUpgradeList) {
@@ -91,6 +97,7 @@ public class JsonReader {
         return upgrades;
     }
 
+    //EFFECTS: creates animal list and adds to playerobject
     private List<Animal> getAnimalsFromJson(Game game, JSONArray jsonAnimalList) {
         List<Animal> animals = new ArrayList<>();
         for (Object json : jsonAnimalList) {
@@ -111,7 +118,4 @@ public class JsonReader {
         }
         return animals;
     }
-
-
-
 }
