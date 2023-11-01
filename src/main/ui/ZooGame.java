@@ -42,7 +42,6 @@ public class ZooGame {
     TextGraphics perSecGraphic;
 
     //Upgrades and Animals
-
     private final Upgrade onePerClickU = new Upgrade("OnePerClick", 10, 0, 1, 1.4,null);
     private final Upgrade fivePerClickU = new Upgrade("FivePerClick", 5000, 0, 5, 1.4, null);
     private final Upgrade animalBuff = new Upgrade("AnimalBuff", 50, 5, 0, 1.4, null);
@@ -61,6 +60,7 @@ public class ZooGame {
         exit(0); // game is over, we can exit the app
     }
 
+    //EFFECTS: starts the screen and keeps the game running
     private void startGame(Game game) throws IOException, InterruptedException {
         startScreen(game);
         while (keepGoing) {   // (*)
@@ -78,6 +78,8 @@ public class ZooGame {
         screen.startScreen();
     }
 
+    //MODIFIES: this
+    //EFFECTS: initialises game states: available upgrades and animals
     public Game initGame(String name) {
         game = new Game(name);
         uplist.add(onePerClickU);
@@ -129,6 +131,8 @@ public class ZooGame {
         }
     }
 
+    //MODIFIES: this
+    //EFFECTS: loads game from local save file
     private void loadGame() throws IOException, InterruptedException {
         try {
             game = jsonReader.read();
@@ -142,6 +146,8 @@ public class ZooGame {
 //        }
     }
 
+    //MODIFIES: save file
+    //EFFECTS: saves game state to file as json object
     private void saveGame() {
         try {
             jsonWriter.open();
@@ -154,11 +160,7 @@ public class ZooGame {
 
     }
 
-    /**
-     * Handles one cycle in the game by taking user input,
-     * ticking the game internally, and rendering the effects
-     */
-
+    //MODIFIES: this
     //EFFECTS: handles a single tick of the game and renders it
     private void tick() throws IOException {
         try {
@@ -257,7 +259,4 @@ public class ZooGame {
             System.out.println("Insufficient Money");
         }
     }
-
-
-
 }
