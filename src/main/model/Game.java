@@ -1,240 +1,257 @@
 package model;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.Writable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Game implements Writable {
     private String name;
-    public static final int TICKS_PER_SECOND = 10;
-    private Player player1 = new Player(1, null);
-    private double score = 0;
-    private int perSec = 0;
-    private List<Location> locations = new ArrayList<>();
-    private final int unlockCafe = 1000;
-    private boolean unlockedCafe = false;
-    private final int unlockZoo = 10000;
-    private boolean unlockedZoo = false;
-    private final Location cafe = new Location("Animal Cafe", 10, 50, null);
-    private final Location zoo = new Location("Zoo", 100, 100, null);
+    private double perClick;
+    private double score;
+    private double perSec;
+    private final double ticks;
+
+    // animal and count
+    private HashMap<Upgradable, Integer> animals;
+    // unlockable animal and unlocked?
+    private HashMap<Upgradable, Boolean> availAnimals;
+    private HashSet<Upgrade> upgrades;
+    private HashMap<Upgrade, Boolean> availUpgrades;
 
     //Upgrades and Animals
 
-    private final Upgrade onePerClickU = new Upgrade("OnePerClick", 200, 0, 1, 1.4,null);
-    private final Upgrade fivePerClickU = new Upgrade("FivePerClick", 5000, 0, 5, 1.4, null);
-    private final Upgrade animalBuff = new Upgrade("AnimalBuff", 50, 5, 0, 1.4, null);
-    private final Animal cat = new Animal("Cat", 50, 1, 0, 1.2, null);
-    private final Animal dog = new Animal("Dog", 200, 2, 0,  1.2, null);
-    private final List<Upgrade> uplist = new ArrayList<>();
-    private final List<Animal> anList = new ArrayList<>();
-    private final List<Upgrade> uaList = new ArrayList<>();
+    private final Upgrade onePerClickU = new Upgrade("OnePerClick", 10, 0, 1, 0,1.4,null);
+    private final Upgrade fivePerClickU = new Upgrade("FivePerClick", 5000, 0, 5, 5000, 1.4, null);
+    private final Upgradable cat = new Upgradable("Cat", 50, 1, 0, 0, 1.2, null);
+    private final Upgradable dog = new Upgradable("Dog", 200, 2, 0, 0, 1.2, null);
+    private final Upgradable capybara = new Upgradable("Capybara", 200, 2, 0,  500,1.2, null);
 
-    public Game(String name) {
+    //MODIFIES: this
+    //EFFECTS: constructs game object and inits the available upgrade and animal list
+    public Game(String name, int ticks) {
         this.name = name;
+        this.perClick = 1;
+        this.perSec = 0;
+        this.score = 0;
+        this.animals = new HashMap<>();
+        this.availAnimals = new HashMap<>();
+        this.upgrades = new HashSet<>();
+        this.availUpgrades = new HashMap<>();
+        this.ticks = ticks;
+        initAvails();
     }
+
+    //MODIFIES: this
+    //EFFECTS inits avail animals and upgrades
+    private void initAvails() {
+        availAnimals.put(cat, true);
+        availAnimals.put(dog, true);
+        availAnimals.put(capybara, false);
+        availUpgrades.put(onePerClickU, true);
+        availUpgrades.put(fivePerClickU, false);
+    }
+
 
     //MODIFIES: this
     //EFFECTS: adds up all the money per sec and ocassionally spawns specials,
     // also checks for unlocks and makes them available to player
     public void tick() {
         checkUnlocks();
-        if (player1.getAnimals().size() != 0) {
-            for (Animal a: player1.getAnimals()) {
-                score += ((double) (a.getPerSec() * a.getCount()) / 10);
-            }
-        }
-
-        if (locations.size() > 0) {
-            for (Location l: locations) {
-                score += ((double) l.getPerSec() / 10);
-                for (Animal a: l.getAnimals()) {
-                    score += ((double) a.getPerSec() * a.getCount() / 10);
-                }
-            }
+        for (Upgradable animal : animals.keySet()) {
+            // score += each animals's per second multiplied by their count
+            perSec = (animal.getPerSec() * animals.get(animal) / ticks);
+            score += (animal.getPerSec() * animals.get(animal) / ticks);
         }
     }
 
     //MODIFIES: This
     //EFFECT: earn money
     public void click() {
-        score += player1.getPerClick();
+        score += perClick;
     }
 
-    //EFFECT: returns list of available upgrades for player, locations, and animals
-    public String displayAvailUpgrades() {
-        List<String> output = new ArrayList<>();
-        output.add("Player Upgrades:");
-        for (Upgrade u: player1.getAvailUpgrades()) {
-            output.add(u.getName() + ": " + u.getCost());
-        }
-        output.add("Available Animals:");
-        output.addAll(returnAnimals(player1.getAvailAnimals()));
-        if (player1.getAnimals().size() != 0) {
-            output.addAll(returnAnimalUpgrades(player1.getAnimals()));
-        }
-        if (locations.size() != 0) {
-            for (Location l: locations) {
-                output.add(l.getName() + " Upgrades:");
-                for (Upgrade u: l.getAvailUpgrades()) {
-                    output.add(u.getName() + ": " + u.getCost());
-                }
-                output.add("Available Animals in " + l.getName() + ": ");
-                output.addAll(returnAnimals(l.getAvailAnimals()));
+    //EFFECTS: adds upgrade to upgrades if score >= item cost and if upgrade is unlocked
+    public void buyUpgrade(String upgradeName) {
+        Upgrade buyUpgrade = null;
+        Upgrade temp = new Upgrade(upgradeName, 0, 0, 0, 0, 0, null);
+        for (Upgrade u : availUpgrades.keySet()) {
+            if (u.equals(temp)) {
+                buyUpgrade = u;
             }
         }
-        return listToString(output);
-    }
-
-    private String listToString(List<String> input) {
-        String newOutput = "";
-        for (String i: input) {
-            newOutput += i;
-            newOutput += ' ';
+        if (buyUpgrade == null) {
+            System.out.println("upgrade not found");
+        } else if (upgrades.contains(buyUpgrade)) {
+            System.out.println("upgrade already bought");
+        } else if (score >= buyUpgrade.getCost() && availUpgrades.get(buyUpgrade)) {
+            score -= buyUpgrade.getCost();
+            upgrades.add(buyUpgrade);
+            updatePerClick();
+            System.out.println(buyUpgrade.getName() + " bought");
+        } else if (!availUpgrades.get(buyUpgrade)) {
+            System.out.println("upgrade not unlocked");
+        } else {
+            System.out.println("not enough money");
         }
-        return newOutput;
-    }
-
-    //EFFECTS: display current upgrades, animals, and locations
-    public String displayStats() {
-        List<String> output = new ArrayList<>();
-
-        output.add("Owned Upgrades:");
-        output.addAll(returnOwnedUpgrades(player1));
-
-        output.add("Player Animals:");
-        output.addAll(returnOwnedAnimals(player1));
-
-
-        output.add("Owned Locations:");
-        if (locations.size() != 0) {
-            for (Location l: locations) {
-                output.add(l.getName());
-                output.add(l.getName() + " Upgrades:");
-                for (Upgrade u: l.getUpgrades()) {
-                    output.add(u.getName());
-                }
-                output.add(l.getName() + " Animals:");
-                output.addAll(returnOwnedAnimals(l));
-            }
-        }
-        String newOutput = "";
-        for (String i: output) {
-            newOutput += i;
-            newOutput += ' ';
-        }
-        return newOutput;
     }
 
     //MODIFIES: this
-    //EFFECT: adds more upgradables to availUpgrades/animals/locations when score reaches a threshold
+    //EFFECTS: updates the perClick variable
+    private void updatePerClick() {
+        for (Upgrade u : upgrades) {
+            perClick += u.getPerClick();
+        }
+    }
+
+    //EFFECTS: adds upgrade to upgrades if score >= item cost and if upgrade is unlocked
+    public void buyAnimal(String animalName, Integer quantity) {
+        Upgradable buyAnimal = findAnimal(animalName);
+        if (buyAnimal == null) {
+            System.out.println("animal not found");
+        } else if (!animals.containsKey(buyAnimal)
+                && score >= buyAnimal.getCost() * quantity && availAnimals.get(buyAnimal)) {
+            score -= buyAnimal.getCost() * quantity;
+            animals.put(buyAnimal, quantity);
+            System.out.println(buyAnimal.getName() + " bought");
+        } else if (animals.containsKey(buyAnimal)
+                && score >= buyAnimal.getCost() * quantity && availAnimals.get(buyAnimal)) {
+            score -= buyAnimal.getCost() * quantity;
+            animals.replace(buyAnimal, animals.get(buyAnimal) + quantity);
+            System.out.println(buyAnimal.getName() + " x" + quantity + " bought");
+        } else if (!availAnimals.get(buyAnimal)) {
+            System.out.println("animal not unlocked");
+        } else {
+            System.out.println("not enough money");
+        }
+    }
+
+    private Upgradable findAnimal(String animalName) {
+        Upgradable buyAnimal = null;
+        Upgradable temp = new Upgradable(animalName, 0, 0, 0, 0, 0, null);
+        for (Upgradable u : availAnimals.keySet()) {
+            if (u.equals(temp)) {
+                buyAnimal = u;
+            }
+        }
+        return buyAnimal;
+    }
+
+    //MODIFIES: this
+    //EFFECT: sets unlocked to true in hashmap when score >= unlockedAt for each upgrade/upgradable
     private void checkUnlocks() {
-        if (score >= unlockCafe && (!unlockedCafe)) {
-            System.out.println("Unlocked Cafe");
-            locations.add(cafe);
-            unlockedCafe = true;
+        for (Upgradable u : availAnimals.keySet()) {
+            if (u.getUnlockedAt() >= score) {
+                availAnimals.replace(u, true);
+            }
         }
-        if (score >= unlockZoo && (!unlockedZoo)) {
-            System.out.println("Unlocked Zoo");
-            locations.add(zoo);
-            unlockedZoo = true;
+        for (Upgrade u : availUpgrades.keySet()) {
+            if (u.getUnlockedAt() >= score) {
+                availUpgrades.replace(u, true);
+            }
         }
     }
 
-
-    //MODIFIES: this
-    //EFFECTS: calculates the perSec of entire game
-    public int getPerSec() {
-        perSec = 0;
-        if (player1.getAnimals().size() != 0) {
-            for (Animal a: player1.getAnimals()) {
-                perSec += a.getPerSec() * a.getCount();
-            }
+    //EFFECTS: returns owned items as a string
+    public String getOwnedString() {
+        StringBuilder newString = new StringBuilder("Owned Animals: ");
+        for (Upgradable u : animals.keySet()) {
+            newString.append(u.getName()).append(" ");
         }
-
-        if (locations.size() > 0) {
-            for (Location l: locations) {
-                perSec += l.getPerSec();
-                for (Animal a: l.getAnimals()) {
-                    perSec += a.getPerSec() * a.getCount();
-                }
-            }
+        newString.append("Owned Upgrades: ");
+        for (Upgrade u : upgrades) {
+            newString.append(u.getName()).append(" ");
         }
-        return perSec;
+        return newString.toString();
     }
 
-    //EFFECTS: returns all animals in list as list of String
-    private List<String> returnAnimals(List<Animal> a) {
-        List<String> output = new ArrayList<>();
-        for (Animal ani: a) {
-            output.add(ani.getName()  + ": " + ani.getCost());
+    //EFFECTS: returns available items as string
+    public String getAvailString() {
+        StringBuilder newString = new StringBuilder("Available Animals: ");
+        for (Upgradable u : availAnimals.keySet()) {
+            newString.append(u.getName()).append(" ");
         }
-        return output;
-    }
-
-    //EFFECTS: returns all animals and their respective upgrades
-    private List<String> returnAnimalUpgrades(List<Animal> a) {
-        List<String> output = new ArrayList<>();
-        for (Animal thisone: a) {
-            output.add(thisone.getName() + " Upgrades:");
-            for (Upgrade u: thisone.getAvailUpgrades()) {
-                output.add(u.getName());
-            }
+        newString.append("Available Upgrades: ");
+        for (Upgrade u : availUpgrades.keySet()) {
+            newString.append(u.getName()).append(" ");
         }
-        return output;
-    }
-
-
-    //EFFECTS: returns owned upgrades
-    private List<String> returnOwnedUpgrades(Upgradable u) {
-        List<String> output = new ArrayList<>();
-        if (u.getUpgrades().size() != 0) {
-            for (Upgrade s: u.getUpgrades()) {
-                output.add(s.getName() + " x" + s.getCount());
-            }
-        }
-        return output;
-    }
-
-    //EFFECTS: returns owned animals
-    private List<String> returnOwnedAnimals(Location l) {
-        List<String> output = new ArrayList<>();
-        if (l.getAnimals().size() != 0) {
-            for (Animal a: l.getAnimals()) {
-                output.add(a.getName() + " x" + a.getCount());
-                output.add(a.getName() + " Upgrades:");
-                output.addAll(returnOwnedUpgrades(a));
-            }
-        }
-        return output;
+        return newString.toString();
     }
 
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         json.put("name", name);
-        json.put("player", player1.toJson());
         json.put("score", score);
+        json.put("perClick", perClick);
         json.put("perSec", perSec);
-        json.put("unlocked-cafe", unlockedCafe);
-        json.put("unlocked-zoo", unlockedZoo);
+        json.put("animals", getAnimalsJson());
+        json.put("availAnimals", getAvailAnimalsJson());
+        json.put("upgrades", getUpgradesJson());
+        json.put("availUpgrades", getAvailUpgradesJson());
         return json;
     }
 
-    //MODIFIES: this
-    //EFFECTS: adds location to list of locations
-    public void addLocation(Location location) {
-        locations.add(location);
+    //EFFECTS: returns animal hashmap as json array
+    private JSONArray getAnimalsJson() {
+        JSONArray myArray = new JSONArray();
+        for (Upgradable u : animals.keySet()) {
+            myArray.put(u.toJson(animals.get(u)));
+        }
+        return myArray;
+    }
+
+    //EFFECTS: returns animal hashmap as json array
+    private JSONArray getAvailAnimalsJson() {
+        JSONArray myArray = new JSONArray();
+        for (Upgradable u : availAnimals.keySet()) {
+            myArray.put(u.toJson(availAnimals.get(u)));
+        }
+        return myArray;
+    }
+
+    //EFFECTS: returns animal set as json array
+    private JSONArray getUpgradesJson() {
+        JSONArray myArray = new JSONArray();
+        for (Upgrade u : upgrades) {
+            myArray.put(u.toJson());
+        }
+        return myArray;
+    }
+
+    //EFFECTS: returns animal hashmap as json array
+    private JSONArray getAvailUpgradesJson() {
+        JSONArray myArray = new JSONArray();
+        for (Upgrade u : availUpgrades.keySet()) {
+            myArray.put(u.toJson(availUpgrades.get(u)));
+        }
+        return myArray;
     }
 
     //getter and setters
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getPerClick() {
+        return perClick;
+    }
+
+    public void setPerClick(double perClick) {
+        this.perClick = perClick;
+    }
 
     public double getScore() {
         return score;
     }
 
-    public int getScoreInt() {
+    public double getScoreInt() {
         return (int) score;
     }
 
@@ -242,43 +259,43 @@ public class Game implements Writable {
         this.score = score;
     }
 
-    public List<Location> getLocations() {
-        return locations;
+    public double getPerSec() {
+        return perSec;
     }
 
-    public void setLocations(List<Location> locations) {
-        this.locations = locations;
-    }
-
-    public Player getPlayer1() {
-        return player1;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setPerSec(int perSec) {
+    public void setPerSec(double perSec) {
         this.perSec = perSec;
     }
 
-    public boolean isUnlockedCafe() {
-        return unlockedCafe;
+    public HashMap<Upgradable, Integer> getAnimals() {
+        return animals;
     }
 
-    public void setUnlockedCafe(boolean unlockedCafe) {
-        this.unlockedCafe = unlockedCafe;
+    public void setAnimals(HashMap<Upgradable, Integer> animals) {
+        this.animals = animals;
     }
 
-    public boolean isUnlockedZoo() {
-        return unlockedZoo;
+    public HashMap<Upgradable, Boolean> getAvailAnimals() {
+        return availAnimals;
     }
 
-    public void setUnlockedZoo(boolean unlockedZoo) {
-        this.unlockedZoo = unlockedZoo;
+    public void setAvailAnimals(HashMap<Upgradable, Boolean> availAnimals) {
+        this.availAnimals = availAnimals;
     }
 
-    public void setPlayer1(Player player1) {
-        this.player1 = player1;
+    public HashSet<Upgrade> getUpgrades() {
+        return upgrades;
+    }
+
+    public void setUpgrades(HashSet<Upgrade> upgrades) {
+        this.upgrades = upgrades;
+    }
+
+    public HashMap<Upgrade, Boolean> getAvailUpgrades() {
+        return availUpgrades;
+    }
+
+    public void setAvailUpgrades(HashMap<Upgrade, Boolean> availUpgrades) {
+        this.availUpgrades = availUpgrades;
     }
 }
