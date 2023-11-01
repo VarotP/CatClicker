@@ -1,0 +1,932 @@
+Index: src/main/persistence/JsonReader.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package persistence;\r\n\r\nimport model.*;\r\nimport org.json.JSONArray;\r\nimport org.json.JSONObject;\r\nimport ui.ZooGame;\r\n\r\nimport java.io.IOException;\r\nimport java.nio.charset.StandardCharsets;\r\nimport java.nio.file.Files;\r\nimport java.nio.file.Paths;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\nimport java.util.stream.Stream;\r\n\r\npublic class JsonReader {\r\n    //Upgrades and Animals\r\n    private final String source;\r\n    private final ZooGame papa;\r\n\r\n    public JsonReader(ZooGame papa, String source) {\r\n        this.source = source;\r\n        this.papa = papa;\r\n    }\r\n\r\n    public Game read() throws IOException {\r\n        String jsonData = readFile(source);\r\n        JSONObject jsonObject = new JSONObject(jsonData);\r\n        return parseGameFile(jsonObject);\r\n    }\r\n\r\n    private String readFile(String source) throws IOException {\r\n        StringBuilder contentBuilder = new StringBuilder();\r\n\r\n        try (Stream<String> stream = Files.lines(Paths.get(source), StandardCharsets.UTF_8)) {\r\n            stream.forEach(s -> contentBuilder.append(s));\r\n        }\r\n\r\n        return contentBuilder.toString();\r\n    }\r\n\r\n    private Game parseGameFile(JSONObject jsonObject) {\r\n        String gameName = jsonObject.getString(\"name\");\r\n        Game thisGame = papa.initGame(gameName);\r\n        buildGame(thisGame, jsonObject);\r\n        return thisGame;\r\n    }\r\n\r\n    private void buildGame(Game game, JSONObject jsonObject) {\r\n        JSONObject playerObject = jsonObject.getJSONObject(\"player\");\r\n        Player newPlayer = game.getPlayer1();\r\n        newPlayer.setPerSec(jsonObject.getInt(\"perSec\"));\r\n        addUpgradesAndAnimals(game, newPlayer, playerObject);\r\n\r\n        game.setScore(jsonObject.getDouble(\"score\"));\r\n        game.setPerSec(jsonObject.getInt(\"perSec\"));\r\n        game.setUnlockedCafe(jsonObject.getBoolean(\"unlocked-cafe\"));\r\n        game.setUnlockedZoo(jsonObject.getBoolean(\"unlocked-zoo\"));\r\n    }\r\n\r\n    private void addUpgradesAndAnimals(Game game, Player player, JSONObject playerObject) {\r\n\r\n        JSONArray jsonUpgradeList = playerObject.getJSONArray(\"upgrades\");\r\n        JSONArray jsonAnimalList = playerObject.getJSONArray(\"player-animals\");\r\n\r\n        player.setPerClick(playerObject.getInt(\"perClick\"));\r\n        player.setUpgrades(getUpgradesFromJson(game, jsonUpgradeList));\r\n        player.setAnimals(getAnimalsFromJson(game, jsonAnimalList));\r\n        game.setPlayer1(player);\r\n    }\r\n\r\n\r\n    private List<Upgrade> getUpgradesFromJson(Game game, JSONArray jsonUpgradeList) {\r\n        List<Upgrade> upgrades = new ArrayList<>();\r\n        for (Object json : jsonUpgradeList) {\r\n            JSONObject nextUpgrade = (JSONObject) json;\r\n\r\n            String upgradeName = nextUpgrade.getString(\"name\");\r\n            int count = nextUpgrade.getInt(\"count\");\r\n            int cost = nextUpgrade.getInt(\"cost\");\r\n            int perSec = nextUpgrade.getInt(\"perSec\");\r\n            int perClick = nextUpgrade.getInt(\"perClick\");\r\n            double scalingFactor = nextUpgrade.getDouble(\"scalingFactor\");\r\n            Upgrade newUpgrade = new Upgrade(upgradeName, cost, perSec, perClick, scalingFactor, null);\r\n            newUpgrade.setCount(count);\r\n            upgrades.add(newUpgrade);\r\n\r\n            //sets availAnimal to cost of animal from saved game\r\n            game.getPlayer1().findUpgrade(newUpgrade, game.getPlayer1().getAvailUpgrades()).setCost(cost);\r\n        }\r\n        return upgrades;\r\n    }\r\n\r\n    private List<Animal> getAnimalsFromJson(Game game, JSONArray jsonAnimalList) {\r\n        List<Animal> animals = new ArrayList<>();\r\n        for (Object json : jsonAnimalList) {\r\n            JSONObject nextAnimal = (JSONObject) json;\r\n\r\n            String animalName = nextAnimal.getString(\"name\");\r\n            int count = nextAnimal.getInt(\"count\");\r\n            int cost = nextAnimal.getInt(\"cost\");\r\n            int perSec = nextAnimal.getInt(\"perSec\");\r\n            int perClick = nextAnimal.getInt(\"perClick\");\r\n            double scalingFactor = nextAnimal.getDouble(\"scalingFactor\");\r\n            Animal newAnimal = new Animal(animalName, cost, perSec, perClick, scalingFactor, null);\r\n            newAnimal.setCount(count);\r\n            animals.add(newAnimal);\r\n\r\n            //sets availAnimal to cost of animal from saved game\r\n            game.getPlayer1().findAnimal(newAnimal, game.getPlayer1().getAvailAnimals()).setCost(cost);\r\n        }\r\n        return animals;\r\n    }\r\n\r\n\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/persistence/JsonReader.java b/src/main/persistence/JsonReader.java
+--- a/src/main/persistence/JsonReader.java	(revision 8cb12a9dcfe14326d404a1fd4c8b4d96b554a9a0)
++++ b/src/main/persistence/JsonReader.java	(date 1698798492365)
+@@ -10,17 +10,19 @@
+ import java.nio.file.Files;
+ import java.nio.file.Paths;
+ import java.util.ArrayList;
++import java.util.HashMap;
++import java.util.HashSet;
+ import java.util.List;
+ import java.util.stream.Stream;
+ 
+ public class JsonReader {
+     //Upgrades and Animals
+     private final String source;
+-    private final ZooGame papa;
++    private int ticks;
+ 
+-    public JsonReader(ZooGame papa, String source) {
++    public JsonReader(String source, int ticks) {
+         this.source = source;
+-        this.papa = papa;
++        this.ticks = ticks;
+     }
+ 
+     public Game read() throws IOException {
+@@ -41,77 +43,88 @@
+ 
+     private Game parseGameFile(JSONObject jsonObject) {
+         String gameName = jsonObject.getString("name");
+-        Game thisGame = papa.initGame(gameName);
++        Game thisGame = new Game(gameName, ticks);
+         buildGame(thisGame, jsonObject);
+         return thisGame;
+     }
+ 
+     private void buildGame(Game game, JSONObject jsonObject) {
+-        JSONObject playerObject = jsonObject.getJSONObject("player");
+-        Player newPlayer = game.getPlayer1();
+-        newPlayer.setPerSec(jsonObject.getInt("perSec"));
+-        addUpgradesAndAnimals(game, newPlayer, playerObject);
+-
+         game.setScore(jsonObject.getDouble("score"));
+         game.setPerSec(jsonObject.getInt("perSec"));
+-        game.setUnlockedCafe(jsonObject.getBoolean("unlocked-cafe"));
+-        game.setUnlockedZoo(jsonObject.getBoolean("unlocked-zoo"));
+-    }
+-
+-    private void addUpgradesAndAnimals(Game game, Player player, JSONObject playerObject) {
+-
+-        JSONArray jsonUpgradeList = playerObject.getJSONArray("upgrades");
+-        JSONArray jsonAnimalList = playerObject.getJSONArray("player-animals");
+-
+-        player.setPerClick(playerObject.getInt("perClick"));
+-        player.setUpgrades(getUpgradesFromJson(game, jsonUpgradeList));
+-        player.setAnimals(getAnimalsFromJson(game, jsonAnimalList));
+-        game.setPlayer1(player);
++        game.setAnimals(getAnimalsJson(jsonObject.getJSONArray("animals")));
++        game.setAvailAnimals(getAvailAnimalsJson(jsonObject.getJSONArray("availAnimals")));
++        game.setUpgrades(getUpgradesJson(jsonObject.getJSONArray("upgrades")));
++        game.setAvailUpgrades(getAvailUpgradesJson(jsonObject.getJSONArray("availUpgrades")));
+     }
+ 
++    private HashMap<Upgradable, Integer> getAnimalsJson(JSONArray jsonArray) {
++        HashMap<Upgradable, Integer> myHashMap = new HashMap<>();
++        for (Object json : jsonArray) {
++            JSONObject nextAnimal = (JSONObject) json;
++            String animalName = nextAnimal.getString("name");
++            int cost = nextAnimal.getInt("cost");
++            int perSec = nextAnimal.getInt("perSec");
++            int perClick = nextAnimal.getInt("perClick");
++            double scalingFactor = nextAnimal.getDouble("scalingFactor");
++            int unlockedAt = nextAnimal.getInt("unlockedAt");
++            int quantity = nextAnimal.getInt("quantity");
++            Upgradable newAnimal = new Upgradable(animalName, cost, perSec, perClick, unlockedAt, scalingFactor, null);
+ 
+-    private List<Upgrade> getUpgradesFromJson(Game game, JSONArray jsonUpgradeList) {
+-        List<Upgrade> upgrades = new ArrayList<>();
+-        for (Object json : jsonUpgradeList) {
+-            JSONObject nextUpgrade = (JSONObject) json;
+-
+-            String upgradeName = nextUpgrade.getString("name");
+-            int count = nextUpgrade.getInt("count");
+-            int cost = nextUpgrade.getInt("cost");
+-            int perSec = nextUpgrade.getInt("perSec");
+-            int perClick = nextUpgrade.getInt("perClick");
+-            double scalingFactor = nextUpgrade.getDouble("scalingFactor");
+-            Upgrade newUpgrade = new Upgrade(upgradeName, cost, perSec, perClick, scalingFactor, null);
+-            newUpgrade.setCount(count);
+-            upgrades.add(newUpgrade);
+-
+-            //sets availAnimal to cost of animal from saved game
+-            game.getPlayer1().findUpgrade(newUpgrade, game.getPlayer1().getAvailUpgrades()).setCost(cost);
++            myHashMap.put(newAnimal, quantity);
+         }
+-        return upgrades;
++        return myHashMap;
+     }
+ 
+-    private List<Animal> getAnimalsFromJson(Game game, JSONArray jsonAnimalList) {
+-        List<Animal> animals = new ArrayList<>();
+-        for (Object json : jsonAnimalList) {
++    private HashMap<Upgradable, Boolean> getAvailAnimalsJson(JSONArray jsonArray) {
++        HashMap<Upgradable, Boolean> myHashMap = new HashMap<>();
++        for (Object json : jsonArray) {
+             JSONObject nextAnimal = (JSONObject) json;
+-
+             String animalName = nextAnimal.getString("name");
+-            int count = nextAnimal.getInt("count");
+             int cost = nextAnimal.getInt("cost");
+             int perSec = nextAnimal.getInt("perSec");
+             int perClick = nextAnimal.getInt("perClick");
+             double scalingFactor = nextAnimal.getDouble("scalingFactor");
+-            Animal newAnimal = new Animal(animalName, cost, perSec, perClick, scalingFactor, null);
+-            newAnimal.setCount(count);
+-            animals.add(newAnimal);
++            int unlockedAt = nextAnimal.getInt("unlockedAt");
++            boolean unlocked = nextAnimal.getBoolean("unlocked");
++            Upgradable newAnimal = new Upgradable(animalName, cost, perSec, perClick, unlockedAt, scalingFactor, null);
+ 
+-            //sets availAnimal to cost of animal from saved game
+-            game.getPlayer1().findAnimal(newAnimal, game.getPlayer1().getAvailAnimals()).setCost(cost);
++            myHashMap.put(newAnimal, unlocked);
+         }
+-        return animals;
++        return myHashMap;
+     }
+ 
++    private HashSet<Upgrade> getUpgradesJson(JSONArray jsonArray) {
++        HashSet<Upgrade> myHashSet = new HashSet<>();
++        for (Object json : jsonArray) {
++            JSONObject nextUpgrade = (JSONObject) json;
++            String upgradeName = nextUpgrade.getString("name");
++            int cost = nextUpgrade.getInt("cost");
++            int perSec = nextUpgrade.getInt("perSec");
++            int perClick = nextUpgrade.getInt("perClick");
++            double scalingFactor = nextUpgrade.getDouble("scalingFactor");
++            int unlockedAt = nextUpgrade.getInt("unlockedAt");
++            Upgrade newUpgrade = new Upgrade(upgradeName, cost, perSec, perClick, unlockedAt, scalingFactor, null);
+ 
++            myHashSet.add(newUpgrade);
++        }
++        return myHashSet;
++    }
+ 
++    private HashMap<Upgrade, Boolean> getAvailUpgradesJson(JSONArray jsonArray) {
++        HashMap<Upgrade, Boolean> myHashMap = new HashMap<>();
++        for (Object json : jsonArray) {
++            JSONObject nextUpgrade = (JSONObject) json;
++            String upgradeName = nextUpgrade.getString("name");
++            int cost = nextUpgrade.getInt("cost");
++            int perSec = nextUpgrade.getInt("perSec");
++            int perClick = nextUpgrade.getInt("perClick");
++            double scalingFactor = nextUpgrade.getDouble("scalingFactor");
++            int unlockedAt = nextUpgrade.getInt("unlockedAt");
++            boolean unlocked = nextUpgrade.getBoolean("unlocked");
++            Upgrade newUpgrade = new Upgrade(upgradeName, cost, perSec, perClick, unlockedAt, scalingFactor, null);
++
++            myHashMap.put(newUpgrade, unlocked);
++        }
++        return myHashMap;
++    }
+ }
+Index: data/testSave.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{\r\n    \"score\": 25.7,\r\n    \"unlocked-cafe\": false,\r\n    \"perSec\": 2,\r\n    \"name\": \"Val\",\r\n    \"unlocked-zoo\": false,\r\n    \"player\": {\r\n        \"player-animals\": [{\r\n            \"cost\": 28,\r\n            \"perSec\": 1,\r\n            \"name\": \"Cat\",\r\n            \"count\": 2,\r\n            \"scalingFactor\": 1.2,\r\n            \"perClick\": 0\r\n        }],\r\n        \"upgrades\": [{\r\n            \"cost\": 14,\r\n            \"perSec\": 0,\r\n            \"name\": \"OnePerClick\",\r\n            \"count\": 1,\r\n            \"scalingFactor\": 1.4,\r\n            \"perClick\": 1\r\n        }],\r\n        \"perClick\": 2\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/data/testSave.json b/data/testSave.json
+--- a/data/testSave.json	(revision 8cb12a9dcfe14326d404a1fd4c8b4d96b554a9a0)
++++ b/data/testSave.json	(date 1698798556355)
+@@ -1,26 +1,57 @@
+ {
+-    "score": 25.7,
+-    "unlocked-cafe": false,
+-    "perSec": 2,
+-    "name": "Val",
+-    "unlocked-zoo": false,
+-    "player": {
+-        "player-animals": [{
+-            "cost": 28,
++    "score": 37,
++    "availUpgrades": [
++        {
++            "cost": 10,
++            "perSec": 0,
++            "name": "OnePerClick",
++            "unlockedAt": 0,
++            "scalingFactor": 1.4,
++            "unlocked": true,
++            "perClick": 1
++        },
++        {
++            "cost": 5000,
++            "perSec": 0,
++            "name": "FivePerClick",
++            "unlockedAt": 5000,
++            "scalingFactor": 1.4,
++            "unlocked": true,
++            "perClick": 5
++        }
++    ],
++    "perSec": 0,
++    "name": "Val",
++    "animals": [],
++    "availAnimals": [
++        {
++            "cost": 200,
++            "perSec": 2,
++            "name": "Capybara",
++            "unlockedAt": 500,
++            "scalingFactor": 1.2,
++            "unlocked": true,
++            "perClick": 0
++        },
++        {
++            "cost": 50,
+             "perSec": 1,
+             "name": "Cat",
+-            "count": 2,
++            "unlockedAt": 0,
+             "scalingFactor": 1.2,
++            "unlocked": true,
+             "perClick": 0
+-        }],
+-        "upgrades": [{
+-            "cost": 14,
+-            "perSec": 0,
+-            "name": "OnePerClick",
+-            "count": 1,
+-            "scalingFactor": 1.4,
+-            "perClick": 1
+-        }],
+-        "perClick": 2
+-    }
++        },
++        {
++            "cost": 200,
++            "perSec": 2,
++            "name": "Dog",
++            "unlockedAt": 0,
++            "scalingFactor": 1.2,
++            "unlocked": true,
++            "perClick": 0
++        }
++    ],
++    "upgrades": [],
++    "perClick": 1
+ }
+\ No newline at end of file
+Index: src/test/model/UpgradableTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package model;\r\nimport org.junit.jupiter.api.BeforeEach;\r\nimport org.junit.jupiter.api.Test;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\nimport static org.junit.jupiter.api.Assertions.*;\r\n\r\npublic class UpgradableTest {\r\n    private Upgradable testUpgradable;\r\n    private Upgrade testUpgrade;\r\n\r\n    @BeforeEach\r\n    public void Setup() {\r\n        testUpgradable = new Upgradable(\"lmao\", 100, 1, 1, 1.5, null);\r\n        testUpgrade = new Upgrade(\"one\", 10, 1, 0, 1.4, null);\r\n    }\r\n\r\n    @Test\r\n    void findUpgradeFailTest() {\r\n        List<Upgrade> ulist = new ArrayList<>();\r\n        assertNull(testUpgradable.findUpgrade(testUpgrade, ulist));\r\n    }\r\n\r\n    @Test\r\n    void findUpgradeSuccessTest() {\r\n        testUpgradable.addUpgrade(testUpgrade);\r\n        assertEquals(testUpgrade, testUpgradable.findUpgrade(testUpgrade, testUpgradable.getUpgrades()));\r\n    }\r\n\r\n    @Test\r\n    void setScaleFactorTest() {\r\n        testUpgradable.setScalingFactor(1.5);\r\n        assertEquals(1.5, testUpgradable.getScalingFactor());\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/model/UpgradableTest.java b/src/test/model/UpgradableTest.java
+--- a/src/test/model/UpgradableTest.java	(revision 8cb12a9dcfe14326d404a1fd4c8b4d96b554a9a0)
++++ b/src/test/model/UpgradableTest.java	(date 1698798492392)
+@@ -1,37 +1,87 @@
+ package model;
++
++import org.json.JSONObject;
+ import org.junit.jupiter.api.BeforeEach;
+ import org.junit.jupiter.api.Test;
+ 
+-import java.util.ArrayList;
+-import java.util.List;
+-
+ import static org.junit.jupiter.api.Assertions.*;
+ 
+-public class UpgradableTest {
+-    private Upgradable testUpgradable;
+-    private Upgrade testUpgrade;
++class UpgradableTest {
++    private Upgradable testupgrade;
+ 
+     @BeforeEach
+-    public void Setup() {
+-        testUpgradable = new Upgradable("lmao", 100, 1, 1, 1.5, null);
+-        testUpgrade = new Upgrade("one", 10, 1, 0, 1.4, null);
++    public void setup() {
++        testupgrade = new Upgradable("one", 10, 1, 0, 0, 1.4, null);
++    }
++
++    @Test
++    void nameTest() {
++        assertEquals("one", testupgrade.getName());
++        testupgrade.setName("two");
++        assertEquals("two", testupgrade.getName());
++    }
++
++    @Test
++    void costTest() {
++        assertEquals(10, testupgrade.getCost());
++        testupgrade.setCost(20);
++        assertEquals(20, testupgrade.getCost());
++    }
++
++    @Test
++    void perSecTest() {
++        assertEquals(1, testupgrade.getPerSec());
++        testupgrade.setPerSec(2);
++        assertEquals(2, testupgrade.getPerSec());
+     }
+ 
+     @Test
+-    void findUpgradeFailTest() {
+-        List<Upgrade> ulist = new ArrayList<>();
+-        assertNull(testUpgradable.findUpgrade(testUpgrade, ulist));
++    void perClickTest() {
++        assertEquals(0, testupgrade.getPerClick());
++        testupgrade.setPerClick(1);
++        assertEquals(1, testupgrade.getPerClick());
+     }
+ 
+     @Test
+-    void findUpgradeSuccessTest() {
+-        testUpgradable.addUpgrade(testUpgrade);
+-        assertEquals(testUpgrade, testUpgradable.findUpgrade(testUpgrade, testUpgradable.getUpgrades()));
++    void specialTest() {
++        assertNull(testupgrade.getSpecial());
++        testupgrade.setSpecial("YA!");
++        assertEquals("YA!", testupgrade.getSpecial());
+     }
+ 
+     @Test
+-    void setScaleFactorTest() {
+-        testUpgradable.setScalingFactor(1.5);
+-        assertEquals(1.5, testUpgradable.getScalingFactor());
++    void toJsonTest() {
++        JSONObject json = new JSONObject();
++        json.put("name", "one");
++        json.put("cost", 10);
++        json.put("perSec", 1);
++        json.put("perClick", 0);
++        json.put("scalingFactor", 1.4);
++        json.put("unlockedAt", 0);
++        assertEquals(json.getString("name"), testupgrade.toJson(10).getString("name"));
++        assertEquals(json.getInt("cost"), testupgrade.toJson(10).getInt("cost"));
++        assertEquals(json.getInt("perSec"), testupgrade.toJson(10).getInt("perSec"));
++        assertEquals(json.getInt("perClick"), testupgrade.toJson(10).getInt("perClick"));
++        assertEquals(json.getDouble("scalingFactor"), testupgrade.toJson(10).getDouble("scalingFactor"));
++        assertEquals(json.getInt("unlockedAt"), testupgrade.toJson(10).getInt("unlockedAt"));
++        assertEquals(10, testupgrade.toJson(10).getInt("quantity"));
+     }
+-}
++
++    @Test
++    void toJsonTestAvail() {
++        JSONObject json = new JSONObject();
++        json.put("name", "one");
++        json.put("cost", 10);
++        json.put("perSec", 1);
++        json.put("perClick", 0);
++        json.put("scalingFactor", 1.4);
++        json.put("unlockedAt", 0);
++        assertEquals(json.getString("name"), testupgrade.toJson(true).getString("name"));
++        assertEquals(json.getInt("cost"), testupgrade.toJson(true).getInt("cost"));
++        assertEquals(json.getInt("perSec"), testupgrade.toJson(true).getInt("perSec"));
++        assertEquals(json.getInt("perClick"), testupgrade.toJson(true).getInt("perClick"));
++        assertEquals(json.getDouble("scalingFactor"), testupgrade.toJson(true).getDouble("scalingFactor"));
++        assertEquals(json.getInt("unlockedAt"), testupgrade.toJson(true).getInt("unlockedAt"));
++        assertTrue(testupgrade.toJson(true).getBoolean("unlocked"));
++    }
++}
+\ No newline at end of file
+Index: src/main/ui/ZooGame.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ui;\r\n\r\n//import com.googlecode.lanterna.TerminalPosition;\r\nimport com.googlecode.lanterna.TerminalSize;\r\n//import com.googlecode.lanterna.TextCharacter;\r\nimport com.googlecode.lanterna.graphics.TextGraphics;\r\nimport com.googlecode.lanterna.screen.TerminalScreen;\r\nimport com.googlecode.lanterna.terminal.Terminal;\r\nimport com.googlecode.lanterna.screen.Screen;\r\nimport com.googlecode.lanterna.terminal.DefaultTerminalFactory;\r\nimport model.*;\r\nimport com.googlecode.lanterna.input.KeyStroke;\r\nimport com.googlecode.lanterna.input.KeyType;\r\nimport persistence.JsonReader;\r\nimport persistence.JsonWriter;\r\n\r\n\r\nimport java.io.FileNotFoundException;\r\nimport java.io.IOException;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\nimport java.util.Scanner;\r\n\r\nimport static java.lang.System.exit;\r\n\r\n\r\npublic class ZooGame {\r\n    //fields\r\n    boolean keepGoing = true;\r\n    private Game game;\r\n    private Screen screen;\r\n    private Scanner input;\r\n    private JsonWriter jsonWriter;\r\n    private JsonReader jsonReader;\r\n    private static final String JSON_STORE = \"./data/testSave.json\";\r\n\r\n    //graphic fields\r\n    TextGraphics scoreGraphic;\r\n    TextGraphics availUpgradeGraphic;\r\n    TextGraphics ownedUpgradeGraphic;\r\n    TextGraphics perClickGraphic;\r\n    TextGraphics perSecGraphic;\r\n\r\n    //Upgrades and Animals\r\n\r\n    private final Upgrade onePerClickU = new Upgrade(\"OnePerClick\", 10, 0, 1, 1.4,null);\r\n    private final Upgrade fivePerClickU = new Upgrade(\"FivePerClick\", 5000, 0, 5, 1.4, null);\r\n    private final Upgrade animalBuff = new Upgrade(\"AnimalBuff\", 50, 5, 0, 1.4, null);\r\n    private final Animal cat = new Animal(\"Cat\", 20, 1, 0, 1.2, null);\r\n    private final Animal dog = new Animal(\"Dog\", 200, 2, 0,  1.2, null);\r\n    private final List<Upgrade> uplist = new ArrayList<>();\r\n    private final List<Animal> anList = new ArrayList<>();\r\n    private final List<Upgrade> uaList = new ArrayList<>();\r\n\r\n\r\n    //EFFECTS: runs the game\r\n    public void runGame() throws InterruptedException, IOException {\r\n        jsonReader = new JsonReader(this, JSON_STORE);\r\n        jsonWriter = new JsonWriter(JSON_STORE);\r\n        mainMenu();\r\n        exit(0); // game is over, we can exit the app\r\n    }\r\n\r\n    private void startGame(Game game) throws IOException, InterruptedException {\r\n        startScreen(game);\r\n        while (keepGoing) {   // (*)\r\n            tick();                                                     // update the game\r\n            Thread.sleep(1000L / Game.TICKS_PER_SECOND);                // (**)\r\n        }\r\n    }\r\n\r\n\r\n    //EFFECTS: initializes initial game state\r\n    private void startScreen(Game game) throws IOException {\r\n        Terminal terminal = new DefaultTerminalFactory().setInitialTerminalSize(\r\n                new TerminalSize(150, 50)).createTerminal();\r\n        screen = new TerminalScreen(terminal);\r\n        screen.startScreen();\r\n    }\r\n\r\n    public Game initGame(String name) {\r\n        game = new Game(name);\r\n        uplist.add(onePerClickU);\r\n        uplist.add(fivePerClickU);\r\n        game.getPlayer1().setAvailUpgrades(uplist);\r\n        uaList.add(animalBuff);\r\n        cat.setAvailUpgrades(uaList);\r\n        dog.setAvailUpgrades(uaList);\r\n        anList.add(cat);\r\n        anList.add(dog);\r\n        game.getPlayer1().setAvailAnimals(anList);\r\n        return game;\r\n    }\r\n\r\n\r\n    //MODIFIES: this\r\n    //EFFECTS: displays main menu\r\n    private void mainMenu() throws IOException, InterruptedException {\r\n\r\n        boolean keepGoing = true;\r\n        String command = null;\r\n        input = new Scanner(System.in);\r\n\r\n        while (keepGoing) {\r\n            System.out.println(\"New = n, Load = l, Exit = e\");\r\n            command = input.next();\r\n            command = command.toLowerCase();\r\n            if (command.equals(\"e\")) {\r\n                keepGoing = false;\r\n            } else {\r\n                processCommand(command);\r\n            }\r\n        }\r\n        System.out.println(\"See you again!\");\r\n    }\r\n\r\n    //MODIFIES: this\r\n    //EFFECTS: processes user command\r\n    private void processCommand(String command) throws IOException, InterruptedException {\r\n        if (command.equals(\"n\")) {\r\n            System.out.println(\"Enter your name\");\r\n            String name = input.next();\r\n            game = initGame(name);\r\n            startGame(game);\r\n        } else if (command.equals(\"l\")) {\r\n            loadGame();\r\n        } else {\r\n            System.out.println(\"invalid selection\");\r\n        }\r\n    }\r\n\r\n    private void loadGame() throws IOException, InterruptedException {\r\n        try {\r\n            game = jsonReader.read();\r\n            System.out.println(\"Loaded \" + game.getName() + \" from \" + JSON_STORE);\r\n            startGame(game);\r\n        } finally {\r\n            System.out.println(\"Placeholder\");\r\n        }\r\n//        catch (IOException e) {\r\n//            System.out.println(\"Unable to read from file: \" + JSON_STORE);\r\n//        }\r\n    }\r\n\r\n    private void saveGame() {\r\n        try {\r\n            jsonWriter.open();\r\n            jsonWriter.write(game);\r\n            jsonWriter.close();\r\n            System.out.println(\"Saved \" + game.getName() + \" to \" + JSON_STORE);\r\n        } catch (FileNotFoundException e) {\r\n            System.out.println(\"Unable to write to file: \" + JSON_STORE);\r\n        }\r\n\r\n    }\r\n\r\n    /**\r\n     * Handles one cycle in the game by taking user input,\r\n     * ticking the game internally, and rendering the effects\r\n     */\r\n\r\n    //EFFECTS: handles a single tick of the game and renders it\r\n    private void tick() throws IOException {\r\n        try {\r\n            handleUserInput();\r\n            game.tick();\r\n            render();\r\n        } catch (IOException e) {\r\n            e.printStackTrace();\r\n        }\r\n\r\n    }\r\n\r\n    //MODIFIES: this\r\n    //EFFECTS: Handles user input (clicks)\r\n    @SuppressWarnings(\"methodlength\")\r\n    private void handleUserInput() throws IOException {\r\n        KeyStroke stroke = screen.pollInput();\r\n        if (stroke != null) {\r\n            //Close game\r\n            if (stroke.getKeyType() == KeyType.Escape) {\r\n                screen.close();\r\n                saveGame();\r\n                exit(0);\r\n            }\r\n\r\n            // SPACE BAR: get money\r\n            if (stroke.getCharacter() == ' ') {\r\n                game.click();\r\n            }\r\n\r\n            //buy upgrade1\r\n            if (stroke.getCharacter() == '1') {\r\n                buyUpgrade(game.getPlayer1(), onePerClickU);\r\n            }\r\n\r\n            //buy upgrade2\r\n            if (stroke.getCharacter() == '2') {\r\n                buyUpgrade(game.getPlayer1(), fivePerClickU);\r\n                render();\r\n            }\r\n\r\n            //buy monkey\r\n            if (stroke.getCharacter() == '3') {\r\n                buyAnimal(game.getPlayer1(), cat);\r\n                render();\r\n            }\r\n\r\n            //buy monkey\r\n            if (stroke.getCharacter() == '4') {\r\n                buyAnimal(game.getPlayer1(), dog);\r\n                render();\r\n            }\r\n        }\r\n\r\n    }\r\n\r\n\r\n    //EFFECTS: Renders the scores and availUpgrades and everything\r\n    private void render() throws IOException {\r\n        TextGraphics nameGraphic = screen.newTextGraphics();\r\n        TextGraphics scoreGraphic = screen.newTextGraphics();\r\n        TextGraphics availUpgradeGraphic = screen.newTextGraphics();\r\n        TextGraphics ownedUpgradeGraphic = screen.newTextGraphics();\r\n        TextGraphics perClickGraphic = screen.newTextGraphics();\r\n        TextGraphics perSecGraphic = screen.newTextGraphics();\r\n\r\n        nameGraphic.putString(5,3, game.getName());\r\n        scoreGraphic.putString(5,5, \"Score = \" + game.getScoreInt());\r\n        perSecGraphic.putString(5,7, \"Score per second: \" + game.getPerSec());\r\n        perClickGraphic.putString(5,8, \"Score per click: \" + game.getPlayer1().getPerClick());\r\n        ownedUpgradeGraphic.putString(5,9, game.displayStats());\r\n        availUpgradeGraphic.putString(5, 10, game.displayAvailUpgrades());\r\n\r\n\r\n        screen.refresh();\r\n    }\r\n\r\n    //MODIFIES: this\r\n    //EFFECTS: adds upgrade to list of animals if never owned, +1 to upgrade's count if already owned\r\n    private void buyUpgrade(Upgradable who, Upgrade thisupgrade) throws IOException {\r\n        if (game.getScore() >= thisupgrade.getCost()) {\r\n            System.out.println(thisupgrade.getName() + \" upgrade bought\");\r\n            game.setScore(who.buyUpgrades(game.getScore(), thisupgrade));\r\n        } else {\r\n            System.out.println(\"Insufficient Money\");\r\n        }\r\n    }\r\n\r\n    //MODIFIES: this\r\n    //EFFECTS: adds animal to list of animals if never owned, +1 to animal's count if already owned\r\n    private void buyAnimal(Location who, Animal thisanimal) {\r\n        if (game.getScore() >= thisanimal.getCost()) {\r\n            System.out.println(thisanimal.getName() + \" bought\");\r\n            game.setScore(who.buyAnimal(game.getScore(), thisanimal));\r\n        } else {\r\n            System.out.println(\"Insufficient Money\");\r\n        }\r\n    }\r\n\r\n\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/ui/ZooGame.java b/src/main/ui/ZooGame.java
+--- a/src/main/ui/ZooGame.java	(revision 8cb12a9dcfe14326d404a1fd4c8b4d96b554a9a0)
++++ b/src/main/ui/ZooGame.java	(date 1698798492378)
+@@ -33,6 +33,7 @@
+     private JsonWriter jsonWriter;
+     private JsonReader jsonReader;
+     private static final String JSON_STORE = "./data/testSave.json";
++    public static final int TICKS_PER_SECOND = 10;
+ 
+     //graphic fields
+     TextGraphics scoreGraphic;
+@@ -43,19 +44,9 @@
+ 
+     //Upgrades and Animals
+ 
+-    private final Upgrade onePerClickU = new Upgrade("OnePerClick", 10, 0, 1, 1.4,null);
+-    private final Upgrade fivePerClickU = new Upgrade("FivePerClick", 5000, 0, 5, 1.4, null);
+-    private final Upgrade animalBuff = new Upgrade("AnimalBuff", 50, 5, 0, 1.4, null);
+-    private final Animal cat = new Animal("Cat", 20, 1, 0, 1.2, null);
+-    private final Animal dog = new Animal("Dog", 200, 2, 0,  1.2, null);
+-    private final List<Upgrade> uplist = new ArrayList<>();
+-    private final List<Animal> anList = new ArrayList<>();
+-    private final List<Upgrade> uaList = new ArrayList<>();
+-
+-
+     //EFFECTS: runs the game
+     public void runGame() throws InterruptedException, IOException {
+-        jsonReader = new JsonReader(this, JSON_STORE);
++        jsonReader = new JsonReader(JSON_STORE, TICKS_PER_SECOND);
+         jsonWriter = new JsonWriter(JSON_STORE);
+         mainMenu();
+         exit(0); // game is over, we can exit the app
+@@ -65,7 +56,7 @@
+         startScreen(game);
+         while (keepGoing) {   // (*)
+             tick();                                                     // update the game
+-            Thread.sleep(1000L / Game.TICKS_PER_SECOND);                // (**)
++            Thread.sleep(1000L / TICKS_PER_SECOND);                // (**)
+         }
+     }
+ 
+@@ -78,21 +69,6 @@
+         screen.startScreen();
+     }
+ 
+-    public Game initGame(String name) {
+-        game = new Game(name);
+-        uplist.add(onePerClickU);
+-        uplist.add(fivePerClickU);
+-        game.getPlayer1().setAvailUpgrades(uplist);
+-        uaList.add(animalBuff);
+-        cat.setAvailUpgrades(uaList);
+-        dog.setAvailUpgrades(uaList);
+-        anList.add(cat);
+-        anList.add(dog);
+-        game.getPlayer1().setAvailAnimals(anList);
+-        return game;
+-    }
+-
+-
+     //MODIFIES: this
+     //EFFECTS: displays main menu
+     private void mainMenu() throws IOException, InterruptedException {
+@@ -120,7 +96,7 @@
+         if (command.equals("n")) {
+             System.out.println("Enter your name");
+             String name = input.next();
+-            game = initGame(name);
++            game = new Game(name, TICKS_PER_SECOND);
+             startGame(game);
+         } else if (command.equals("l")) {
+             loadGame();
+@@ -191,24 +167,24 @@
+ 
+             //buy upgrade1
+             if (stroke.getCharacter() == '1') {
+-                buyUpgrade(game.getPlayer1(), onePerClickU);
++                game.buyUpgrade("OnePerClick");
+             }
+ 
+             //buy upgrade2
+             if (stroke.getCharacter() == '2') {
+-                buyUpgrade(game.getPlayer1(), fivePerClickU);
++                game.buyUpgrade("FivePerClick");
+                 render();
+             }
+ 
+             //buy monkey
+             if (stroke.getCharacter() == '3') {
+-                buyAnimal(game.getPlayer1(), cat);
++                game.buyAnimal("Cat", 1);
+                 render();
+             }
+ 
+             //buy monkey
+             if (stroke.getCharacter() == '4') {
+-                buyAnimal(game.getPlayer1(), dog);
++                game.buyAnimal("Dog", 1);
+                 render();
+             }
+         }
+@@ -227,37 +203,13 @@
+ 
+         nameGraphic.putString(5,3, game.getName());
+         scoreGraphic.putString(5,5, "Score = " + game.getScoreInt());
+-        perSecGraphic.putString(5,7, "Score per second: " + game.getPerSec());
+-        perClickGraphic.putString(5,8, "Score per click: " + game.getPlayer1().getPerClick());
+-        ownedUpgradeGraphic.putString(5,9, game.displayStats());
+-        availUpgradeGraphic.putString(5, 10, game.displayAvailUpgrades());
++        perSecGraphic.putString(5,7, "Score per second: " + game.getPerSec() * TICKS_PER_SECOND);
++        perClickGraphic.putString(5,8, "Score per click: " + game.getPerClick());
++        ownedUpgradeGraphic.putString(5,9, game.getOwnedString());
++        availUpgradeGraphic.putString(5, 10, game.getAvailString());
+ 
+ 
+         screen.refresh();
+     }
+ 
+-    //MODIFIES: this
+-    //EFFECTS: adds upgrade to list of animals if never owned, +1 to upgrade's count if already owned
+-    private void buyUpgrade(Upgradable who, Upgrade thisupgrade) throws IOException {
+-        if (game.getScore() >= thisupgrade.getCost()) {
+-            System.out.println(thisupgrade.getName() + " upgrade bought");
+-            game.setScore(who.buyUpgrades(game.getScore(), thisupgrade));
+-        } else {
+-            System.out.println("Insufficient Money");
+-        }
+-    }
+-
+-    //MODIFIES: this
+-    //EFFECTS: adds animal to list of animals if never owned, +1 to animal's count if already owned
+-    private void buyAnimal(Location who, Animal thisanimal) {
+-        if (game.getScore() >= thisanimal.getCost()) {
+-            System.out.println(thisanimal.getName() + " bought");
+-            game.setScore(who.buyAnimal(game.getScore(), thisanimal));
+-        } else {
+-            System.out.println("Insufficient Money");
+-        }
+-    }
+-
+-
+-
+ }
+Index: src/main/model/Upgrade.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package model;\r\n\r\nimport org.json.JSONObject;\r\nimport persistence.Writable;\r\n\r\npublic class Upgrade implements Writable {\r\n    private String name;\r\n    private int count;\r\n    private int cost;\r\n    private int perSec;\r\n    private int perClick;\r\n    private double scalingFactor;\r\n    private String special;\r\n\r\n    //REQUIRES: cost >= 0\r\n\r\n    public Upgrade(String name, int cost, int persec, int perclick, double scalingFactor, String special) {\r\n        this.name = name;\r\n        this.count = 0;\r\n        this.cost = cost;\r\n        this.perSec = persec;\r\n        this.perClick = perclick;\r\n        this.scalingFactor = scalingFactor;\r\n        this.special = special;\r\n    }\r\n\r\n    public JSONObject toJson() {\r\n        JSONObject json = new JSONObject();\r\n        json.put(\"name\", getName());\r\n        json.put(\"count\", getCount());\r\n        json.put(\"cost\", getCost());\r\n        json.put(\"perSec\", getPerSec());\r\n        json.put(\"perClick\", getPerClick());\r\n        json.put(\"scalingFactor\", scalingFactor);\r\n        return json;\r\n    }\r\n\r\n    public String getName() {\r\n        return name;\r\n    }\r\n\r\n    public void setName(String name) {\r\n        this.name = name;\r\n    }\r\n\r\n    public int getCost() {\r\n        return (int) (cost * Math.pow(scalingFactor, count));\r\n    }\r\n\r\n    public void setCost(int cost) {\r\n        this.cost = cost;\r\n    }\r\n\r\n    public int getPerSec() {\r\n        return perSec;\r\n    }\r\n\r\n    public void setPerSec(int perSec) {\r\n        this.perSec = perSec;\r\n    }\r\n\r\n    public int getPerClick() {\r\n        return perClick;\r\n    }\r\n\r\n    public void setPerClick(int perClick) {\r\n        this.perClick = perClick;\r\n    }\r\n\r\n    public String getSpecial() {\r\n        return special;\r\n    }\r\n\r\n    public void setSpecial(String special) {\r\n        this.special = special;\r\n    }\r\n\r\n    public int getCount() {\r\n        return count;\r\n    }\r\n\r\n    public void setCount(int count) {\r\n        this.count = count;\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/model/Upgrade.java b/src/main/model/Upgrade.java
+--- a/src/main/model/Upgrade.java	(revision 8cb12a9dcfe14326d404a1fd4c8b4d96b554a9a0)
++++ b/src/main/model/Upgrade.java	(date 1698798492357)
+@@ -5,33 +5,47 @@
+ 
+ public class Upgrade implements Writable {
+     private String name;
+-    private int count;
+     private int cost;
+     private int perSec;
+     private int perClick;
++    private int unlockedAt;
+     private double scalingFactor;
+     private String special;
+ 
+     //REQUIRES: cost >= 0
+ 
+-    public Upgrade(String name, int cost, int persec, int perclick, double scalingFactor, String special) {
++    public Upgrade(String name, int cost, int persec, int perclick, int unlockedAt, double scalingFactor, String special) {
+         this.name = name;
+-        this.count = 0;
+         this.cost = cost;
+         this.perSec = persec;
+         this.perClick = perclick;
++        this.unlockedAt = unlockedAt;
+         this.scalingFactor = scalingFactor;
+         this.special = special;
+     }
+ 
++    //EFFECTS: returns upgrade as json object
+     public JSONObject toJson() {
+         JSONObject json = new JSONObject();
+         json.put("name", getName());
+-        json.put("count", getCount());
+         json.put("cost", getCost());
+         json.put("perSec", getPerSec());
+         json.put("perClick", getPerClick());
+         json.put("scalingFactor", scalingFactor);
++        json.put("unlockedAt", getUnlockedAt());
++        return json;
++    }
++
++    //EFFECTS: returns upgrade as json object
++    public JSONObject toJson(Boolean unlocked) {
++        JSONObject json = new JSONObject();
++        json.put("name", getName());
++        json.put("cost", getCost());
++        json.put("perSec", getPerSec());
++        json.put("perClick", getPerClick());
++        json.put("scalingFactor", scalingFactor);
++        json.put("unlockedAt", getUnlockedAt());
++        json.put("unlocked", unlocked);
+         return json;
+     }
+ 
+@@ -44,7 +58,7 @@
+     }
+ 
+     public int getCost() {
+-        return (int) (cost * Math.pow(scalingFactor, count));
++        return this.cost;
+     }
+ 
+     public void setCost(int cost) {
+@@ -75,11 +89,26 @@
+         this.special = special;
+     }
+ 
+-    public int getCount() {
+-        return count;
++    public int getUnlockedAt() {
++        return unlockedAt;
++    }
++
++    public void setUnlockedAt(int unlockedAt) {
++        this.unlockedAt = unlockedAt;
++    }
++
++    @Override
++    public boolean equals(Object o) {
++        if (this == o) return true;
++        if (o == null || getClass() != o.getClass()) return false;
++
++        Upgrade upgrade = (Upgrade) o;
++
++        return name.equals(upgrade.name);
+     }
+ 
+-    public void setCount(int count) {
+-        this.count = count;
++    @Override
++    public int hashCode() {
++        return name.hashCode();
+     }
+ }
+Index: src/test/persistance/JsonReaderTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package persistance;\r\n\r\nimport model.Game;\r\nimport org.junit.jupiter.api.BeforeEach;\r\nimport org.junit.jupiter.api.Test;\r\nimport persistence.JsonReader;\r\nimport ui.ZooGame;\r\n\r\nimport java.io.IOException;\r\n\r\nimport static org.junit.jupiter.api.Assertions.assertEquals;\r\nimport static org.junit.jupiter.api.Assertions.fail;\r\n\r\npublic class JsonReaderTest {\r\n    ZooGame zoogame;\r\n    JsonReader reader;\r\n\r\n    @BeforeEach\r\n    void setup() {\r\n        zoogame = new ZooGame();\r\n        reader = new JsonReader(zoogame, \"./data/testSave.json\");\r\n    }\r\n\r\n    @Test\r\n    void readTest() {\r\n        Game newGame = new Game(\"Val\");\r\n        try {\r\n            assertEquals(newGame.getName(), reader.read().getName());\r\n            assertEquals(25.7, reader.read().getScore());\r\n            assertEquals(newGame.getLocations(), reader.read().getLocations());\r\n            assertEquals(2, reader.read().getPerSec());\r\n            assertEquals(25, reader.read().getScoreInt());\r\n        } catch (IOException e) {\r\n            fail();\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/persistance/JsonReaderTest.java b/src/test/persistance/JsonReaderTest.java
+--- a/src/test/persistance/JsonReaderTest.java	(revision 8cb12a9dcfe14326d404a1fd4c8b4d96b554a9a0)
++++ b/src/test/persistance/JsonReaderTest.java	(date 1698798492398)
+@@ -1,37 +1,37 @@
+-package persistance;
+-
+-import model.Game;
+-import org.junit.jupiter.api.BeforeEach;
+-import org.junit.jupiter.api.Test;
+-import persistence.JsonReader;
+-import ui.ZooGame;
+-
+-import java.io.IOException;
+-
+-import static org.junit.jupiter.api.Assertions.assertEquals;
+-import static org.junit.jupiter.api.Assertions.fail;
+-
+-public class JsonReaderTest {
+-    ZooGame zoogame;
+-    JsonReader reader;
+-
+-    @BeforeEach
+-    void setup() {
+-        zoogame = new ZooGame();
+-        reader = new JsonReader(zoogame, "./data/testSave.json");
+-    }
+-
+-    @Test
+-    void readTest() {
+-        Game newGame = new Game("Val");
+-        try {
+-            assertEquals(newGame.getName(), reader.read().getName());
+-            assertEquals(25.7, reader.read().getScore());
+-            assertEquals(newGame.getLocations(), reader.read().getLocations());
+-            assertEquals(2, reader.read().getPerSec());
+-            assertEquals(25, reader.read().getScoreInt());
+-        } catch (IOException e) {
+-            fail();
+-        }
+-    }
+-}
++//package persistance;
++//
++//import model.Game;
++//import org.junit.jupiter.api.BeforeEach;
++//import org.junit.jupiter.api.Test;
++//import persistence.JsonReader;
++//import ui.ZooGame;
++//
++//import java.io.IOException;
++//
++//import static org.junit.jupiter.api.Assertions.assertEquals;
++//import static org.junit.jupiter.api.Assertions.fail;
++//
++//public class JsonReaderTest {
++//    ZooGame zoogame;
++//    JsonReader reader;
++//
++//    @BeforeEach
++//    void setup() {
++//        zoogame = new ZooGame();
++//        reader = new JsonReader(zoogame, "./data/testSave.json");
++//    }
++//
++//    @Test
++//    void readTest() {
++//        Game newGame = new Game("Val");
++//        try {
++//            assertEquals(newGame.getName(), reader.read().getName());
++//            assertEquals(25.7, reader.read().getScore());
++//            assertEquals(newGame.getLocations(), reader.read().getLocations());
++//            assertEquals(2, reader.read().getPerSec());
++//            assertEquals(25, reader.read().getScoreInt());
++//        } catch (IOException e) {
++//            fail();
++//        }
++//    }
++//}
+Index: src/main/model/Upgradable.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package model;\r\n\r\nimport java.io.IOException;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class Upgradable {\r\n    private String name;\r\n    private int count;\r\n    private int cost;\r\n    private int perSec;\r\n    private int perClick;\r\n    private double scalingFactor;\r\n    private String special;\r\n    private List<Upgrade> upgrades;\r\n    private List<Upgrade> availUpgrades;\r\n    private String description;\r\n\r\n    //REQUIRES:\r\n    //EFFECTS: creates upgradable\r\n    public Upgradable(String name, int cost, int persec, int perclick, double scalingfactor,  String special) {\r\n        this.name = name;\r\n        this.count = 0;\r\n        this.cost = cost;\r\n        this.perSec = persec;\r\n        this.perClick = perclick;\r\n        this.scalingFactor = scalingfactor;\r\n        this.special = special;\r\n        this.availUpgrades = new ArrayList<>();\r\n        this.upgrades = new ArrayList<>();\r\n    }\r\n\r\n    //REQUIRES: Upgrade is in availUpgrades, money >= upgrade.getCost\r\n    //MODIFIES: this\r\n    //EFFECTS: adds upgrade to upgrades, subtracts money, returns amount of remaining money\r\n    public double buyUpgrades(double money, Upgrade upgrade) {\r\n        if (!checkContainsUpgrade(upgrade)) {\r\n            upgrades.add(upgrade);\r\n        } else {\r\n            upgrade = findUpgrade(upgrade, upgrades);\r\n        }\r\n        double returnChange = money - upgrade.getCost();\r\n        upgrade.setCount(upgrade.getCount() + 1);\r\n        this.perSec += upgrade.getPerSec();\r\n        this.perClick += upgrade.getPerClick();\r\n        return returnChange;\r\n    }\r\n\r\n    public Upgrade findUpgrade(Upgrade toFind, List<Upgrade> upgradeList) {\r\n        for (Upgrade currentUpgrade : upgradeList) {\r\n            if (currentUpgrade.getName().equals(toFind.getName())) {\r\n                return currentUpgrade;\r\n            }\r\n        }\r\n        return null;\r\n    }\r\n\r\n    //get and set methods\r\n\r\n    public String getName() {\r\n        return name;\r\n    }\r\n\r\n    public void setName(String name) {\r\n        this.name = name;\r\n    }\r\n\r\n    public int getCost() {\r\n        return (int) (cost * Math.pow(scalingFactor, count));\r\n    }\r\n\r\n    public void setCost(int cost) {\r\n        this.cost = cost;\r\n    }\r\n\r\n    public int getPerSec() {\r\n        return perSec;\r\n    }\r\n\r\n    public void setPerSec(int perSec) {\r\n        this.perSec = perSec;\r\n    }\r\n\r\n    public int getPerClick() {\r\n        return perClick;\r\n    }\r\n\r\n    public void setPerClick(int perClick) {\r\n        this.perClick = perClick;\r\n    }\r\n\r\n    public String getSpecial() {\r\n        return special;\r\n    }\r\n\r\n    public void setSpecial(String special) {\r\n        this.special = special;\r\n    }\r\n\r\n    public List<Upgrade> getUpgrades() {\r\n        return upgrades;\r\n    }\r\n\r\n    public void setUpgrades(List<Upgrade> upgrades) {\r\n        this.upgrades = upgrades;\r\n    }\r\n\r\n    //EFFECTS: returns list of available upgrades\r\n    public List<Upgrade> getAvailUpgrades() {\r\n        return this.availUpgrades;\r\n    }\r\n\r\n    public void setAvailUpgrades(List<Upgrade> thislist) {\r\n        this.availUpgrades = thislist;\r\n    }\r\n\r\n    public int getCount() {\r\n        return count;\r\n    }\r\n\r\n    public void setCount(int count) {\r\n        this.count = count;\r\n    }\r\n\r\n    //MODIFIES: this\r\n    //EFFECTS: adds upgrade to upgrade list\r\n    public void addUpgrade(Upgrade upgrade) {\r\n        this.upgrades.add(upgrade);\r\n    }\r\n\r\n    public double getScalingFactor() {\r\n        return scalingFactor;\r\n    }\r\n\r\n    public void setScalingFactor(double scalingFactor) {\r\n        this.scalingFactor = scalingFactor;\r\n    }\r\n\r\n    public boolean checkContainsUpgrade(Upgrade u) {\r\n        for (Upgrade currentUpgrade : upgrades) {\r\n            if (currentUpgrade.getName().equals(u.getName())) {\r\n                return true;\r\n            }\r\n        }\r\n        return false;\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/model/Upgradable.java b/src/main/model/Upgradable.java
+--- a/src/main/model/Upgradable.java	(revision 8cb12a9dcfe14326d404a1fd4c8b4d96b554a9a0)
++++ b/src/main/model/Upgradable.java	(date 1698798492346)
+@@ -1,59 +1,56 @@
+ package model;
+ 
++import org.json.JSONObject;
++import persistence.Writable;
++
+ import java.io.IOException;
+-import java.util.ArrayList;
+-import java.util.List;
++import java.util.*;
+ 
+ public class Upgradable {
+     private String name;
+-    private int count;
++
+     private int cost;
+     private int perSec;
+     private int perClick;
++    private int unlockedAt;
+     private double scalingFactor;
+     private String special;
+-    private List<Upgrade> upgrades;
+-    private List<Upgrade> availUpgrades;
+     private String description;
+ 
++
++
+     //REQUIRES:
+     //EFFECTS: creates upgradable
+-    public Upgradable(String name, int cost, int persec, int perclick, double scalingfactor,  String special) {
++    public Upgradable(String name, int cost,
++                      int persec, int perclick, int unlockedAt, double scalingfactor,  String special) {
+         this.name = name;
+-        this.count = 0;
+         this.cost = cost;
+         this.perSec = persec;
+         this.perClick = perclick;
++        this.unlockedAt = unlockedAt;
+         this.scalingFactor = scalingfactor;
+         this.special = special;
+-        this.availUpgrades = new ArrayList<>();
+-        this.upgrades = new ArrayList<>();
+     }
+ 
+-    //REQUIRES: Upgrade is in availUpgrades, money >= upgrade.getCost
+-    //MODIFIES: this
+-    //EFFECTS: adds upgrade to upgrades, subtracts money, returns amount of remaining money
+-    public double buyUpgrades(double money, Upgrade upgrade) {
+-        if (!checkContainsUpgrade(upgrade)) {
+-            upgrades.add(upgrade);
+-        } else {
+-            upgrade = findUpgrade(upgrade, upgrades);
+-        }
+-        double returnChange = money - upgrade.getCost();
+-        upgrade.setCount(upgrade.getCount() + 1);
+-        this.perSec += upgrade.getPerSec();
+-        this.perClick += upgrade.getPerClick();
+-        return returnChange;
+-    }
++//    //REQUIRES: Upgrade is in availUpgrades, money >= upgrade.getCost
++//    //MODIFIES: this
++//    //EFFECTS: adds upgrade to upgrades, subtracts money, returns amount of remaining money
++//    public double buyUpgrades(double money, Upgrade upgrade, int quantity) {
++//        upgrades.add(upgrade);
++//        double returnChange = money - upgrade.getCost();
++//        this.perSec += upgrade.getPerSec();
++//        this.perClick += upgrade.getPerClick();
++//        return returnChange;
++//    }
+ 
+-    public Upgrade findUpgrade(Upgrade toFind, List<Upgrade> upgradeList) {
+-        for (Upgrade currentUpgrade : upgradeList) {
+-            if (currentUpgrade.getName().equals(toFind.getName())) {
+-                return currentUpgrade;
+-            }
+-        }
+-        return null;
+-    }
++//    public Upgrade findUpgrade(Upgrade toFind, List<Upgrade> upgradeList) {
++//        for (Upgrade currentUpgrade : upgradeList) {
++//            if (currentUpgrade.getName().equals(toFind.getName())) {
++//                return currentUpgrade;
++//            }
++//        }
++//        return null;
++//    }
+ 
+     //get and set methods
+ 
+@@ -66,7 +63,7 @@
+     }
+ 
+     public int getCost() {
+-        return (int) (cost * Math.pow(scalingFactor, count));
++        return this.cost;
+     }
+ 
+     public void setCost(int cost) {
+@@ -97,37 +94,6 @@
+         this.special = special;
+     }
+ 
+-    public List<Upgrade> getUpgrades() {
+-        return upgrades;
+-    }
+-
+-    public void setUpgrades(List<Upgrade> upgrades) {
+-        this.upgrades = upgrades;
+-    }
+-
+-    //EFFECTS: returns list of available upgrades
+-    public List<Upgrade> getAvailUpgrades() {
+-        return this.availUpgrades;
+-    }
+-
+-    public void setAvailUpgrades(List<Upgrade> thislist) {
+-        this.availUpgrades = thislist;
+-    }
+-
+-    public int getCount() {
+-        return count;
+-    }
+-
+-    public void setCount(int count) {
+-        this.count = count;
+-    }
+-
+-    //MODIFIES: this
+-    //EFFECTS: adds upgrade to upgrade list
+-    public void addUpgrade(Upgrade upgrade) {
+-        this.upgrades.add(upgrade);
+-    }
+-
+     public double getScalingFactor() {
+         return scalingFactor;
+     }
+@@ -136,12 +102,64 @@
+         this.scalingFactor = scalingFactor;
+     }
+ 
+-    public boolean checkContainsUpgrade(Upgrade u) {
+-        for (Upgrade currentUpgrade : upgrades) {
+-            if (currentUpgrade.getName().equals(u.getName())) {
+-                return true;
+-            }
++    //EFFECTS: returns animal object as JSON
++    public JSONObject toJson(Integer quantity) {
++        JSONObject json = new JSONObject();
++        json.put("name", getName());
++        json.put("cost", getCost());
++        json.put("perSec", getPerSec());
++        json.put("perClick", getPerClick());
++        json.put("scalingFactor", getScalingFactor());
++        json.put("unlockedAt", getUnlockedAt());
++        json.put("quantity", quantity);
++        return json;
++    }
++
++    public JSONObject toJson(Boolean unlocked) {
++        JSONObject json = new JSONObject();
++        json.put("name", getName());
++        json.put("cost", getCost());
++        json.put("perSec", getPerSec());
++        json.put("perClick", getPerClick());
++        json.put("scalingFactor", getScalingFactor());
++        json.put("unlockedAt", getUnlockedAt());
++        json.put("unlocked", unlocked);
++        return json;
++    }
++
++    @Override
++    public boolean equals(Object o) {
++        if (this == o) {
++            return true;
+         }
+-        return false;
++        if (o == null || getClass() != o.getClass()) {
++            return false;
++        }
++
++        Upgradable that = (Upgradable) o;
++
++        return name.equals(that.name);
+     }
++
++    @Override
++    public int hashCode() {
++        return name.hashCode();
++    }
++
++    public int getUnlockedAt() {
++        return unlockedAt;
++    }
++
++    public void setUnlockedAt(int unlockedAt) {
++        this.unlockedAt = unlockedAt;
++    }
++
++    //    public boolean checkContainsUpgrade(Upgrade u) {
++//        for (Upgrade currentUpgrade : upgrades) {
++//            if (currentUpgrade.getName().equals(u.getName())) {
++//                return true;
++//            }
++//        }
++//        return false;
++//    }
+ }
+\ No newline at end of file

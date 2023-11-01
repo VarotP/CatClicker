@@ -1,0 +1,967 @@
+Index: src/test/model/AnimalTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/model/AnimalTest.java b/src/test/model/AnimalTest.java
+deleted file mode 100644
+--- a/src/test/model/AnimalTest.java	
++++ /dev/null	
+@@ -1,146 +0,0 @@
+-package model;
+-
+-import org.json.JSONObject;
+-import org.junit.jupiter.api.BeforeEach;
+-import org.junit.jupiter.api.Test;
+-
+-import java.util.ArrayList;
+-import java.util.List;
+-
+-import static org.junit.jupiter.api.Assertions.*;
+-
+-class AnimalTest {
+-    private Animal monkey;
+-    private Upgrade testUpgrade;
+-    private Upgrade testUpgrade2;
+-    private final List<Upgrade> upgrades = new ArrayList<>();
+-
+-    @BeforeEach
+-    public void setup() {
+-        monkey = new Animal("Monkey", 100, 1, 0, 1.2,null);
+-        testUpgrade = new Upgrade("one", 10, 1, 0, 1.4, null);
+-        testUpgrade2 = new Upgrade("two", 20, 0, 2, 1.4,null);
+-        upgrades.add(testUpgrade);
+-        upgrades.add(testUpgrade2);
+-        monkey.setAvailUpgrades(upgrades);
+-    }
+-
+-    @Test
+-    public void buyUpgradeTest() {
+-        List<Upgrade> empty = new ArrayList<>();
+-        assertEquals(empty, monkey.getUpgrades());
+-        assertEquals(0, monkey.buyUpgrades(10, testUpgrade));
+-        empty.add(testUpgrade);
+-        assertEquals(empty, monkey.getUpgrades());
+-        assertEquals(2, monkey.getPerSec());
+-        assertEquals(0, monkey.getPerClick());
+-        assertNull(monkey.getSpecial());
+-    }
+-
+-    @Test
+-    public void buyUpgradeMoneyRemainTest() {
+-        List<Upgrade> empty = new ArrayList<>();
+-        assertEquals(empty, monkey.getUpgrades());
+-        assertEquals(10, monkey.buyUpgrades(20, testUpgrade));
+-        empty.add(testUpgrade);
+-        assertEquals(empty, monkey.getUpgrades());
+-        assertEquals(2, monkey.getPerSec());
+-        assertEquals(0, monkey.getPerClick());
+-        assertNull(monkey.getSpecial());
+-    }
+-
+-    @Test
+-    public void buyUpgradeMultiple() {
+-        List<Upgrade> empty = new ArrayList<>();
+-        assertEquals(empty, monkey.getUpgrades());
+-        assertEquals(20, monkey.buyUpgrades(30, testUpgrade));
+-        empty.add(testUpgrade);
+-        assertEquals(empty, monkey.getUpgrades());
+-        assertEquals(6, monkey.buyUpgrades(20, testUpgrade));
+-        empty.get(0).setCount(2);
+-        assertEquals(empty, monkey.getUpgrades());
+-
+-    }
+-
+-
+-    @Test
+-    void nameTest() {
+-        assertEquals("Monkey", monkey.getName());
+-        monkey.setName("Monke");
+-        assertEquals("Monke", monkey.getName());
+-    }
+-
+-    @Test
+-    void costTest() {
+-        assertEquals(100, monkey.getCost());
+-        monkey.setCost(20);
+-        assertEquals(20, monkey.getCost());
+-    }
+-
+-    @Test
+-    void perSecTest() {
+-        assertEquals(1, monkey.getPerSec());
+-        monkey.setPerSec(2);
+-        assertEquals(2, monkey.getPerSec());
+-    }
+-
+-    @Test
+-    void perClickTest() {
+-        assertEquals(0, monkey.getPerClick());
+-        monkey.setPerClick(1);
+-        assertEquals(1, monkey.getPerClick());
+-    }
+-
+-    @Test
+-    void specialTest() {
+-        assertNull(monkey.getSpecial());
+-        monkey.setSpecial("YA!");
+-        assertEquals("YA!", monkey.getSpecial());
+-    }
+-
+-    @Test
+-    void setUpgradeTest() {
+-        List<Upgrade> empty = new ArrayList<>();
+-        assertEquals(empty, monkey.getUpgrades());
+-        upgrades.add(testUpgrade);
+-        monkey.setUpgrades(upgrades);
+-        assertEquals(upgrades, monkey.getUpgrades());
+-    }
+-
+-    @Test
+-    void setAvailUpgradesTest() {
+-        List<Upgrade> empty = new ArrayList<>();
+-        empty.add(testUpgrade);
+-        empty.add(testUpgrade2);
+-        assertEquals(empty, monkey.getAvailUpgrades());
+-    }
+-
+-    @Test
+-    void addUpgradeTest() {
+-        List<Upgrade> empty = new ArrayList<>();
+-        assertEquals(empty, monkey.getUpgrades());
+-        monkey.addUpgrade(testUpgrade);
+-        monkey.addUpgrade(testUpgrade2);
+-        empty.add(testUpgrade);
+-        empty.add(testUpgrade2);
+-        assertEquals(empty, monkey.getUpgrades());
+-    }
+-
+-    @Test
+-    void toJsonTest() {
+-        JSONObject json = new JSONObject();
+-        json.put("name", "Monkey");
+-        json.put("count", 0);
+-        json.put("cost", 100);
+-        json.put("perSec", 1);
+-        json.put("perClick", 0);
+-        json.put("scalingFactor", 1.2);
+-        assertEquals(json.getString("name"), monkey.toJson().getString("name"));
+-        assertEquals(json.getInt("count"), monkey.toJson().getInt("count"));
+-        assertEquals(json.getInt("cost"), monkey.toJson().getInt("cost"));
+-        assertEquals(json.getInt("perSec"), monkey.toJson().getInt("perSec"));
+-        assertEquals(json.getInt("perClick"), monkey.toJson().getInt("perClick"));
+-        assertEquals(json.getDouble("scalingFactor"), monkey.toJson().getDouble("scalingFactor"));
+-
+-    }
+-}
+\ No newline at end of file
+Index: src/main/model/Location.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/model/Location.java b/src/main/model/Location.java
+deleted file mode 100644
+--- a/src/main/model/Location.java	
++++ /dev/null	
+@@ -1,80 +0,0 @@
+-package model;
+-
+-import java.io.IOException;
+-import java.util.ArrayList;
+-import java.util.List;
+-
+-public class Location extends Upgradable {
+-    private List<Animal> animals;
+-    private List<Animal> availAnimals;
+-
+-    //REQUIRES:
+-    //EFFECTS: creates upgradable
+-    public Location(String name, int persec, int perclick, String special) {
+-        super(name, 0, persec, perclick, 0, special);
+-        this.animals = new ArrayList<>();
+-        this.availAnimals = new ArrayList<>();
+-    }
+-
+-    //REQUIRES: Upgrade is in availAnimals, money >= animal.getCost
+-    //MODIFIES: this
+-    //EFFECTS: adds animal to animals if not owned, otherwise add 1 to count
+-    //subtracts money, returns amount of remaining money
+-    public double buyAnimal(double money, Animal animal) {
+-        if (!checkContainsAnimal(animal)) {
+-            animals.add(animal);
+-        } else {
+-            animal = findAnimal(animal, animals);
+-        }
+-        double returnChange = money - animal.getCost();
+-        animal.setCount(animal.getCount() + 1);
+-        setPerSec(getPerSec() + animal.getPerSec());
+-        setPerClick(getPerClick() + animal.getPerClick());
+-        return returnChange;
+-    }
+-
+-    //get and set methods
+-
+-    public List<Animal> getAnimals() {
+-        return animals;
+-    }
+-
+-    public void setAnimals(List<Animal> animals) {
+-        this.animals = animals;
+-    }
+-
+-
+-    public List<Animal> getAvailAnimals() {
+-        return availAnimals;
+-    }
+-
+-    public void setAvailAnimals(List<Animal> availAnimals) {
+-        this.availAnimals = availAnimals;
+-    }
+-
+-    //MODIFIES: this
+-    //EFFECTS: adds animal to animal list
+-    public void addAnimal(Animal animal) {
+-        this.animals.add(animal);
+-    }
+-
+-    public boolean checkContainsAnimal(Animal a) {
+-        for (Animal currentAnimal : animals) {
+-            if (currentAnimal.getName().equals(a.getName())) {
+-                return true;
+-            }
+-        }
+-        return false;
+-    }
+-
+-    public Animal findAnimal(Animal toFind, List<Animal> animalList) {
+-        for (Animal currentAnimal : animalList) {
+-            if (currentAnimal.getName().equals(toFind.getName())) {
+-                return currentAnimal;
+-            }
+-        }
+-        return null;
+-    }
+-
+-}
+-
+Index: src/test/model/PlayerTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/model/PlayerTest.java b/src/test/model/PlayerTest.java
+deleted file mode 100644
+--- a/src/test/model/PlayerTest.java	
++++ /dev/null	
+@@ -1,191 +0,0 @@
+-package model;
+-
+-import org.json.JSONArray;
+-import org.json.JSONObject;
+-import org.junit.jupiter.api.BeforeEach;
+-import org.junit.jupiter.api.Test;
+-
+-import java.util.ArrayList;
+-import java.util.List;
+-
+-import static org.junit.jupiter.api.Assertions.*;
+-import static org.junit.jupiter.api.Assertions.assertTrue;
+-
+-class PlayerTest {
+-    private Player player1;
+-    private Upgrade testUpgrade;
+-    private Upgrade testUpgrade2;
+-    private Animal monkey;
+-    private Animal capybara;
+-    private Animal tiger;
+-    private final List<Upgrade> upgrades = new ArrayList<>();
+-    private final List<Animal> animals = new ArrayList<>();
+-
+-    @BeforeEach
+-    public void setup() {
+-        player1 = new Player(1, null);
+-        testUpgrade = new Upgrade("one", 10, 0, 1, 1.4,null);
+-        testUpgrade2 = new Upgrade("two", 20, 0, 2, 1.4, null);
+-        upgrades.add(testUpgrade);
+-        upgrades.add(testUpgrade2);
+-        monkey = new Animal("Monkey", 100, 1, 0,1.2, null);
+-        capybara = new Animal("Capybara", 200, 2, 1,1.2, null);
+-        tiger = new Animal("Tiger", 1200, 2, 1, 1.2, null);
+-        animals.add(monkey);
+-        animals.add(capybara);
+-        animals.add(tiger);
+-        player1.setAvailUpgrades(upgrades);
+-        player1.setAvailAnimals(animals);
+-    }
+-
+-    @Test
+-    public void buyUpgradeTest() {
+-        List<Upgrade> empty = new ArrayList<>();
+-        assertEquals(empty, player1.getUpgrades());
+-        assertEquals(0, player1.buyUpgrades(10, testUpgrade));
+-        empty.add(testUpgrade);
+-        assertEquals(empty, player1.getUpgrades());
+-        assertEquals(0, player1.getPerSec());
+-        assertEquals(2, player1.getPerClick());
+-        assertNull(player1.getSpecial());
+-    }
+-
+-    @Test
+-    public void buyUpgradeMoneyRemainTest() {
+-        List<Upgrade> empty = new ArrayList<>();
+-        assertEquals(empty, player1.getUpgrades());
+-        assertEquals(10, player1.buyUpgrades(20, testUpgrade));
+-        empty.add(testUpgrade);
+-        assertEquals(empty, player1.getUpgrades());
+-        assertEquals(0, player1.getPerSec());
+-        assertEquals(2, player1.getPerClick());
+-        assertNull(player1.getSpecial());
+-    }
+-
+-    @Test
+-    public void buyUpgradeMultiple() {
+-        List<Upgrade> empty = new ArrayList<>();
+-        assertEquals(empty, player1.getUpgrades());
+-        assertEquals(20, player1.buyUpgrades(30, testUpgrade));
+-        empty.add(testUpgrade);
+-        assertEquals(empty, player1.getUpgrades());
+-        assertEquals(6, player1.buyUpgrades(20, testUpgrade));
+-        empty.get(0).setCount(2);
+-        assertEquals(empty, player1.getUpgrades());
+-
+-    }
+-
+-    @Test
+-    public void buyAnimalTest() {
+-        List<Animal> empty = new ArrayList<>();
+-        assertEquals(empty, player1.getAnimals());
+-        assertEquals(0, player1.buyAnimal(100, monkey));
+-        empty.add(monkey);
+-        assertEquals(empty, player1.getAnimals());
+-        assertEquals(1, player1.getPerSec());
+-        assertEquals(1, player1.getPerClick());
+-        assertNull(player1.getSpecial());
+-    }
+-
+-    @Test
+-    public void buyAnimalMoneyRemainTest() {
+-        List<Animal> empty = new ArrayList<>();
+-        assertEquals(empty, player1.getAnimals());
+-        assertEquals(250, player1.buyAnimal(350, monkey));
+-        empty.add(monkey);
+-        assertEquals(empty, player1.getAnimals());
+-        assertEquals(1, player1.getPerSec());
+-        assertEquals(1, player1.getPerClick());
+-        assertNull(player1.getSpecial());
+-    }
+-
+-    @Test
+-    public void buyAnimalMultiple() {
+-        List<Animal> empty = new ArrayList<>();
+-        assertEquals(empty, player1.getAnimals());
+-        assertEquals(250, player1.buyAnimal(350, monkey));
+-        empty.add(monkey);
+-        assertEquals(empty, player1.getAnimals());
+-        assertEquals(1, player1.getPerSec());
+-        assertEquals(50, player1.buyAnimal(250, capybara));
+-        empty.add(capybara);
+-        assertEquals(empty, player1.getAnimals());
+-        assertEquals(3, player1.getPerSec());
+-    }
+-
+-    @Test
+-    void addUpgradeTest() {
+-        List<Upgrade> empty = new ArrayList<>();
+-        assertEquals(empty, player1.getUpgrades());
+-        player1.addUpgrade(testUpgrade);
+-        player1.addUpgrade(testUpgrade2);
+-        empty.add(testUpgrade);
+-        empty.add(testUpgrade2);
+-        assertEquals(empty, player1.getUpgrades());
+-    }
+-
+-    @Test
+-    void addAnimalTest() {
+-        List<Animal> empty = new ArrayList<>();
+-        assertEquals(empty, player1.getAnimals());
+-        player1.addAnimal(monkey);
+-        player1.addAnimal(capybara);
+-        empty.add(monkey);
+-        empty.add(capybara);
+-        assertEquals(empty, player1.getAnimals());
+-    }
+-
+-    @Test
+-    void perClickTest() {
+-        assertEquals(1, player1.getPerClick());
+-        player1.setPerClick(2);
+-        assertEquals(2, player1.getPerClick());
+-    }
+-
+-    @Test
+-    void specialTest() {
+-        assertNull(player1.getSpecial());
+-        player1.setSpecial("YA!");
+-        assertEquals("YA!", player1.getSpecial());
+-    }
+-    @Test
+-    void setAvailUpgradesTest() {
+-        List<Upgrade> empty = new ArrayList<>();
+-        empty.add(testUpgrade);
+-        empty.add(testUpgrade2);
+-        assertEquals(empty, player1.getAvailUpgrades());
+-
+-        List<Upgrade> empty2 = new ArrayList<>();
+-        empty2.add(testUpgrade);
+-
+-        List<Upgrade> empty3 = new ArrayList<>();
+-        empty3.add(testUpgrade);
+-        player1.setAvailUpgrades(empty3);
+-        assertEquals(empty2, player1.getAvailUpgrades());
+-    }
+-
+-    @Test
+-    void setAvailAnimalsTest() {
+-        List<Animal> empty = new ArrayList<>();
+-        empty.add(tiger);
+-        assertEquals(animals, player1.getAvailAnimals());
+-        player1.setAvailAnimals(empty);
+-        List<Animal> empty2 = new ArrayList<>();
+-        empty2.add(tiger);
+-        assertEquals(empty2, player1.getAvailAnimals());
+-    }
+-
+-    @Test
+-    void toJsonTest() {
+-        JSONObject json = new JSONObject();
+-        player1.addUpgrade(testUpgrade);
+-        player1.addAnimal(monkey);
+-        json.put("perClick", 1);
+-        json.put("upgrades", player1.upgradesToJson());
+-        json.put("player-animals", player1.animalsToJson());
+-        assertEquals(json.getInt("perClick"), player1.toJson().getInt("perClick"));
+-    }
+-
+-
+-
+-}
+Index: src/main/model/Player.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/model/Player.java b/src/main/model/Player.java
+deleted file mode 100644
+--- a/src/main/model/Player.java	
++++ /dev/null	
+@@ -1,41 +0,0 @@
+-package model;
+-
+-import org.json.JSONArray;
+-import org.json.JSONObject;
+-import persistence.Writable;
+-
+-public class Player extends Location implements Writable {
+-
+-    //EFFECTS: creates upgradable
+-    public Player(int perclick, String special) {
+-        super("Player", 0, perclick, special);
+-    }
+-
+-    @Override
+-    public JSONObject toJson() {
+-        JSONObject json = new JSONObject();
+-
+-        json.put("perClick", getPerClick());
+-        json.put("upgrades", upgradesToJson());
+-        json.put("player-animals", animalsToJson());
+-        return json;
+-    }
+-
+-    public JSONArray upgradesToJson() {
+-        JSONArray upgradesJson = new JSONArray();
+-        for (Upgrade u: getUpgrades()) {
+-            upgradesJson.put(u.toJson());
+-        }
+-        return upgradesJson;
+-    }
+-
+-    public JSONArray animalsToJson() {
+-        JSONArray animalsJson = new JSONArray();
+-        for (Animal a: getAnimals()) {
+-            animalsJson.put(a.toJson());
+-        }
+-        return animalsJson;
+-    }
+-
+-
+-}
+Index: src/main/model/Animal.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/model/Animal.java b/src/main/model/Animal.java
+deleted file mode 100644
+--- a/src/main/model/Animal.java	
++++ /dev/null	
+@@ -1,26 +0,0 @@
+-package model;
+-
+-import org.json.JSONObject;
+-import persistence.Writable;
+-
+-public class Animal extends Upgradable implements Writable {
+-
+-    //REQUIRES:
+-    //EFFECTS: creates upgradable
+-    public Animal(String name, int cost, int persec, int perclick, double scalingfactor, String special) {
+-        super(name, cost, persec, perclick, scalingfactor, special);
+-    }
+-
+-
+-    //EFFECTS: returns animal object as JSON
+-    public JSONObject toJson() {
+-        JSONObject json = new JSONObject();
+-        json.put("name", getName());
+-        json.put("count", getCount());
+-        json.put("cost", getCost());
+-        json.put("perSec", getPerSec());
+-        json.put("perClick", getPerClick());
+-        json.put("scalingFactor", getScalingFactor());
+-        return json;
+-    }
+-}
+Index: src/test/model/LocationTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/model/LocationTest.java b/src/test/model/LocationTest.java
+deleted file mode 100644
+--- a/src/test/model/LocationTest.java	
++++ /dev/null	
+@@ -1,225 +0,0 @@
+-package model;
+-
+-import org.junit.jupiter.api.BeforeEach;
+-import org.junit.jupiter.api.Test;
+-
+-import java.util.ArrayList;
+-import java.util.List;
+-
+-import static org.junit.jupiter.api.Assertions.*;
+-import static org.junit.jupiter.api.Assertions.assertEquals;
+-
+-public class LocationTest {
+-    private Location cafe;
+-    private Upgrade testUpgrade;
+-    private Upgrade testUpgrade2;
+-    private Animal monkey;
+-    private Animal capybara;
+-    private Animal tiger;
+-    private final List<Upgrade> upgrades = new ArrayList<>();
+-    private final List<Animal> animals = new ArrayList<>();
+-
+-    @BeforeEach
+-    public void setup() {
+-        cafe = new Location("Animal Cafe", 10, 10, null);
+-        testUpgrade = new Upgrade("one", 10, 0, 1,1.4, null);
+-        testUpgrade2 = new Upgrade("two", 20, 0, 2, 1.4, null);
+-        upgrades.add(testUpgrade);
+-        upgrades.add(testUpgrade2);
+-        monkey = new Animal("Monkey", 100, 1, 0,1.2, null);
+-        capybara = new Animal("Capybara", 200, 2, 1, 1.2,null);
+-        tiger = new Animal("Tiger", 1200, 2, 1, 1.2, null);
+-        animals.add(monkey);
+-        animals.add(capybara);
+-        animals.add(tiger);
+-        cafe.setAvailUpgrades(upgrades);
+-        cafe.setAvailAnimals(animals);
+-    }
+-
+-    @Test
+-    public void constructorTest() {
+-        assertEquals("Animal Cafe", cafe.getName());
+-        assertEquals(10, cafe.getPerSec());
+-        assertEquals(10, cafe.getPerClick());
+-        assertNull(cafe.getSpecial());
+-    }
+-
+-    @Test
+-    public void buyUpgradeTest() {
+-        List<Upgrade> empty = new ArrayList<>();
+-        assertEquals(empty, cafe.getUpgrades());
+-        assertEquals(0, cafe.buyUpgrades(10, testUpgrade));
+-        empty.add(testUpgrade);
+-        assertEquals(empty, cafe.getUpgrades());
+-        assertEquals(10, cafe.getPerSec());
+-        assertEquals(11, cafe.getPerClick());
+-        assertNull(cafe.getSpecial());
+-    }
+-
+-    @Test
+-    public void buyUpgradeMoneyRemainTest() {
+-        List<Upgrade> empty = new ArrayList<>();
+-        assertEquals(empty, cafe.getUpgrades());
+-        assertEquals(10, cafe.buyUpgrades(20, testUpgrade));
+-        empty.add(testUpgrade);
+-        assertEquals(empty, cafe.getUpgrades());
+-        assertEquals(10, cafe.getPerSec());
+-        assertEquals(11, cafe.getPerClick());
+-        assertNull(cafe.getSpecial());
+-    }
+-
+-    @Test
+-    public void buyUpgradeMultiple() {
+-        List<Upgrade> empty = new ArrayList<>();
+-        assertEquals(empty, cafe.getUpgrades());
+-        assertEquals(20, cafe.buyUpgrades(30, testUpgrade));
+-        empty.add(testUpgrade);
+-        assertEquals(empty, cafe.getUpgrades());
+-        assertEquals(0, cafe.buyUpgrades(20, testUpgrade2));
+-        empty.add(testUpgrade2);
+-        assertEquals(empty, cafe.getUpgrades());
+-
+-    }
+-
+-    @Test
+-    public void buyAnimalTest() {
+-        List<Animal> empty = new ArrayList<>();
+-        assertEquals(empty, cafe.getAnimals());
+-        assertEquals(0, cafe.buyAnimal(100, monkey));
+-        empty.add(monkey);
+-        assertEquals(empty, cafe.getAnimals());
+-        assertEquals(11, cafe.getPerSec());
+-        assertEquals(10, cafe.getPerClick());
+-        assertNull(cafe.getSpecial());
+-    }
+-
+-    @Test
+-    public void buyAnimalMoneyRemainTest() {
+-        List<Animal> empty = new ArrayList<>();
+-        assertEquals(empty, cafe.getAnimals());
+-        assertEquals(250, cafe.buyAnimal(350, monkey));
+-        empty.add(monkey);
+-        assertEquals(empty, cafe.getAnimals());
+-        assertEquals(11, cafe.getPerSec());
+-        assertEquals(10, cafe.getPerClick());
+-        assertNull(cafe.getSpecial());
+-    }
+-
+-    @Test
+-    public void buyAnimalMultiple() {
+-        List<Animal> empty = new ArrayList<>();
+-        assertEquals(empty, cafe.getAnimals());
+-        assertEquals(250, cafe.buyAnimal(350, monkey));
+-        empty.add(monkey);
+-        assertEquals(empty, cafe.getAnimals());
+-        assertEquals(50, cafe.buyAnimal(250, capybara));
+-        empty.add(capybara);
+-        assertEquals(empty, cafe.getAnimals());
+-
+-    }
+-
+-    @Test
+-    void addUpgradeTest() {
+-        List<Upgrade> empty = new ArrayList<>();
+-        assertEquals(empty, cafe.getUpgrades());
+-        cafe.addUpgrade(testUpgrade);
+-        cafe.addUpgrade(testUpgrade2);
+-        empty.add(testUpgrade);
+-        empty.add(testUpgrade2);
+-        assertEquals(empty, cafe.getUpgrades());
+-    }
+-
+-    @Test
+-    void addAnimalTest() {
+-        List<Animal> empty = new ArrayList<>();
+-        assertEquals(empty, cafe.getAnimals());
+-        cafe.addAnimal(monkey);
+-        cafe.addAnimal(capybara);
+-        empty.add(monkey);
+-        empty.add(capybara);
+-        assertEquals(empty, cafe.getAnimals());
+-    }
+-
+-    @Test
+-    void nameTest() {
+-        assertEquals("Animal Cafe", cafe.getName());
+-        cafe.setName("Animal Shelter");
+-        assertEquals("Animal Shelter", cafe.getName());
+-    }
+-
+-    @Test
+-    void perSecTest() {
+-        assertEquals(10, cafe.getPerSec());
+-        cafe.setPerSec(20);
+-        assertEquals(20, cafe.getPerSec());
+-    }
+-
+-    @Test
+-    void perClickTest() {
+-        assertEquals(10, cafe.getPerClick());
+-        cafe.setPerClick(20);
+-        assertEquals(20, cafe.getPerClick());
+-    }
+-
+-    @Test
+-    void specialTest() {
+-        assertNull(cafe.getSpecial());
+-        cafe.setSpecial("YA!");
+-        assertEquals("YA!", cafe.getSpecial());
+-    }
+-
+-    @Test
+-    void setAvailUpgradesTest() {
+-        List<Upgrade> empty = new ArrayList<>();
+-        empty.add(testUpgrade);
+-        empty.add(testUpgrade2);
+-        assertEquals(empty, cafe.getAvailUpgrades());
+-
+-        List<Upgrade> empty2 = new ArrayList<>();
+-        empty2.add(testUpgrade);
+-
+-        List<Upgrade> empty3 = new ArrayList<>();
+-        empty3.add(testUpgrade);
+-        cafe.setAvailUpgrades(empty3);
+-        assertEquals(empty2, cafe.getAvailUpgrades());
+-    }
+-
+-    @Test
+-    void setAvailAnimalsTest() {
+-        List<Animal> empty = new ArrayList<>();
+-        empty.add(tiger);
+-        assertEquals(animals, cafe.getAvailAnimals());
+-        cafe.setAvailAnimals(empty);
+-        List<Animal> empty2 = new ArrayList<>();
+-        empty2.add(tiger);
+-        assertEquals(empty2, cafe.getAvailAnimals());
+-    }
+-
+-    @Test
+-    void setAnimalTest() {
+-        List<Animal> empty = new ArrayList<>();
+-        empty.add(tiger);
+-        cafe.setAnimals(empty);
+-        List<Animal> empty2 = new ArrayList<>();
+-        empty2.add(tiger);
+-        assertEquals(empty2, cafe.getAnimals());
+-    }
+-
+-    @Test
+-    void containAnimalTest() {
+-        cafe.buyAnimal(10000, capybara);
+-        assertTrue(cafe.checkContainsAnimal(capybara));
+-    }
+-
+-    @Test
+-    void findAnimalTest() {
+-        Animal capyimposter = new Animal("Capybara", 0,0,0,0, null);
+-        cafe.addAnimal(capybara);
+-        assertEquals(9800,  cafe.buyAnimal(10000, capyimposter));
+-        assertEquals(capybara, cafe.findAnimal(capyimposter, animals));
+-        Animal yourmom = new Animal("Yourmom", 0,0,0,0, null);
+-        assertNull(cafe.findAnimal(yourmom, animals));
+-    }
+-
+-
+-}
+Index: src/test/model/UpgradeTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package model;\r\n\r\nimport org.json.JSONObject;\r\nimport org.junit.jupiter.api.BeforeEach;\r\nimport org.junit.jupiter.api.Test;\r\n\r\nimport static org.junit.jupiter.api.Assertions.assertEquals;\r\nimport static org.junit.jupiter.api.Assertions.assertNull;\r\n\r\nclass UpgradeTest {\r\n    private Upgrade testUpgrade;\r\n\r\n    @BeforeEach\r\n    public void setup() {\r\n        testUpgrade = new Upgrade(\"one\", 10, 1, 0, 1.4, null);\r\n    }\r\n\r\n    @Test\r\n    void nameTest() {\r\n        assertEquals(\"one\", testUpgrade.getName());\r\n        testUpgrade.setName(\"two\");\r\n        assertEquals(\"two\", testUpgrade.getName());\r\n    }\r\n\r\n    @Test\r\n    void costTest() {\r\n        assertEquals(10, testUpgrade.getCost());\r\n        testUpgrade.setCost(20);\r\n        assertEquals(20, testUpgrade.getCost());\r\n    }\r\n\r\n    @Test\r\n    void perSecTest() {\r\n        assertEquals(1, testUpgrade.getPerSec());\r\n        testUpgrade.setPerSec(2);\r\n        assertEquals(2, testUpgrade.getPerSec());\r\n    }\r\n\r\n    @Test\r\n    void perClickTest() {\r\n        assertEquals(0, testUpgrade.getPerClick());\r\n        testUpgrade.setPerClick(1);\r\n        assertEquals(1, testUpgrade.getPerClick());\r\n    }\r\n\r\n    @Test\r\n    void specialTest() {\r\n        assertNull(testUpgrade.getSpecial());\r\n        testUpgrade.setSpecial(\"YA!\");\r\n        assertEquals(\"YA!\", testUpgrade.getSpecial());\r\n    }\r\n\r\n    @Test\r\n    void toJsonTest() {\r\n        JSONObject json = new JSONObject();\r\n        json.put(\"name\", \"one\");\r\n        json.put(\"count\", 0);\r\n        json.put(\"cost\", 10);\r\n        json.put(\"perSec\", 1);\r\n        json.put(\"perClick\", 0);\r\n        json.put(\"scalingFactor\", 1.4);\r\n        assertEquals(json.getString(\"name\"), testUpgrade.toJson().getString(\"name\"));\r\n        assertEquals(json.getInt(\"count\"), testUpgrade.toJson().getInt(\"count\"));\r\n        assertEquals(json.getInt(\"cost\"), testUpgrade.toJson().getInt(\"cost\"));\r\n        assertEquals(json.getInt(\"perSec\"), testUpgrade.toJson().getInt(\"perSec\"));\r\n        assertEquals(json.getInt(\"perClick\"), testUpgrade.toJson().getInt(\"perClick\"));\r\n        assertEquals(json.getDouble(\"scalingFactor\"), testUpgrade.toJson().getDouble(\"scalingFactor\"));\r\n\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/model/UpgradeTest.java b/src/test/model/UpgradeTest.java
+--- a/src/test/model/UpgradeTest.java	
++++ b/src/test/model/UpgradeTest.java	
+@@ -4,15 +4,14 @@
+ import org.junit.jupiter.api.BeforeEach;
+ import org.junit.jupiter.api.Test;
+ 
+-import static org.junit.jupiter.api.Assertions.assertEquals;
+-import static org.junit.jupiter.api.Assertions.assertNull;
++import static org.junit.jupiter.api.Assertions.*;
+ 
+ class UpgradeTest {
+     private Upgrade testUpgrade;
+ 
+     @BeforeEach
+     public void setup() {
+-        testUpgrade = new Upgrade("one", 10, 1, 0, 1.4, null);
++        testUpgrade = new Upgrade("one", 10, 1, 0, 0, 1.4, null);
+     }
+ 
+     @Test
+@@ -59,12 +58,31 @@
+         json.put("perSec", 1);
+         json.put("perClick", 0);
+         json.put("scalingFactor", 1.4);
++        json.put("unlockedAt", 0);
+         assertEquals(json.getString("name"), testUpgrade.toJson().getString("name"));
+-        assertEquals(json.getInt("count"), testUpgrade.toJson().getInt("count"));
+         assertEquals(json.getInt("cost"), testUpgrade.toJson().getInt("cost"));
+         assertEquals(json.getInt("perSec"), testUpgrade.toJson().getInt("perSec"));
+         assertEquals(json.getInt("perClick"), testUpgrade.toJson().getInt("perClick"));
+         assertEquals(json.getDouble("scalingFactor"), testUpgrade.toJson().getDouble("scalingFactor"));
++        assertEquals(json.getInt("unlockedAt"), testUpgrade.toJson().getInt("unlockedAt"));
++    }
+ 
++    @Test
++    void toJsonTestAvail() {
++        JSONObject json = new JSONObject();
++        json.put("name", "one");
++        json.put("count", 0);
++        json.put("cost", 10);
++        json.put("perSec", 1);
++        json.put("perClick", 0);
++        json.put("scalingFactor", 1.4);
++        json.put("unlockedAt", 0);
++        assertEquals(json.getString("name"), testUpgrade.toJson(true).getString("name"));
++        assertEquals(json.getInt("cost"), testUpgrade.toJson(true).getInt("cost"));
++        assertEquals(json.getInt("perSec"), testUpgrade.toJson(true).getInt("perSec"));
++        assertEquals(json.getInt("perClick"), testUpgrade.toJson(true).getInt("perClick"));
++        assertEquals(json.getDouble("scalingFactor"), testUpgrade.toJson(true).getDouble("scalingFactor"));
++        assertEquals(json.getInt("unlockedAt"), testUpgrade.toJson(true).getInt("unlockedAt"));
++        assertTrue(testUpgrade.toJson(true).getBoolean("unlocked"));
+     }
+ }
+\ No newline at end of file
+Index: src/test/persistance/JsonWriterTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package persistance;\r\n\r\nimport model.Game;\r\nimport org.junit.jupiter.api.BeforeEach;\r\nimport org.junit.jupiter.api.Test;\r\nimport persistence.JsonWriter;\r\nimport ui.ZooGame;\r\n\r\nimport java.io.FileNotFoundException;\r\n\r\nimport static org.junit.jupiter.api.Assertions.fail;\r\n\r\npublic class JsonWriterTest {\r\n    JsonWriter writer;\r\n    JsonWriter writer2;\r\n    ZooGame zoogame;\r\n    Game game;\r\n\r\n    @BeforeEach\r\n    void setup() {\r\n        zoogame = new ZooGame();\r\n        game = zoogame.initGame(\"Val\");\r\n        writer = new JsonWriter(\"./data/testOutput.json\");\r\n    }\r\n\r\n    @Test\r\n    void fileNotFound() {\r\n        writer2 = new JsonWriter(\"./dumb/testOutput.json\");\r\n        try {\r\n            writer2.open();\r\n            fail();\r\n        } catch (FileNotFoundException e) {\r\n            System.out.println(\"test passed\");\r\n        }\r\n    }\r\n\r\n    @Test\r\n    void writeSuccessCloseTest() {\r\n        try {\r\n            writer.open();\r\n            writer.write(game);\r\n            writer.close();\r\n        } catch (FileNotFoundException e) {\r\n            fail();\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/persistance/JsonWriterTest.java b/src/test/persistance/JsonWriterTest.java
+--- a/src/test/persistance/JsonWriterTest.java	
++++ b/src/test/persistance/JsonWriterTest.java	
+@@ -1,47 +1,47 @@
+-package persistance;
+-
+-import model.Game;
+-import org.junit.jupiter.api.BeforeEach;
+-import org.junit.jupiter.api.Test;
+-import persistence.JsonWriter;
+-import ui.ZooGame;
+-
+-import java.io.FileNotFoundException;
+-
+-import static org.junit.jupiter.api.Assertions.fail;
+-
+-public class JsonWriterTest {
+-    JsonWriter writer;
+-    JsonWriter writer2;
+-    ZooGame zoogame;
+-    Game game;
+-
+-    @BeforeEach
+-    void setup() {
+-        zoogame = new ZooGame();
+-        game = zoogame.initGame("Val");
+-        writer = new JsonWriter("./data/testOutput.json");
+-    }
+-
+-    @Test
+-    void fileNotFound() {
+-        writer2 = new JsonWriter("./dumb/testOutput.json");
+-        try {
+-            writer2.open();
+-            fail();
+-        } catch (FileNotFoundException e) {
+-            System.out.println("test passed");
+-        }
+-    }
+-
+-    @Test
+-    void writeSuccessCloseTest() {
+-        try {
+-            writer.open();
+-            writer.write(game);
+-            writer.close();
+-        } catch (FileNotFoundException e) {
+-            fail();
+-        }
+-    }
+-}
++//package persistance;
++//
++//import model.Game;
++//import org.junit.jupiter.api.BeforeEach;
++//import org.junit.jupiter.api.Test;
++//import persistence.JsonWriter;
++//import ui.ZooGame;
++//
++//import java.io.FileNotFoundException;
++//
++//import static org.junit.jupiter.api.Assertions.fail;
++//
++//public class JsonWriterTest {
++//    JsonWriter writer;
++//    JsonWriter writer2;
++//    ZooGame zoogame;
++//    Game game;
++//
++//    @BeforeEach
++//    void setup() {
++//        zoogame = new ZooGame();
++//        game = zoogame.initGame("Val");
++//        writer = new JsonWriter("./data/testOutput.json");
++//    }
++//
++//    @Test
++//    void fileNotFound() {
++//        writer2 = new JsonWriter("./dumb/testOutput.json");
++//        try {
++//            writer2.open();
++//            fail();
++//        } catch (FileNotFoundException e) {
++//            System.out.println("test passed");
++//        }
++//    }
++//
++//    @Test
++//    void writeSuccessCloseTest() {
++//        try {
++//            writer.open();
++//            writer.write(game);
++//            writer.close();
++//        } catch (FileNotFoundException e) {
++//            fail();
++//        }
++//    }
++//}
+Index: src/main/ui/ZooGame2.java
+===================================================================
+diff --git a/src/main/ui/ZooGame2.java b/src/main/ui/ZooGame2.java
+new file mode 100644
+--- /dev/null	
++++ b/src/main/ui/ZooGame2.java	
+@@ -0,0 +1,23 @@
++package ui;
++//
++//import model.Game;
++//
++//import javax.swing.*;
++//
++//public class ZooGame2 extends JFrame {
++//    private static final int INVERVAL = 10;
++//    private Game game;
++//    private GamePanel gp;
++//    private ShopPanel sp;
++//    private UpgradePanel up;
++//    private Timer t;
++//
++//    public ZooGame2() {
++//        super("Irwin's Paradise");
++//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
++//        setUndecorated(true);
++//        this.game = ZooGame.initGame("Test");
++//
++//    }
++//
++//}

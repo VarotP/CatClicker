@@ -1,0 +1,66 @@
+{
+    "score": 0,
+    "availUpgrades": [
+        {
+            "cost": 10,
+            "perSec": 0,
+            "name": "OnePerClick",
+            "unlockedAt": 0,
+            "scalingFactor": 1.4,
+            "unlocked": true,
+            "perClick": 1
+        },
+        {
+            "cost": 5000,
+            "perSec": 0,
+            "name": "FivePerClick",
+            "unlockedAt": 5000,
+            "scalingFactor": 1.4,
+            "unlocked": false,
+            "perClick": 5
+        },
+        {
+            "cost": 10000,
+            "perSec": 0,
+            "name": "TwentyPerClick",
+            "unlockedAt": 10000,
+            "scalingFactor": 1.4,
+            "unlocked": false,
+            "perClick": 5
+        }
+    ],
+    "perSec": 0,
+    "name": "Val",
+    "animals": [],
+    "availAnimals": [
+        {
+            "cost": 200,
+            "perSec": 2,
+            "name": "Capybara",
+            "unlockedAt": 500,
+            "scalingFactor": 1.2,
+            "unlocked": false,
+            "perClick": 0
+        },
+        {
+            "cost": 50,
+            "perSec": 1,
+            "name": "Cat",
+            "unlockedAt": 0,
+            "scalingFactor": 1.2,
+            "unlocked": true,
+            "perClick": 0
+        },
+        {
+            "cost": 200,
+            "perSec": 2,
+            "name": "Dog",
+            "unlockedAt": 0,
+            "scalingFactor": 1.2,
+            "unlocked": true,
+            "perClick": 0
+        }
+    ],
+    "upgrades": [],
+    "perClick": 1
+}
