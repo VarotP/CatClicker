@@ -1,60 +1,56 @@
 package model;
 
+import org.json.JSONObject;
+import persistence.Writable;
+
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Upgradable {
     private String name;
-    private int count;
+
     private int cost;
     private int perSec;
     private int perClick;
+    private int unlockedAt;
     private double scalingFactor;
     private String special;
-    private List<Upgrade> upgrades;
-    private List<Upgrade> availUpgrades;
     private String description;
+
+
 
     //REQUIRES:
     //EFFECTS: creates upgradable
-    public Upgradable(String name, int cost, int persec, int perclick, double scalingfactor,  String special) {
+    public Upgradable(String name, int cost,
+                      int persec, int perclick, int unlockedAt, double scalingfactor,  String special) {
         this.name = name;
-        this.count = 0;
         this.cost = cost;
         this.perSec = persec;
         this.perClick = perclick;
+        this.unlockedAt = unlockedAt;
         this.scalingFactor = scalingfactor;
         this.special = special;
-        this.availUpgrades = new ArrayList<>();
-        this.upgrades = new ArrayList<>();
     }
 
-    //REQUIRES: Upgrade is in availUpgrades, money >= upgrade.getCost
-    //MODIFIES: this
-    //EFFECTS: adds upgrade to upgrades, subtracts money, returns amount of remaining money
-    public double buyUpgrades(double money, Upgrade upgrade) {
-        if (!checkContainsUpgrade(upgrade)) {
-            upgrades.add(upgrade);
-        } else {
-            upgrade = findUpgrade(upgrade, upgrades);
-        }
-        double returnChange = money - upgrade.getCost();
-        upgrade.setCount(upgrade.getCount() + 1);
-        this.perSec += upgrade.getPerSec();
-        this.perClick += upgrade.getPerClick();
-        return returnChange;
-    }
+//    //REQUIRES: Upgrade is in availUpgrades, money >= upgrade.getCost
+//    //MODIFIES: this
+//    //EFFECTS: adds upgrade to upgrades, subtracts money, returns amount of remaining money
+//    public double buyUpgrades(double money, Upgrade upgrade, int quantity) {
+//        upgrades.add(upgrade);
+//        double returnChange = money - upgrade.getCost();
+//        this.perSec += upgrade.getPerSec();
+//        this.perClick += upgrade.getPerClick();
+//        return returnChange;
+//    }
 
-    //EFFECTS: searches for upgrade with same String name and returns it, if not found return null
-    public Upgrade findUpgrade(Upgrade toFind, List<Upgrade> upgradeList) {
-        for (Upgrade currentUpgrade : upgradeList) {
-            if (currentUpgrade.getName().equals(toFind.getName())) {
-                return currentUpgrade;
-            }
-        }
-        return null;
-    }
+//    public Upgrade findUpgrade(Upgrade toFind, List<Upgrade> upgradeList) {
+//        for (Upgrade currentUpgrade : upgradeList) {
+//            if (currentUpgrade.getName().equals(toFind.getName())) {
+//                return currentUpgrade;
+//            }
+//        }
+//        return null;
+//    }
 
     //get and set methods
 
@@ -67,7 +63,7 @@ public class Upgradable {
     }
 
     public int getCost() {
-        return (int) (cost * Math.pow(scalingFactor, count));
+        return this.cost;
     }
 
     public void setCost(int cost) {
@@ -98,31 +94,6 @@ public class Upgradable {
         this.special = special;
     }
 
-    public List<Upgrade> getUpgrades() {
-        return upgrades;
-    }
-
-    public void setUpgrades(List<Upgrade> upgrades) {
-        this.upgrades = upgrades;
-    }
-
-    //EFFECTS: returns list of available upgrades
-    public List<Upgrade> getAvailUpgrades() {
-        return this.availUpgrades;
-    }
-
-    public void setAvailUpgrades(List<Upgrade> thislist) {
-        this.availUpgrades = thislist;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
     public double getScalingFactor() {
         return scalingFactor;
     }
@@ -130,4 +101,65 @@ public class Upgradable {
     public void setScalingFactor(double scalingFactor) {
         this.scalingFactor = scalingFactor;
     }
+
+    //EFFECTS: returns animal object as JSON
+    public JSONObject toJson(Integer quantity) {
+        JSONObject json = new JSONObject();
+        json.put("name", getName());
+        json.put("cost", getCost());
+        json.put("perSec", getPerSec());
+        json.put("perClick", getPerClick());
+        json.put("scalingFactor", getScalingFactor());
+        json.put("unlockedAt", getUnlockedAt());
+        json.put("quantity", quantity);
+        return json;
+    }
+
+    public JSONObject toJson(Boolean unlocked) {
+        JSONObject json = new JSONObject();
+        json.put("name", getName());
+        json.put("cost", getCost());
+        json.put("perSec", getPerSec());
+        json.put("perClick", getPerClick());
+        json.put("scalingFactor", getScalingFactor());
+        json.put("unlockedAt", getUnlockedAt());
+        json.put("unlocked", unlocked);
+        return json;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Upgradable that = (Upgradable) o;
+
+        return name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+    public int getUnlockedAt() {
+        return unlockedAt;
+    }
+
+    public void setUnlockedAt(int unlockedAt) {
+        this.unlockedAt = unlockedAt;
+    }
+
+    //    public boolean checkContainsUpgrade(Upgrade u) {
+//        for (Upgrade currentUpgrade : upgrades) {
+//            if (currentUpgrade.getName().equals(u.getName())) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 }

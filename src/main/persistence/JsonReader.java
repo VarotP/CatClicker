@@ -10,18 +10,19 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Stream;
 
 public class JsonReader {
     //Upgrades and Animals
     private final String source;
-    private final ZooGame papa;
+    private int ticks;
 
-    //EFFECTS: constructs jsonReader object
-    public JsonReader(ZooGame papa, String source) {
+    public JsonReader(String source, int ticks) {
         this.source = source;
-        this.papa = papa;
+        this.ticks = ticks;
     }
 
     //EFFECTS: read file driver
@@ -45,77 +46,89 @@ public class JsonReader {
     //EFFECTS: parses json object and creates game object
     private Game parseGameFile(JSONObject jsonObject) {
         String gameName = jsonObject.getString("name");
-        Game thisGame = papa.initGame(gameName);
+        Game thisGame = new Game(gameName, ticks);
         buildGame(thisGame, jsonObject);
         return thisGame;
     }
 
     //EFFECTS: builds game object from json file
     private void buildGame(Game game, JSONObject jsonObject) {
-        JSONObject playerObject = jsonObject.getJSONObject("player");
-        Player newPlayer = game.getPlayer1();
-        newPlayer.setPerSec(jsonObject.getInt("perSec"));
-        addUpgradesAndAnimals(game, newPlayer, playerObject);
-
         game.setScore(jsonObject.getDouble("score"));
         game.setPerSec(jsonObject.getInt("perSec"));
-        game.setUnlockedCafe(jsonObject.getBoolean("unlocked-cafe"));
-        game.setUnlockedZoo(jsonObject.getBoolean("unlocked-zoo"));
+        game.setAnimals(getAnimalsJson(jsonObject.getJSONArray("animals")));
+        game.setAvailAnimals(getAvailAnimalsJson(jsonObject.getJSONArray("availAnimals")));
+        game.setUpgrades(getUpgradesJson(jsonObject.getJSONArray("upgrades")));
+        game.setAvailUpgrades(getAvailUpgradesJson(jsonObject.getJSONArray("availUpgrades")));
     }
 
-    //EFFECTS: adds animals and upgrades from json file to game object
-    private void addUpgradesAndAnimals(Game game, Player player, JSONObject playerObject) {
-
-        JSONArray jsonUpgradeList = playerObject.getJSONArray("upgrades");
-        JSONArray jsonAnimalList = playerObject.getJSONArray("player-animals");
-
-        player.setPerClick(playerObject.getInt("perClick"));
-        player.setUpgrades(getUpgradesFromJson(game, jsonUpgradeList));
-        player.setAnimals(getAnimalsFromJson(game, jsonAnimalList));
-        game.setPlayer1(player);
-    }
-
-    //EFFECTS: creates upgrades list and sets it to playerobject
-    private List<Upgrade> getUpgradesFromJson(Game game, JSONArray jsonUpgradeList) {
-        List<Upgrade> upgrades = new ArrayList<>();
-        for (Object json : jsonUpgradeList) {
-            JSONObject nextUpgrade = (JSONObject) json;
-
-            String upgradeName = nextUpgrade.getString("name");
-            int count = nextUpgrade.getInt("count");
-            int cost = nextUpgrade.getInt("cost");
-            int perSec = nextUpgrade.getInt("perSec");
-            int perClick = nextUpgrade.getInt("perClick");
-            double scalingFactor = nextUpgrade.getDouble("scalingFactor");
-            Upgrade newUpgrade = new Upgrade(upgradeName, cost, perSec, perClick, scalingFactor, null);
-            newUpgrade.setCount(count);
-            upgrades.add(newUpgrade);
-
-            //sets availAnimal to cost of animal from saved game
-            game.getPlayer1().findUpgrade(newUpgrade, game.getPlayer1().getAvailUpgrades()).setCost(cost);
-        }
-        return upgrades;
-    }
-
-    //EFFECTS: creates animal list and adds to playerobject
-    private List<Animal> getAnimalsFromJson(Game game, JSONArray jsonAnimalList) {
-        List<Animal> animals = new ArrayList<>();
-        for (Object json : jsonAnimalList) {
+    private HashMap<Upgradable, Integer> getAnimalsJson(JSONArray jsonArray) {
+        HashMap<Upgradable, Integer> myHashMap = new HashMap<>();
+        for (Object json : jsonArray) {
             JSONObject nextAnimal = (JSONObject) json;
-
             String animalName = nextAnimal.getString("name");
-            int count = nextAnimal.getInt("count");
             int cost = nextAnimal.getInt("cost");
             int perSec = nextAnimal.getInt("perSec");
             int perClick = nextAnimal.getInt("perClick");
             double scalingFactor = nextAnimal.getDouble("scalingFactor");
-            Animal newAnimal = new Animal(animalName, cost, perSec, perClick, scalingFactor, null);
-            newAnimal.setCount(count);
-            animals.add(newAnimal);
+            int unlockedAt = nextAnimal.getInt("unlockedAt");
+            int quantity = nextAnimal.getInt("quantity");
+            Upgradable newAnimal = new Upgradable(animalName, cost, perSec, perClick, unlockedAt, scalingFactor, null);
 
-            //sets availAnimal to cost of animal from saved game
-            game.getPlayer1().findAnimal(newAnimal, game.getPlayer1().getAvailAnimals()).setCost(cost);
+            myHashMap.put(newAnimal, quantity);
         }
-        return animals;
+        return myHashMap;
+    }
+
+    private HashMap<Upgradable, Boolean> getAvailAnimalsJson(JSONArray jsonArray) {
+        HashMap<Upgradable, Boolean> myHashMap = new HashMap<>();
+        for (Object json : jsonArray) {
+            JSONObject nextAnimal = (JSONObject) json;
+            String animalName = nextAnimal.getString("name");
+            int cost = nextAnimal.getInt("cost");
+            int perSec = nextAnimal.getInt("perSec");
+            int perClick = nextAnimal.getInt("perClick");
+            double scalingFactor = nextAnimal.getDouble("scalingFactor");
+            int unlockedAt = nextAnimal.getInt("unlockedAt");
+            boolean unlocked = nextAnimal.getBoolean("unlocked");
+            Upgradable newAnimal = new Upgradable(animalName, cost, perSec, perClick, unlockedAt, scalingFactor, null);
+
+            myHashMap.put(newAnimal, unlocked);
+        }
+        return myHashMap;
+    }
+
+    private HashSet<Upgrade> getUpgradesJson(JSONArray jsonArray) {
+        HashSet<Upgrade> myHashSet = new HashSet<>();
+        for (Object json : jsonArray) {
+            JSONObject nextUpgrade = (JSONObject) json;
+            String upgradeName = nextUpgrade.getString("name");
+            int cost = nextUpgrade.getInt("cost");
+            int perSec = nextUpgrade.getInt("perSec");
+            int perClick = nextUpgrade.getInt("perClick");
+            double scalingFactor = nextUpgrade.getDouble("scalingFactor");
+            int unlockedAt = nextUpgrade.getInt("unlockedAt");
+            Upgrade newUpgrade = new Upgrade(upgradeName, cost, perSec, perClick, unlockedAt, scalingFactor, null);
+
+            myHashSet.add(newUpgrade);
+        }
+        return myHashSet;
+    }
+
+    private HashMap<Upgrade, Boolean> getAvailUpgradesJson(JSONArray jsonArray) {
+        HashMap<Upgrade, Boolean> myHashMap = new HashMap<>();
+        for (Object json : jsonArray) {
+            JSONObject nextUpgrade = (JSONObject) json;
+            String upgradeName = nextUpgrade.getString("name");
+            int cost = nextUpgrade.getInt("cost");
+            int perSec = nextUpgrade.getInt("perSec");
+            int perClick = nextUpgrade.getInt("perClick");
+            double scalingFactor = nextUpgrade.getDouble("scalingFactor");
+            int unlockedAt = nextUpgrade.getInt("unlockedAt");
+            boolean unlocked = nextUpgrade.getBoolean("unlocked");
+            Upgrade newUpgrade = new Upgrade(upgradeName, cost, perSec, perClick, unlockedAt, scalingFactor, null);
+
+            myHashMap.put(newUpgrade, unlocked);
+        }
+        return myHashMap;
     }
 }

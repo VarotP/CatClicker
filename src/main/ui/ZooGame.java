@@ -33,6 +33,7 @@ public class ZooGame {
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
     private static final String JSON_STORE = "./data/testSave.json";
+    public static final int TICKS_PER_SECOND = 10;
 
     //graphic fields
     TextGraphics scoreGraphic;
@@ -42,19 +43,10 @@ public class ZooGame {
     TextGraphics perSecGraphic;
 
     //Upgrades and Animals
-    private final Upgrade onePerClickU = new Upgrade("OnePerClick", 10, 0, 1, 1.4,null);
-    private final Upgrade fivePerClickU = new Upgrade("FivePerClick", 5000, 0, 5, 1.4, null);
-    private final Upgrade animalBuff = new Upgrade("AnimalBuff", 50, 5, 0, 1.4, null);
-    private final Animal cat = new Animal("Cat", 20, 1, 0, 1.2, null);
-    private final Animal dog = new Animal("Dog", 200, 2, 0,  1.2, null);
-    private final List<Upgrade> uplist = new ArrayList<>();
-    private final List<Animal> anList = new ArrayList<>();
-    private final List<Upgrade> uaList = new ArrayList<>();
-
 
     //EFFECTS: runs the game
     public void runGame() throws InterruptedException, IOException {
-        jsonReader = new JsonReader(this, JSON_STORE);
+        jsonReader = new JsonReader(JSON_STORE, TICKS_PER_SECOND);
         jsonWriter = new JsonWriter(JSON_STORE);
         mainMenu();
         exit(0); // game is over, we can exit the app
@@ -65,7 +57,7 @@ public class ZooGame {
         startScreen(game);
         while (keepGoing) {   // (*)
             tick();                                                     // update the game
-            Thread.sleep(1000L / Game.TICKS_PER_SECOND);                // (**)
+            Thread.sleep(1000L / TICKS_PER_SECOND);                // (**)
         }
     }
 
@@ -77,23 +69,6 @@ public class ZooGame {
         screen = new TerminalScreen(terminal);
         screen.startScreen();
     }
-
-    //MODIFIES: this
-    //EFFECTS: initialises game states: available upgrades and animals
-    public Game initGame(String name) {
-        game = new Game(name);
-        uplist.add(onePerClickU);
-        uplist.add(fivePerClickU);
-        game.getPlayer1().setAvailUpgrades(uplist);
-        uaList.add(animalBuff);
-        cat.setAvailUpgrades(uaList);
-        dog.setAvailUpgrades(uaList);
-        anList.add(cat);
-        anList.add(dog);
-        game.getPlayer1().setAvailAnimals(anList);
-        return game;
-    }
-
 
     //MODIFIES: this
     //EFFECTS: displays main menu
@@ -122,7 +97,7 @@ public class ZooGame {
         if (command.equals("n")) {
             System.out.println("Enter your name");
             String name = input.next();
-            game = initGame(name);
+            game = new Game(name, TICKS_PER_SECOND);
             startGame(game);
         } else if (command.equals("l")) {
             loadGame();
@@ -193,24 +168,24 @@ public class ZooGame {
 
             //buy upgrade1
             if (stroke.getCharacter() == '1') {
-                buyUpgrade(game.getPlayer1(), onePerClickU);
+                game.buyUpgrade("OnePerClick");
             }
 
             //buy upgrade2
             if (stroke.getCharacter() == '2') {
-                buyUpgrade(game.getPlayer1(), fivePerClickU);
+                game.buyUpgrade("FivePerClick");
                 render();
             }
 
             //buy monkey
             if (stroke.getCharacter() == '3') {
-                buyAnimal(game.getPlayer1(), cat);
+                game.buyAnimal("Cat", 1);
                 render();
             }
 
             //buy monkey
             if (stroke.getCharacter() == '4') {
-                buyAnimal(game.getPlayer1(), dog);
+                game.buyAnimal("Dog", 1);
                 render();
             }
         }
@@ -230,33 +205,12 @@ public class ZooGame {
         nameGraphic.putString(5,3, game.getName());
         scoreGraphic.putString(5,5, "Score = " + game.getScoreInt());
         perSecGraphic.putString(5,7, "Score per second: " + game.getPerSec());
-        perClickGraphic.putString(5,8, "Score per click: " + game.getPlayer1().getPerClick());
-        ownedUpgradeGraphic.putString(5,9, game.displayStats());
-        availUpgradeGraphic.putString(5, 10, game.displayAvailUpgrades());
+        perClickGraphic.putString(5,8, "Score per click: " + game.getPerClick());
+        ownedUpgradeGraphic.putString(5,9, game.getOwnedString());
+        availUpgradeGraphic.putString(5, 10, game.getAvailString());
 
 
         screen.refresh();
     }
 
-    //MODIFIES: this
-    //EFFECTS: adds upgrade to list of animals if never owned, +1 to upgrade's count if already owned
-    private void buyUpgrade(Upgradable who, Upgrade thisupgrade) throws IOException {
-        if (game.getScore() >= thisupgrade.getCost()) {
-            System.out.println(thisupgrade.getName() + " upgrade bought");
-            game.setScore(who.buyUpgrades(game.getScore(), thisupgrade));
-        } else {
-            System.out.println("Insufficient Money");
-        }
-    }
-
-    //MODIFIES: this
-    //EFFECTS: adds animal to list of animals if never owned, +1 to animal's count if already owned
-    private void buyAnimal(Location who, Animal thisanimal) {
-        if (game.getScore() >= thisanimal.getCost()) {
-            System.out.println(thisanimal.getName() + " bought");
-            game.setScore(who.buyAnimal(game.getScore(), thisanimal));
-        } else {
-            System.out.println("Insufficient Money");
-        }
-    }
 }

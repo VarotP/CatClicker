@@ -5,33 +5,48 @@ import persistence.Writable;
 
 public class Upgrade implements Writable {
     private String name;
-    private int count;
     private int cost;
     private int perSec;
     private int perClick;
+    private int unlockedAt;
     private double scalingFactor;
     private String special;
 
     //REQUIRES: cost >= 0
-    public Upgrade(String name, int cost, int persec, int perclick, double scalingFactor, String special) {
+
+    public Upgrade(String name, int cost, int persec, int perclick, int unlockedAt, double scalingFactor,
+                   String special) {
         this.name = name;
-        this.count = 0;
         this.cost = cost;
         this.perSec = persec;
         this.perClick = perclick;
+        this.unlockedAt = unlockedAt;
         this.scalingFactor = scalingFactor;
         this.special = special;
     }
 
-    //EFFECTS: returns upgrade object as json object
+    //EFFECTS: returns upgrade as json object
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         json.put("name", getName());
-        json.put("count", getCount());
         json.put("cost", getCost());
         json.put("perSec", getPerSec());
         json.put("perClick", getPerClick());
         json.put("scalingFactor", scalingFactor);
+        json.put("unlockedAt", getUnlockedAt());
+        return json;
+    }
+
+    //EFFECTS: returns upgrade as json object
+    public JSONObject toJson(Boolean unlocked) {
+        JSONObject json = new JSONObject();
+        json.put("name", getName());
+        json.put("cost", getCost());
+        json.put("perSec", getPerSec());
+        json.put("perClick", getPerClick());
+        json.put("scalingFactor", scalingFactor);
+        json.put("unlockedAt", getUnlockedAt());
+        json.put("unlocked", unlocked);
         return json;
     }
 
@@ -44,7 +59,7 @@ public class Upgrade implements Writable {
     }
 
     public int getCost() {
-        return (int) (cost * Math.pow(scalingFactor, count));
+        return this.cost;
     }
 
     public void setCost(int cost) {
@@ -75,11 +90,30 @@ public class Upgrade implements Writable {
         this.special = special;
     }
 
-    public int getCount() {
-        return count;
+    public int getUnlockedAt() {
+        return unlockedAt;
     }
 
-    public void setCount(int count) {
-        this.count = count;
+    public void setUnlockedAt(int unlockedAt) {
+        this.unlockedAt = unlockedAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Upgrade upgrade = (Upgrade) o;
+
+        return name.equals(upgrade.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
     }
 }
