@@ -56,22 +56,6 @@ public class Upgradable {
         return null;
     }
 
-    //MODIFIES: this
-    //EFFECTS: adds upgrade to upgrade list
-    public void addUpgrade(Upgrade upgrade) {
-        this.upgrades.add(upgrade);
-    }
-
-    //EFFECTS: returns true if there is a upgrade with same name in upgrades, else return false
-    public boolean checkContainsUpgrade(Upgrade u) {
-        for (Upgrade currentUpgrade : upgrades) {
-            if (currentUpgrade.getName().equals(u.getName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     //get and set methods
 
     public String getName() {

@@ -30,6 +30,16 @@ public class UpgradableTest {
     }
 
     @Test
+    void equalsTest() {
+        Upgradable testupgrade2 = new Upgradable("one", 10, 1, 0, 0, 1, null);
+        Upgradable testupgrade3 = new Upgradable("two", 10, 1, 0, 0, 1.4, null);
+        assertTrue(testupgrade.equals(testupgrade));
+        assertTrue(testupgrade.equals(testupgrade2));
+        assertFalse(testupgrade.equals(null));
+        assertFalse(testupgrade.equals(testupgrade3));
+    }
+
+    @Test
     void setScaleFactorTest() {
         testUpgradable.setScalingFactor(1.5);
         assertEquals(1.5, testUpgradable.getScalingFactor());

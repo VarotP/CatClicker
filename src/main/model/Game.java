@@ -24,6 +24,7 @@ public class Game implements Writable {
 
     private final Upgrade onePerClickU = new Upgrade("OnePerClick", 10, 0, 1, 0,1.4,null);
     private final Upgrade fivePerClickU = new Upgrade("FivePerClick", 5000, 0, 5, 5000, 1.4, null);
+    private final Upgrade twentyPerClickU = new Upgrade("TwentyPerClick", 10000, 0, 5, 10000, 1.4, null);
     private final Upgradable cat = new Upgradable("Cat", 50, 1, 0, 0, 1.2, null);
     private final Upgradable dog = new Upgradable("Dog", 200, 2, 0, 0, 1.2, null);
     private final Upgradable capybara = new Upgradable("Capybara", 200, 2, 0,  500,1.2, null);
@@ -127,7 +128,7 @@ public class Game implements Writable {
         }
     }
 
-    private Upgradable findAnimal(String animalName) {
+    public Upgradable findAnimal(String animalName) {
         Upgradable buyAnimal = null;
         Upgradable temp = new Upgradable(animalName, 0, 0, 0, 0, 0, null);
         for (Upgradable u : availAnimals.keySet()) {
@@ -251,8 +252,8 @@ public class Game implements Writable {
         return score;
     }
 
-    public double getScoreInt() {
-        return (int) score;
+    public int getScoreInt() {
+        return (int) Math.round(score);
     }
 
     public void setScore(double score) {
@@ -260,7 +261,7 @@ public class Game implements Writable {
     }
 
     public double getPerSec() {
-        return perSec;
+        return perSec * ticks;
     }
 
     public void setPerSec(double perSec) {
