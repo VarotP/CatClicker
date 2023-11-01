@@ -54,7 +54,7 @@ public class GameTest {
         assertEquals("Owned Animals: Owned Upgrades: ", game.getOwnedString());
         game.buyUpgrade("OnePerClick");
         assertEquals("Owned Animals: Owned Upgrades: ", game.getOwnedString());
-        game.setScore(10000);
+        game.setScore(500);
         game.buyUpgrade("OnePerClick");
         assertEquals("Owned Animals: Owned Upgrades: OnePerClick ", game.getOwnedString());
         game.buyUpgrade("OnePerClick");
@@ -91,7 +91,7 @@ public class GameTest {
 
     @Test
     void getAvailStringTest() {
-        assertEquals("Available Animals: Capybara Cat Dog Available Upgrades: OnePerClick FivePerClick ", game.getAvailString());
+        assertEquals("Available Animals: Capybara Cat Dog Available Upgrades: OnePerClick FivePerClick TwentyPerClick ", game.getAvailString());
     }
 
     @Test

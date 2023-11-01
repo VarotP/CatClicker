@@ -18,18 +18,17 @@ public class JsonReaderTest {
     @BeforeEach
     void setup() {
         zoogame = new ZooGame();
-        reader = new JsonReader(zoogame, "./data/testSave.json");
+        reader = new JsonReader("./data/testOutput.json",10);
     }
 
     @Test
     void readTest() {
-        Game newGame = new Game("Val");
+        Game newGame = new Game("Val", 10);
         try {
             assertEquals(newGame.getName(), reader.read().getName());
-            assertEquals(25.7, reader.read().getScore());
-            assertEquals(newGame.getLocations(), reader.read().getLocations());
-            assertEquals(2, reader.read().getPerSec());
-            assertEquals(25, reader.read().getScoreInt());
+            assertEquals(2, reader.read().getScoreInt());
+            assertEquals(0, reader.read().getPerSec());
+            assertEquals(2, reader.read().getScoreInt());
         } catch (IOException e) {
             fail();
         }

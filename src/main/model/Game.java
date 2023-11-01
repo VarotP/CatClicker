@@ -52,6 +52,7 @@ public class Game implements Writable {
         availAnimals.put(capybara, false);
         availUpgrades.put(onePerClickU, true);
         availUpgrades.put(fivePerClickU, false);
+        availUpgrades.put(twentyPerClickU, false);
     }
 
 
