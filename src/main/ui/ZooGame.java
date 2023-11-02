@@ -15,16 +15,18 @@ import persistence.JsonReader;
 import persistence.JsonWriter;
 
 
+import javax.swing.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Timer;
 
 import static java.lang.System.exit;
 
 
-public class ZooGame {
+public class ZooGame extends JFrame {
     //fields
     boolean keepGoing = true;
     private Game game;
@@ -35,6 +37,11 @@ public class ZooGame {
     private static final String JSON_STORE = "./data/testSave.json";
     public static final int TICKS_PER_SECOND = 10;
 
+    private GamePanel gp;
+    private ScorePanel sp;
+    private ShopPanel shp;
+    private Timer t;
+
     //graphic fields
     TextGraphics scoreGraphic;
     TextGraphics availUpgradeGraphic;
@@ -44,10 +51,18 @@ public class ZooGame {
 
     //Upgrades and Animals
 
-    //EFFECTS: runs the game
-    public void runGame() throws InterruptedException, IOException {
+    public ZooGame() {
         jsonReader = new JsonReader(JSON_STORE, TICKS_PER_SECOND);
         jsonWriter = new JsonWriter(JSON_STORE);
+        try {
+            runGame();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    //EFFECTS: runs the game
+    public void runGame() throws InterruptedException, IOException {
         mainMenu();
         exit(0); // game is over, we can exit the app
     }
