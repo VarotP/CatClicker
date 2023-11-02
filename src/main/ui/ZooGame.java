@@ -23,7 +23,7 @@ import java.util.Scanner;
 
 import static java.lang.System.exit;
 
-
+// handles starting, running, and saving of the game
 public class ZooGame {
     //fields
     boolean keepGoing = true;

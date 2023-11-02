@@ -6,6 +6,8 @@ import persistence.Writable;
 import java.io.IOException;
 import java.util.*;
 
+
+// Represents an upgradable object: namely animal companions
 public class Upgradable {
     private String name;
 

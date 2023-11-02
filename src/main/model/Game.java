@@ -6,6 +6,7 @@ import persistence.Writable;
 
 import java.util.*;
 
+// represents a game object
 public class Game implements Writable {
     private String name;
     private double perClick;

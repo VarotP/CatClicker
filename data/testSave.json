@@ -1,5 +1,5 @@
 {
-    "score": 5,
+    "score": 28,
     "availUpgrades": [
         {
             "cost": 10,
@@ -30,7 +30,7 @@
         }
     ],
     "perSec": 0,
-    "name": "Val",
+    "name": "val",
     "animals": [],
     "availAnimals": [
         {
@@ -61,6 +61,13 @@
             "perClick": 0
         }
     ],
-    "upgrades": [],
-    "perClick": 1
+    "upgrades": [{
+        "cost": 10,
+        "perSec": 0,
+        "name": "OnePerClick",
+        "unlockedAt": 0,
+        "scalingFactor": 1.4,
+        "perClick": 1
+    }],
+    "perClick": 2
 }

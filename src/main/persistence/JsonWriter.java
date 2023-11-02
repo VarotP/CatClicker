@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
+// handles saving of game object as json file
 public class JsonWriter {
     private static final int TAB = 4;
     private PrintWriter writer;

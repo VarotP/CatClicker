@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Stream;
 
+// reads json file and converts to game object
 public class JsonReader {
     //Upgrades and Animals
     private final String source;
