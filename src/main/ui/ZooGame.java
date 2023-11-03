@@ -37,10 +37,10 @@ public class ZooGame extends JFrame {
     private static final String JSON_STORE = "./data/testSave.json";
     public static final int TICKS_PER_SECOND = 10;
 
-    private GamePanel gp;
-    private ScorePanel sp;
-    private ShopPanel shp;
-    private Timer t;
+//    private GamePanel gp;
+//    private ScorePanel sp;
+//    private ShopPanel shp;
+//    private Timer t;
 
     //graphic fields
     TextGraphics scoreGraphic;
@@ -67,24 +67,6 @@ public class ZooGame extends JFrame {
         exit(0); // game is over, we can exit the app
     }
 
-    //EFFECTS: starts the screen and keeps the game running
-    private void startGame(Game game) throws IOException, InterruptedException {
-        startScreen(game);
-        while (keepGoing) {   // (*)
-            tick();                                                     // update the game
-            Thread.sleep(1000L / TICKS_PER_SECOND);                // (**)
-        }
-    }
-
-
-    //EFFECTS: initializes initial game state
-    private void startScreen(Game game) throws IOException {
-        Terminal terminal = new DefaultTerminalFactory().setInitialTerminalSize(
-                new TerminalSize(150, 50)).createTerminal();
-        screen = new TerminalScreen(terminal);
-        screen.startScreen();
-    }
-
     //MODIFIES: this
     //EFFECTS: displays main menu
     private void mainMenu() throws IOException, InterruptedException {
@@ -104,6 +86,25 @@ public class ZooGame extends JFrame {
             }
         }
         System.out.println("See you again!");
+    }
+
+
+    //EFFECTS: starts the screen and keeps the game running
+    private void startGame(Game game) throws IOException, InterruptedException {
+        startScreen(game);
+        while (keepGoing) {   // (*)
+            tick();                                                     // update the game
+            Thread.sleep(1000L / TICKS_PER_SECOND);                // (**)
+        }
+    }
+
+
+    //EFFECTS: initializes initial game state
+    private void startScreen(Game game) throws IOException {
+        Terminal terminal = new DefaultTerminalFactory().setInitialTerminalSize(
+                new TerminalSize(150, 50)).createTerminal();
+        screen = new TerminalScreen(terminal);
+        screen.startScreen();
     }
 
     //MODIFIES: this
@@ -136,6 +137,20 @@ public class ZooGame extends JFrame {
 //        }
     }
 
+    //EFFECTS: display menu for saving or not saving game
+    private void endGame() {
+        String command = null;
+        input = new Scanner(System.in);
+        System.out.println("Save Game? y = yes, n = no");
+        command = input.next();
+        command = command.toLowerCase();
+        if (command.equals("y")) {
+            saveGame();
+            System.out.println("Game successfully saved!");
+        }
+        System.out.println("See you again!");
+    }
+
     //MODIFIES: save file
     //EFFECTS: saves game state to file as json object
     private void saveGame() {
@@ -147,7 +162,6 @@ public class ZooGame extends JFrame {
         } catch (FileNotFoundException e) {
             System.out.println("Unable to write to file: " + JSON_STORE);
         }
-
     }
 
     //MODIFIES: this
@@ -172,7 +186,7 @@ public class ZooGame extends JFrame {
             //Close game
             if (stroke.getKeyType() == KeyType.Escape) {
                 screen.close();
-                saveGame();
+                endGame();
                 exit(0);
             }
 
