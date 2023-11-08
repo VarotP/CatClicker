@@ -113,7 +113,8 @@ public class ZooGame extends JFrame {
         if (command.equals("n")) {
             System.out.println("Enter your name");
             String name = input.next();
-            game = new Game(name, TICKS_PER_SECOND);
+            game = new Game(TICKS_PER_SECOND);
+            game.setName(name);
             startGame(game);
         } else if (command.equals("l")) {
             loadGame();

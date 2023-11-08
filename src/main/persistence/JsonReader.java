@@ -46,7 +46,8 @@ public class JsonReader {
     //EFFECTS: parses json object and creates game object
     private Game parseGameFile(JSONObject jsonObject) {
         String gameName = jsonObject.getString("name");
-        Game thisGame = new Game(gameName, ticks);
+        Game thisGame = new Game(ticks);
+        thisGame.setName(gameName);
         buildGame(thisGame, jsonObject);
         return thisGame;
     }

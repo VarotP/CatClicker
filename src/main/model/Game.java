@@ -22,17 +22,17 @@ public class Game implements Writable {
 
     //Upgrades and Animals
 
-    private final Upgrade onePerClickU = new Upgrade("OnePerClick", 10, 0, 1, 0,1.4,null);
-    private final Upgrade fivePerClickU = new Upgrade("FivePerClick", 5000, 0, 5, 5000, 1.4, null);
-    private final Upgrade twentyPerClickU = new Upgrade("TwentyPerClick", 10000, 0, 5, 10000, 1.4, null);
-    private final Upgradable cat = new Upgradable("Cat", 50, 1, 0, 0, 1.2, null);
-    private final Upgradable dog = new Upgradable("Dog", 200, 2, 0, 0, 1.2, null);
-    private final Upgradable capybara = new Upgradable("Capybara", 200, 2, 0,  500,1.2, null);
+    public final Upgrade onePerClickU = new Upgrade("OnePerClick", 10, 0, 1, 0,1.4,null);
+    public final Upgrade fivePerClickU = new Upgrade("FivePerClick", 5000, 0, 5, 5000, 1.4, null);
+    public final Upgrade twentyPerClickU = new Upgrade("TwentyPerClick", 10000, 0, 5, 10000, 1.4, null);
+    public final Upgradable cat = new Upgradable("Cat", 50, 1, 0, 0, 1.2, null);
+    public final Upgradable dog = new Upgradable("Dog", 200, 2, 0, 0, 1.2, null);
+    public final Upgradable capybara = new Upgradable("Capybara", 200, 2, 0,  500,1.2, null);
 
     //MODIFIES: this
     //EFFECTS: constructs game object and inits the available upgrade and animal list
-    public Game(String name, int ticks) {
-        this.name = name;
+    public Game(int ticks) {
+        this.name = "";
         this.perClick = 1;
         this.perSec = 0;
         this.score = 0;
