@@ -17,6 +17,7 @@ public class UpgradeButton extends Button {
         this.game = game;
         this.upgrade = upgrade;
         button.setText(upgrade.getName());
+        name = upgrade.getName();
     }
 
     @Override

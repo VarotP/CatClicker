@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 public abstract class Button {
     protected JButton button;
     protected ZooGame2 zooGame2;
+    protected String name;
     private boolean active;
 
     // EFFECTS: constructs a Tool associated with the given editor
@@ -56,26 +57,11 @@ public abstract class Button {
         parent.add(button);
     }
 
-    // EFFECTS: default behaviour does nothing
-    public void mousePressedInDrawingArea(MouseEvent e) {
-
+    public void setEnabled(Boolean value) {
+        button.setEnabled(value);
     }
 
-    // EFFECTS: default behaviour does nothing
-    public void mouseReleasedInDrawingArea(MouseEvent e) {
-
+    public String getName() {
+        return name;
     }
-
-    // EFFECTS: default behaviour does nothing
-    public void mouseClickedInDrawingArea(MouseEvent e) {
-
-    }
-
-    // EFFECTS: default behaviour does nothing
-    public void mouseDraggedInDrawingArea(MouseEvent e) {
-
-    }
-
-
-
 }

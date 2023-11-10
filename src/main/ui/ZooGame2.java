@@ -1,6 +1,8 @@
 package ui;
 
 import model.Game;
+import persistence.JsonReader;
+import persistence.JsonWriter;
 import ui.buttons.Button;
 import ui.buttons.UpgradableButton;
 import ui.buttons.UpgradeButton;
@@ -22,8 +24,13 @@ public class ZooGame2 extends JFrame {
 //    private GamePanel gp;
 //    private ScorePanel sp;
     private ShopPanel shp;
+//    private ScorePanel scp;
+    boolean keepGoing = true;
+    private JsonWriter jsonWriter;
+    private JsonReader jsonReader;
+    private static final String JSON_STORE = "./data/testSave.json";
     private Timer timer;
-    private List<Button> buttons;
+
 
     public ZooGame2() {
         super("ZooGame");
@@ -37,7 +44,7 @@ public class ZooGame2 extends JFrame {
         menuframe.setMinimumSize(new Dimension(400, 400));
         JPanel menuPanel = new JPanel();
 
-        JButton newGameButton = new JButton("Start Game");
+        JButton newGameButton = new JButton("New Game");
         newGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -45,6 +52,15 @@ public class ZooGame2 extends JFrame {
             }
         });
         menuPanel.add(newGameButton);
+
+        JButton loadGameButton = new JButton("Load Game");
+        loadGameButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loadGame();
+            }
+        });
+        menuPanel.add(loadGameButton);
 
         JButton exitGameButton = new JButton("Exit Game");
         exitGameButton.addActionListener(new ActionListener() {
@@ -64,14 +80,18 @@ public class ZooGame2 extends JFrame {
 
     private void initFields() {
 //        timer = new Timer(INTERVAL, );
-        buttons = new ArrayList<ui.buttons.Button>();
         game = new Game(INTERVAL);
+        shp = new ShopPanel(this, game);
     }
 
     private void initGraphics() {
         setLayout(new BorderLayout());
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
-        createButtons();
+
+        shp.setLayout(new GridLayout(0, 1));
+        shp.setSize(new Dimension(0, 0));
+        add(shp, BorderLayout.EAST);
+        createExitButtons();
         initScorePanel();
         initGameArea();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -83,6 +103,26 @@ public class ZooGame2 extends JFrame {
         //set name of game
         initFields();
         initGraphics();
+        addTimer();
+        timer.start();
+    }
+
+    private void addTimer() {
+        timer = new Timer(INTERVAL, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                game.tick();
+
+            }
+        });
+    }
+
+    public void saveGame() {
+        System.out.println("game saved");
+    }
+
+    public void loadGame() {
+        System.out.println("game loaded");
     }
 
     private void initScorePanel() {
@@ -112,22 +152,29 @@ public class ZooGame2 extends JFrame {
         add(gameArea, BorderLayout.SOUTH);
     }
 
-    private void createButtons() {
-        JPanel buttonArea = new JPanel();
-        buttonArea.setLayout(new GridLayout(0, 1));
-        buttonArea.setSize(new Dimension(0, 0));
-        add(buttonArea, BorderLayout.EAST);
+    private void createExitButtons() {
+        JPanel exitButtons = new JPanel();
 
-        Button catButton = new UpgradableButton(this, game, buttonArea, game.cat);
-        buttons.add(catButton);
+        JButton saveButton = new JButton("Save and Exit");
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveGame();
+                System.exit(0); // Exits the application
+            }
+        });
 
-        Button dogButton = new UpgradableButton(this, game, buttonArea, game.dog);
-        buttons.add(dogButton);
+        JButton exitButton = new JButton("Exit without Saving");
+        exitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0); // Exits the application
+            }
+        });
 
-        Button onePerClickButton = new UpgradeButton(this, game, buttonArea, game.onePerClickU);
-        buttons.add(onePerClickButton);
+        exitButtons.add(saveButton);
+        exitButtons.add(exitButton);
 
-        Button fivePerClickButton = new UpgradeButton(this, game, buttonArea, game.fivePerClickU);
-        buttons.add(fivePerClickButton);
+        add(exitButtons);
     }
 }

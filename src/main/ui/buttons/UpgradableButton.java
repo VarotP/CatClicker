@@ -17,6 +17,7 @@ public class UpgradableButton extends Button {
         this.game = game;
         this.upgradable = upgradable;
         button.setText(upgradable.getName());
+        name = upgradable.getName();
     }
 
     @Override
@@ -35,5 +36,4 @@ public class UpgradableButton extends Button {
             System.out.println("Clicked!");
         }
     }
-
 }

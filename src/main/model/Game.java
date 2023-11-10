@@ -60,7 +60,6 @@ public class Game implements Writable {
     //EFFECTS: adds up all the money per sec and ocassionally spawns specials,
     // also checks for unlocks and makes them available to player
     public void tick() {
-        checkUnlocks();
         for (Upgradable animal : animals.keySet()) {
             // score += each animals's per second multiplied by their count
             perSec = (animal.getPerSec() * animals.get(animal) / ticks);
@@ -140,16 +139,27 @@ public class Game implements Writable {
         return buyAnimal;
     }
 
+    public Upgrade findUpgrade(String upgradeName) {
+        Upgrade buyUpgrade = null;
+        Upgrade temp = new Upgrade(upgradeName, 0, 0, 0, 0, 0, null);
+        for (Upgrade u : availUpgrades.keySet()) {
+            if (u.equals(temp)) {
+                buyUpgrade = u;
+            }
+        }
+        return buyUpgrade;
+    }
+
     //MODIFIES: this
     //EFFECT: sets unlocked to true in hashmap when score >= unlockedAt for each upgrade/upgradable
-    private void checkUnlocks() {
+    public void checkUnlocks() {
         for (Upgradable u : availAnimals.keySet()) {
-            if (u.getUnlockedAt() >= score) {
+            if (score >= u.getUnlockedAt()) {
                 availAnimals.replace(u, true);
             }
         }
         for (Upgrade u : availUpgrades.keySet()) {
-            if (u.getUnlockedAt() >= score) {
+            if (score >= u.getUnlockedAt()) {
                 availUpgrades.replace(u, true);
             }
         }
