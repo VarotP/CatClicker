@@ -1,5 +1,7 @@
 package ui.buttons;
 
+import model.Upgradable;
+import model.Upgrade;
 import ui.ZooGame2;
 
 import javax.swing.*;
@@ -9,7 +11,10 @@ public abstract class Button {
     protected JButton button;
     protected ZooGame2 zooGame2;
     protected String name;
-    private boolean active;
+    protected Upgrade upgrade;
+    protected Upgradable upgradable;
+    protected boolean active;
+
 
     // EFFECTS: constructs a Tool associated with the given editor
     // with its activation button inside the given parent

@@ -19,7 +19,7 @@ public class ZooGame2 extends JFrame {
     public static final int WIDTH = 1000;
     public static final int HEIGHT = 700;
 
-    private static final int INTERVAL = 10;
+    private static final int INTERVAL = 27;
     private Game game;
 //    private GamePanel gp;
     private ScorePanel sp;
