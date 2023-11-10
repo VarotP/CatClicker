@@ -22,7 +22,7 @@ public class ZooGame2 extends JFrame {
     private static final int INTERVAL = 10;
     private Game game;
 //    private GamePanel gp;
-//    private ScorePanel sp;
+    private ScorePanel sp;
     private ShopPanel shp;
 //    private ScorePanel scp;
     boolean keepGoing = true;
@@ -82,6 +82,7 @@ public class ZooGame2 extends JFrame {
 //        timer = new Timer(INTERVAL, );
         game = new Game(INTERVAL);
         shp = new ShopPanel(this, game);
+        sp = new ScorePanel(this, game);
     }
 
     private void initGraphics() {
@@ -91,8 +92,11 @@ public class ZooGame2 extends JFrame {
         shp.setLayout(new GridLayout(0, 1));
         shp.setSize(new Dimension(0, 0));
         add(shp, BorderLayout.EAST);
+
+        sp.setLayout(new BoxLayout(sp, BoxLayout.PAGE_AXIS));
+        sp.setSize(new Dimension(0, 0));
+        add(sp, BorderLayout.WEST);
         createExitButtons();
-        initScorePanel();
         initGameArea();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -112,7 +116,8 @@ public class ZooGame2 extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 game.tick();
-
+                shp.update();
+                sp.update();
             }
         });
     }
@@ -125,29 +130,16 @@ public class ZooGame2 extends JFrame {
         System.out.println("game loaded");
     }
 
-    private void initScorePanel() {
-        JPanel scorePanel = new JPanel();
-        scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.PAGE_AXIS));
-        scorePanel.setSize(new Dimension(0, 0));
-
-        JLabel playerName = new JLabel("Player name: ");
-        scorePanel.add(playerName);
-
-        JLabel score = new JLabel("Score: ");
-        scorePanel.add(score);
-
-        JLabel ownedAnimals = new JLabel("Owned Animals: ");
-        scorePanel.add(ownedAnimals);
-
-        JLabel ownedUpgrades = new JLabel("Owned Upgrades: ");
-        scorePanel.add(ownedUpgrades);
-
-        add(scorePanel, BorderLayout.WEST);
-    }
-
     private void initGameArea() {
         JPanel gameArea = new JPanel();
         JButton button = new JButton("Click me");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                game.click();
+            }
+        });
+
         gameArea.add(button);
         add(gameArea, BorderLayout.SOUTH);
     }
