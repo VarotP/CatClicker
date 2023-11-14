@@ -1,5 +1,5 @@
 {
-    "score": 18,
+    "score": 94,
     "availUpgrades": [
         {
             "cost": 10,
@@ -16,7 +16,7 @@
             "name": "FivePerClick",
             "unlockedAt": 5000,
             "scalingFactor": 1.4,
-            "unlocked": true,
+            "unlocked": false,
             "perClick": 5
         },
         {
@@ -25,13 +25,21 @@
             "name": "TwentyPerClick",
             "unlockedAt": 10000,
             "scalingFactor": 1.4,
-            "unlocked": true,
+            "unlocked": false,
             "perClick": 5
         }
     ],
-    "perSec": 0,
-    "name": "Val",
-    "animals": [],
+    "perSec": 1,
+    "name": "",
+    "animals": [{
+        "cost": 1,
+        "quantity": 27,
+        "perSec": 1,
+        "name": "Cat",
+        "unlockedAt": 0,
+        "scalingFactor": 1.2,
+        "perClick": 0
+    }],
     "availAnimals": [
         {
             "cost": 200,
@@ -39,11 +47,11 @@
             "name": "Capybara",
             "unlockedAt": 500,
             "scalingFactor": 1.2,
-            "unlocked": true,
+            "unlocked": false,
             "perClick": 0
         },
         {
-            "cost": 50,
+            "cost": 1,
             "perSec": 1,
             "name": "Cat",
             "unlockedAt": 0,

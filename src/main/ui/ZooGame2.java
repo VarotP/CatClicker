@@ -11,6 +11,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,12 +45,14 @@ public class ZooGame2 extends JFrame {
         menuframe.setLayout(new BorderLayout());
         menuframe.setMinimumSize(new Dimension(400, 400));
         JPanel menuPanel = new JPanel();
+        jsonReader = new JsonReader(JSON_STORE, INTERVAL);
+        jsonWriter = new JsonWriter(JSON_STORE);
 
         JButton newGameButton = new JButton("New Game");
         newGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                startGame(); // Exits the application
+                newGame(); // Exits the application
             }
         });
         menuPanel.add(newGameButton);
@@ -78,9 +82,9 @@ public class ZooGame2 extends JFrame {
         menuframe.setVisible(true);
     }
 
-    private void initFields() {
+    private void initFields(Game game) {
 //        timer = new Timer(INTERVAL, );
-        game = new Game(INTERVAL);
+
         shp = new ShopPanel(this, game);
         sp = new ScorePanel(this, game);
     }
@@ -103,15 +107,20 @@ public class ZooGame2 extends JFrame {
         setVisible(true);
     }
 
-    public void startGame() {
+    public void newGame() {
+        this.game = new Game(INTERVAL);
+        startGame(game);
+    }
+
+    public void startGame(Game game) {
         //set name of game
-        initFields();
+        initFields(game);
         initGraphics();
-        addTimer();
+        addTimer(game);
         timer.start();
     }
 
-    private void addTimer() {
+    private void addTimer(Game game) {
         timer = new Timer(INTERVAL, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -122,12 +131,31 @@ public class ZooGame2 extends JFrame {
         });
     }
 
-    public void saveGame() {
-        System.out.println("game saved");
+    //MODIFIES: save file
+    //EFFECTS: saves game state to file as json object
+    private void saveGame() {
+        try {
+            jsonWriter.open();
+            jsonWriter.write(game);
+            jsonWriter.close();
+            System.out.println("Saved " + game.getName() + " to " + JSON_STORE);
+        } catch (FileNotFoundException e) {
+            System.out.println("Unable to write to file: " + JSON_STORE);
+        }
     }
 
-    public void loadGame() {
-        System.out.println("game loaded");
+    //MODIFIES: this
+    //EFFECTS: loads game from local save file
+    private void loadGame() {
+        try {
+            game = jsonReader.read();
+            System.out.println("Loaded " + game.getName() + " from " + JSON_STORE);
+            startGame(game);
+
+        } catch (IOException e) {
+            System.out.println("Unable to read from file: " + JSON_STORE);
+            throw new RuntimeException(e);
+        }
     }
 
     private void initGameArea() {
