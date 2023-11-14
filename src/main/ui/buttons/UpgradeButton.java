@@ -8,9 +8,12 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+// implementation of the shop's buy upgrade button
 public class UpgradeButton extends Button {
     private Game game;
 
+    // MODIFIES: this
+    // EFFECTS: constructor
     public UpgradeButton(ZooGame2 zooGame2, Game game, JComponent parent, Upgrade upgrade) {
         super(zooGame2, parent);
         this.game = game;

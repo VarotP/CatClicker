@@ -7,6 +7,7 @@ import ui.ZooGame2;
 import javax.swing.*;
 import java.awt.event.MouseEvent;
 
+// my own implementation of button class
 public abstract class Button {
     protected JButton button;
     protected ZooGame2 zooGame2;
@@ -62,18 +63,23 @@ public abstract class Button {
         parent.add(button);
     }
 
+    // MODIFIES: this
+    // EFFECTS: enables or disables the button
     public void setEnabled(Boolean value) {
         button.setEnabled(value);
     }
 
+    // EFFECTS: returns the name of the button
     public String getName() {
         return name;
     }
 
+    // EFFECTS: returns the upgrade associated with the button
     public Upgrade getUpgrade() {
         return upgrade;
     }
 
+    // EFFECTS: returns the upgradable associated with the button
     public Upgradable getUpgradable() {
         return upgradable;
     }

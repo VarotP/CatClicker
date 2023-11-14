@@ -60,11 +60,13 @@ public class Game implements Writable {
     //EFFECTS: adds up all the money per sec and ocassionally spawns specials,
     // also checks for unlocks and makes them available to player
     public void tick() {
+        double perSecSum = 0;
         for (Upgradable animal : animals.keySet()) {
             // score += each animals's per second multiplied by their count
-            perSec = (animal.getPerSec() * animals.get(animal) / ticks);
+            perSecSum += (animal.getPerSec() * animals.get(animal) / ticks);
             score += (animal.getPerSec() * animals.get(animal) / ticks);
         }
+        perSec = perSecSum;
     }
 
     //MODIFIES: This
@@ -271,8 +273,8 @@ public class Game implements Writable {
         this.score = score;
     }
 
-    public double getPerSec() {
-        return perSec * ticks;
+    public int getPerSec() {
+        return (int) Math.round(perSec * ticks);
     }
 
     public void setPerSec(double perSec) {

@@ -19,6 +19,7 @@ public class UpgradableButton extends Button {
         button.setText(upgradable.getName() + "\n $" + upgradable.getCost());
         name = upgradable.getName();
         this.quantity = 1;
+        updateCost();
     }
 
     @Override
@@ -27,6 +28,7 @@ public class UpgradableButton extends Button {
         addToParent(parent);
     }
 
+    @Override
     public void addListener() {
         button.addActionListener(new ButtonClickHandler());
     }
@@ -38,10 +40,18 @@ public class UpgradableButton extends Button {
         }
     }
 
+    // MODIFIES: this
+    // EFFECTS: sets quantity of upgrades being bought
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
+    public int getQuantity() {
+        return quantity;
+    }
+
+    // MODIFIES: this
+    // EFFECTS: changes text on the button to reflect the new cost based on the quantity
     public void updateCost() {
         button.setText(upgradable.getName() + "\n $" + upgradable.getCost() * quantity);
     }

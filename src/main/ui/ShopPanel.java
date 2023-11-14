@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+// ui for the shop panel on the right of the game screen
 public class ShopPanel extends JPanel {
     private ZooGame2 zooGame2;
     private Game game;
@@ -23,6 +24,8 @@ public class ShopPanel extends JPanel {
     private int buyOptionIndex;
     private JButton buyOptionButton;
 
+    // MODIFIES: this
+    // EFFECTS: constructor
     public ShopPanel(ZooGame2 zooGame2, Game game) {
         this.buttons = new ArrayList<>();
         this.zooGame2 = zooGame2;
@@ -38,6 +41,8 @@ public class ShopPanel extends JPanel {
         update();
     }
 
+    // MODIFIES: this
+    // EFEFCTS: initializes buy buttons
     private void initButtons() {
         buyOptionButton = new JButton("Buy x1");
         buyOptionButton.addActionListener(new ActionListener() {
@@ -54,6 +59,9 @@ public class ShopPanel extends JPanel {
         Button dogButton = new UpgradableButton(zooGame2, game, this, game.dog);
         buttons.add(dogButton);
 
+        Button capyButton = new UpgradableButton(zooGame2, game, this, game.capybara);
+        buttons.add(capyButton);
+
         Button onePerClickButton = new UpgradeButton(zooGame2, game, this, game.onePerClickU);
         buttons.add(onePerClickButton);
 
@@ -61,25 +69,50 @@ public class ShopPanel extends JPanel {
         buttons.add(fivePerClickButton);
     }
 
+    // MODIFIES: game, this
+    // EFFECTS: refreshes the shop panel
     public void update() {
         game.checkUnlocks();
         activateButtons();
         repaint();
     }
 
+    // MODIFIES: this
+    // EFFECTS: activates buttons based on if certain score is reached for each button
     private void activateButtons() {
         Map<Upgradable, Boolean> animalMap = game.getAvailAnimals();
         Map<Upgrade, Boolean> upgradeMap = game.getAvailUpgrades();
+
+
+
         for (Button b : buttons) {
+            int cost;
+            Boolean activated;
+
             // sets buttons to be enabled based on value of animal from hashmap
             if (b.getClass() == UpgradableButton.class) {
-                b.setEnabled(animalMap.get(game.findAnimal(b.getName())));
+                UpgradableButton upButton = (UpgradableButton) b;
+                activated = animalMap.get(game.findAnimal(upButton.getName()));
+                cost = (upButton.getUpgradable().getCost() * upButton.getQuantity());
+
+                if (game.getScore() >= cost && activated) {
+                    upButton.setEnabled(true);
+                } else {
+                    upButton.setEnabled(false);
+                }
             } else {
-                b.setEnabled(upgradeMap.get(game.findUpgrade(b.getName())));
+                activated = upgradeMap.get(game.findUpgrade(b.getName()));
+                if (game.getScore() >= b.getUpgrade().getCost() && activated) {
+                    b.setEnabled(true);
+                } else {
+                    b.setEnabled(false);
+                }
             }
         }
     }
 
+    // MODIFIES: this
+    // EFFECTS: cycles the buy options for all buttons
     private void cycleBuyOption() {
         buyOptionIndex += 1;
         buyOptionIndex = buyOptionIndex % 4;
@@ -96,21 +129,28 @@ public class ShopPanel extends JPanel {
         }
     }
 
+    // MODIFIES: this
+    // EFFECTS: cycles buy option according to buyOption index
     private void setButtonQuantity(int quantity) {
         for (Button b : buttons) {
             if (b.getClass() == UpgradableButton.class) {
-                UpgradableButton uButton = (UpgradableButton) b;
-                uButton.setQuantity(quantity);
-                uButton.updateCost();
+                UpgradableButton upButton = (UpgradableButton) b;
+                upButton.setQuantity(quantity);
+                upButton.updateCost();
             }
         }
     }
 
+    // MODIFIES: this
+    // EFFECTS: cycles buy option the max quantity of item that could be bought
     private void setButtonQuantity(String max) {
         for (Button b : buttons) {
             if (b.getClass() == UpgradableButton.class) {
                 UpgradableButton uButton = (UpgradableButton) b;
-                uButton.setQuantity(game.getScoreInt() / uButton.getUpgradable().getCost());
+                int cost = game.getScoreInt() / uButton.getUpgradable().getCost();
+                if (cost != 0) {
+                    uButton.setQuantity(game.getScoreInt() / uButton.getUpgradable().getCost());
+                }
                 uButton.updateCost();
             }
         }
