@@ -69,4 +69,12 @@ public abstract class Button {
     public String getName() {
         return name;
     }
+
+    public Upgrade getUpgrade() {
+        return upgrade;
+    }
+
+    public Upgradable getUpgradable() {
+        return upgradable;
+    }
 }

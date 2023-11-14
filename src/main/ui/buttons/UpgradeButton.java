@@ -15,7 +15,7 @@ public class UpgradeButton extends Button {
         super(zooGame2, parent);
         this.game = game;
         this.upgrade = upgrade;
-        button.setText(upgrade.getName());
+        button.setText(upgrade.getName() + "\n $" + upgrade.getCost());
         name = upgrade.getName();
     }
 

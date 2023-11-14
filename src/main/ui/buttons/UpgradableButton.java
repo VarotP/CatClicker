@@ -10,13 +10,15 @@ import java.awt.event.ActionListener;
 
 public class UpgradableButton extends Button {
     private Game game;
+    private int quantity;
 
     public UpgradableButton(ZooGame2 zooGame2, Game game, JComponent parent, Upgradable upgradable) {
         super(zooGame2, parent);
         this.game = game;
         this.upgradable = upgradable;
-        button.setText(upgradable.getName());
+        button.setText(upgradable.getName() + "\n $" + upgradable.getCost());
         name = upgradable.getName();
+        this.quantity = 1;
     }
 
     @Override
@@ -32,7 +34,16 @@ public class UpgradableButton extends Button {
     public class ButtonClickHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            game.buyAnimal(upgradable.getName(), 1);
+            game.buyAnimal(upgradable.getName(), quantity);
         }
     }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public void updateCost() {
+        button.setText(upgradable.getName() + "\n $" + upgradable.getCost() * quantity);
+    }
+
 }
