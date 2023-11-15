@@ -7,10 +7,14 @@ import ui.buttons.Button;
 import ui.buttons.UpgradableButton;
 import ui.buttons.UpgradeButton;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,7 +56,8 @@ public class ZooGame2 extends JFrame {
         newGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                newGame(); // Exits the application
+                newGame();
+//                menuframe.dispatchEvent(new WindowEvent(menuframe, WindowEvent.WINDOW_CLOSING));
             }
         });
         menuPanel.add(newGameButton);
@@ -62,6 +67,7 @@ public class ZooGame2 extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 loadGame();
+//                menuframe.dispatchEvent(new WindowEvent(menuframe, WindowEvent.WINDOW_CLOSING));
             }
         });
         menuPanel.add(loadGameButton);
@@ -160,15 +166,32 @@ public class ZooGame2 extends JFrame {
 
     private void initGameArea() {
         JPanel gameArea = new JPanel();
-        JButton button = new JButton("Click me");
-        button.addActionListener(new ActionListener() {
+
+        BufferedImage buttonIcon = null;
+        ImageIcon catIcon = new ImageIcon("./data/cat.png");
+        ImageIcon catSmileIcon = new ImageIcon("./data/catSmile2.png");
+        Image image = catIcon.getImage(); // transform it
+        Image image2 = catSmileIcon.getImage();
+        Image newimg = image.getScaledInstance(468,320,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
+        Image newimg2 = image2.getScaledInstance(468,320,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
+        catIcon = new ImageIcon(newimg);
+        catSmileIcon = new ImageIcon(newimg2);
+        JButton catButton = new JButton(catIcon);
+        catButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 game.click();
             }
         });
+        catButton.setDisabledIcon(catSmileIcon);
+        catButton.setPressedIcon(catSmileIcon);
+        catButton.setSelectedIcon(catSmileIcon);
+        catButton.setDisabledSelectedIcon(catSmileIcon);
+        catButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        catButton.setBorder(BorderFactory.createEmptyBorder());
+        catButton.setContentAreaFilled(false);
+        gameArea.add(catButton);
 
-        gameArea.add(button);
         add(gameArea, BorderLayout.SOUTH);
     }
 
