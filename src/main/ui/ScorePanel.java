@@ -4,6 +4,7 @@ import model.Game;
 
 import javax.swing.*;
 
+// ui for the score panel
 public class ScorePanel extends JPanel {
     private ZooGame2 zooGame2;
     private Game game;
@@ -15,9 +16,12 @@ public class ScorePanel extends JPanel {
     private JLabel ownedStuff;
     private JLabel availStuff;
 
+    // MODIFIES: this
+    // EFFECTS: constructor
     public ScorePanel(ZooGame2 zooGame2, Game game) {
         this.zooGame2 = zooGame2;
         this.game = game;
+
         this.playerName = new JLabel("Player name: ");
         this.add(playerName);
 
@@ -37,11 +41,14 @@ public class ScorePanel extends JPanel {
         this.add(availStuff);
     }
 
+    // EFFECTS: updates the panel
     public void update() {
         setTexts();
         repaint();
     }
 
+    // MODIFIES: this
+    // EFFECTS: changes text to corresponding numbers
     private void setTexts() {
         score.setText("Score: " + game.getScoreInt());
         scorePerSecond.setText("Score Per Second: " +  + game.getPerSec());

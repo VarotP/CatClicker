@@ -169,27 +169,34 @@ public class Game implements Writable {
 
     //EFFECTS: returns owned items as a string
     public String getOwnedString() {
-        StringBuilder newString = new StringBuilder("Owned Animals: ");
+        StringBuilder newString = new StringBuilder("<html> <br/> Owned Animals: <br/>");
         for (Upgradable u : animals.keySet()) {
-            newString.append(u.getName()).append(" ");
+            newString.append(u.getName()).append(" <br/>");
         }
+        newString.append(" <br/>");
         newString.append("Owned Upgrades: ");
+        newString.append(" <br/>");
         for (Upgrade u : upgrades) {
-            newString.append(u.getName()).append(" ");
+            newString.append(u.getName()).append(" <br/>");
         }
+        newString.append(" <br/>");
+        newString.append("</html>");
         return newString.toString();
     }
 
     //EFFECTS: returns available items as string
     public String getAvailString() {
-        StringBuilder newString = new StringBuilder("Available Animals: ");
+        StringBuilder newString = new StringBuilder("<html> Available Animals: <br/>");
         for (Upgradable u : availAnimals.keySet()) {
-            newString.append(u.getName()).append(" ");
+            newString.append(u.getName()).append(" <br/>");
         }
+        newString.append(" <br/>");
         newString.append("Available Upgrades: ");
+        newString.append(" <br/>");
         for (Upgrade u : availUpgrades.keySet()) {
-            newString.append(u.getName()).append(" ");
+            newString.append(u.getName()).append(" <br/>");
         }
+        newString.append("</html>");
         return newString.toString();
     }
 

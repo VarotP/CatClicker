@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+// "main" game controller
 public class ZooGame2 extends JFrame {
 
     public static final int WIDTH = 1000;
@@ -30,6 +31,7 @@ public class ZooGame2 extends JFrame {
 //    private GamePanel gp;
     private ScorePanel sp;
     private ShopPanel shp;
+    private GameArea ga;
 //    private ScorePanel scp;
     boolean keepGoing = true;
     private JsonWriter jsonWriter;
@@ -37,13 +39,16 @@ public class ZooGame2 extends JFrame {
     private static final String JSON_STORE = "./data/testSave.json";
     private Timer timer;
 
-
+    // MODIFIES: this
+    // EFFECTS: constructor
     public ZooGame2() {
         super("ZooGame");
         startMenu();
 //        startGame();
     }
 
+    // MODIFIES: this
+    // EFFECTS: starts the main menu for the game
     private void startMenu() {
         JFrame menuframe = new JFrame("mainMenu");
         menuframe.setLayout(new BorderLayout());
@@ -61,13 +66,21 @@ public class ZooGame2 extends JFrame {
             }
         });
         menuPanel.add(newGameButton);
+        addMainMenuButtons(menuPanel);
 
+        menuframe.add(menuPanel);
+        menuframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        menuframe.setLocationRelativeTo(null);
+        menuframe.setVisible(true);
+    }
+
+    // EFFECTS; creates main menu buttons and adds to the menu
+    private void addMainMenuButtons(JPanel menuPanel) {
         JButton loadGameButton = new JButton("Load Game");
         loadGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 loadGame();
-//                menuframe.dispatchEvent(new WindowEvent(menuframe, WindowEvent.WINDOW_CLOSING));
             }
         });
         menuPanel.add(loadGameButton);
@@ -80,44 +93,50 @@ public class ZooGame2 extends JFrame {
             }
         });
         menuPanel.add(exitGameButton);
-
-
-        menuframe.add(menuPanel);
-        menuframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        menuframe.setLocationRelativeTo(null);
-        menuframe.setVisible(true);
     }
 
+    // MODIFIES: this
+    // EFFECTS: inits various panels
     private void initFields(Game game) {
 //        timer = new Timer(INTERVAL, );
-
+        ga = new GameArea(this, game);
         shp = new ShopPanel(this, game);
         sp = new ScorePanel(this, game);
     }
 
+    // EFFECTS: sets graphic values for panels
     private void initGraphics() {
         setLayout(new BorderLayout());
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
 
+        createExitButtons();
+
         shp.setLayout(new GridLayout(0, 1));
-        shp.setSize(new Dimension(0, 0));
-        add(shp, BorderLayout.EAST);
+        shp.setMaximumSize(new Dimension(WIDTH, HEIGHT));
+        add(shp, BorderLayout.LINE_END);
 
         sp.setLayout(new BoxLayout(sp, BoxLayout.PAGE_AXIS));
-        sp.setSize(new Dimension(0, 0));
-        add(sp, BorderLayout.WEST);
-        createExitButtons();
-        initGameArea();
+        sp.setSize(new Dimension(200, 0));
+        add(sp, BorderLayout.LINE_START);
+
+
+        ga.setPreferredSize(new Dimension(100, 100));
+        ga.setMinimumSize(new Dimension(100, 100));
+        add(ga, BorderLayout.CENTER);
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
     }
 
+    // MODIFIES: this
+    // EFFECTS: handles new game option and starts a new game
     public void newGame() {
         this.game = new Game(INTERVAL);
         startGame(game);
     }
 
+    // EFFECTS: starts the game based on game object
     public void startGame(Game game) {
         //set name of game
         initFields(game);
@@ -126,6 +145,7 @@ public class ZooGame2 extends JFrame {
         timer.start();
     }
 
+    // EFFECTS: adds timer with update functions for each panel
     private void addTimer(Game game) {
         timer = new Timer(INTERVAL, new ActionListener() {
             @Override
@@ -133,6 +153,7 @@ public class ZooGame2 extends JFrame {
                 game.tick();
                 shp.update();
                 sp.update();
+                ga.update();
             }
         });
     }
@@ -164,37 +185,7 @@ public class ZooGame2 extends JFrame {
         }
     }
 
-    private void initGameArea() {
-        JPanel gameArea = new JPanel();
-
-        BufferedImage buttonIcon = null;
-        ImageIcon catIcon = new ImageIcon("./data/cat.png");
-        ImageIcon catSmileIcon = new ImageIcon("./data/catSmile2.png");
-        Image image = catIcon.getImage(); // transform it
-        Image image2 = catSmileIcon.getImage();
-        Image newimg = image.getScaledInstance(468,320,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
-        Image newimg2 = image2.getScaledInstance(468,320,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
-        catIcon = new ImageIcon(newimg);
-        catSmileIcon = new ImageIcon(newimg2);
-        JButton catButton = new JButton(catIcon);
-        catButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                game.click();
-            }
-        });
-        catButton.setDisabledIcon(catSmileIcon);
-        catButton.setPressedIcon(catSmileIcon);
-        catButton.setSelectedIcon(catSmileIcon);
-        catButton.setDisabledSelectedIcon(catSmileIcon);
-        catButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        catButton.setBorder(BorderFactory.createEmptyBorder());
-        catButton.setContentAreaFilled(false);
-        gameArea.add(catButton);
-
-        add(gameArea, BorderLayout.SOUTH);
-    }
-
+    // EFFECTS: creates the exit buttons for the game
     private void createExitButtons() {
         JPanel exitButtons = new JPanel();
 
@@ -218,6 +209,6 @@ public class ZooGame2 extends JFrame {
         exitButtons.add(saveButton);
         exitButtons.add(exitButton);
 
-        add(exitButtons);
+        add(exitButtons, BorderLayout.PAGE_START);
     }
 }
