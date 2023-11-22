@@ -145,5 +145,15 @@ public class GameTest {
         assertEquals("", game.getName());
     }
 
+    @Test
+    void restOfTheTests() {
+        game.buyUpgrade("OnePerClick");
+        game.buyAnimal("Cat", 1);
+        game.setScore(500);
+        game.buyAnimal("Cat", 1);
+        game.buyAnimal("Cat", 1000);
+        assertEquals("", game.getName());
+    }
+
 
 }
