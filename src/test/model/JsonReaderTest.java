@@ -18,7 +18,6 @@ public class JsonReaderTest {
 
     @BeforeEach
     void setup() {
-        zoogame = new ZooGame2();
         reader = new JsonReader("./data/testOutput.json",10);
     }
 
