@@ -8,10 +8,13 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+// represents an upgradable button found in the shop
 public class UpgradableButton extends Button {
     private Game game;
     private int quantity;
 
+    // MODIFIES: this
+    // EFEFCTSL constructor
     public UpgradableButton(ZooGame2 zooGame2, Game game, JComponent parent, Upgradable upgradable) {
         super(zooGame2, parent);
         this.game = game;
@@ -37,6 +40,7 @@ public class UpgradableButton extends Button {
         @Override
         public void actionPerformed(ActionEvent e) {
             game.buyAnimal(upgradable.getName(), quantity);
+            updateCost();
         }
     }
 

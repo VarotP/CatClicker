@@ -6,6 +6,7 @@ import persistence.Writable;
 import java.io.IOException;
 import java.util.*;
 
+// represents an upgradable object
 public class Upgradable {
     private String name;
 
@@ -115,6 +116,7 @@ public class Upgradable {
         return json;
     }
 
+    //EFFECTS: returns animal object as JSON with unlocked state
     public JSONObject toJson(Boolean unlocked) {
         JSONObject json = new JSONObject();
         json.put("name", getName());

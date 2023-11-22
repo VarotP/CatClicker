@@ -16,12 +16,11 @@ public class GameTest {
 
     @BeforeEach
     void setup() {
-        game = new Game("Val", 10);
+        game = new Game(10);
     }
 
     @Test
     void constructorTest() {
-        assertEquals("Val", game.getName());
         assertEquals(1, game.getPerClick());
         assertEquals(0, game.getPerSec());
         assertEquals(0, game.getScore());
@@ -37,7 +36,7 @@ public class GameTest {
         for (int i = 0; i < 10; i ++) {
             game.tick();
         }
-        assertEquals(1, game.getScoreInt());
+        assertEquals(41, game.getScoreInt());
         assertEquals(1, game.getPerSec());
     }
 
@@ -51,34 +50,34 @@ public class GameTest {
     @Test
     void buyUpgradeTest() {
         game.buyUpgrade("lmaoo");
-        assertEquals("Owned Animals: Owned Upgrades: ", game.getOwnedString());
+        assertEquals("<html> <br/> Owned Animals: <br/> <br/>Owned Upgrades:  <br/> <br/></html>", game.getOwnedString());
         game.buyUpgrade("OnePerClick");
-        assertEquals("Owned Animals: Owned Upgrades: ", game.getOwnedString());
+        assertEquals("<html> <br/> Owned Animals: <br/> <br/>Owned Upgrades:  <br/> <br/></html>", game.getOwnedString());
         game.setScore(500);
         game.buyUpgrade("OnePerClick");
-        assertEquals("Owned Animals: Owned Upgrades: OnePerClick ", game.getOwnedString());
+        assertEquals("<html> <br/> Owned Animals: <br/> <br/>Owned Upgrades:  <br/>OnePerClick <br/> <br/></html>", game.getOwnedString());
         game.buyUpgrade("OnePerClick");
-        assertEquals("Owned Animals: Owned Upgrades: OnePerClick ", game.getOwnedString());
+        assertEquals("<html> <br/> Owned Animals: <br/> <br/>Owned Upgrades:  <br/>OnePerClick <br/> <br/></html>", game.getOwnedString());
         game.buyUpgrade("TwentyPerClick");
-        assertEquals("Owned Animals: Owned Upgrades: OnePerClick ", game.getOwnedString());
+        assertEquals("<html> <br/> Owned Animals: <br/> <br/>Owned Upgrades:  <br/>OnePerClick <br/> <br/></html>", game.getOwnedString());
     }
 
     @Test
     void buyAnimalTest() {
         game.buyAnimal("lmaoo", 1);
-        assertEquals("Owned Animals: Owned Upgrades: ", game.getOwnedString());
+        assertEquals("<html> <br/> Owned Animals: <br/> <br/>Owned Upgrades:  <br/> <br/></html>", game.getOwnedString());
         game.buyAnimal("Cat", 1);
-        assertEquals("Owned Animals: Owned Upgrades: ", game.getOwnedString());
+        assertEquals("<html> <br/> Owned Animals: <br/> <br/>Owned Upgrades:  <br/> <br/></html>", game.getOwnedString());
         game.setScore(200);
         game.buyAnimal("Cat", 1);
-        assertEquals("Owned Animals: Cat Owned Upgrades: ", game.getOwnedString());
+        assertEquals("<html> <br/> Owned Animals: <br/>Cat <br/> <br/>Owned Upgrades:  <br/> <br/></html>", game.getOwnedString());
         game.buyAnimal("Cat", 1);
-        assertEquals("Owned Animals: Cat Owned Upgrades: ", game.getOwnedString());
+        assertEquals("<html> <br/> Owned Animals: <br/>Cat <br/> <br/>Owned Upgrades:  <br/> <br/></html>", game.getOwnedString());
         game.buyAnimal("Capybara", 1);
-        assertEquals("Owned Animals: Cat Owned Upgrades: ", game.getOwnedString());
+        assertEquals("<html> <br/> Owned Animals: <br/>Cat <br/> <br/>Owned Upgrades:  <br/> <br/></html>", game.getOwnedString());
         game.setScore(0);
         game.buyAnimal("Cat", 1);
-        assertEquals("Owned Animals: Cat Owned Upgrades: ", game.getOwnedString());
+        assertEquals("<html> <br/> Owned Animals: <br/>Cat <br/> <br/>Owned Upgrades:  <br/> <br/></html>", game.getOwnedString());
     }
 
     @Test
@@ -86,12 +85,12 @@ public class GameTest {
         game.setScore(10000);
         game.buyAnimal("Cat", 2);
         game.buyUpgrade("OnePerClick");
-        assertEquals("Owned Animals: Cat Owned Upgrades: OnePerClick ", game.getOwnedString());
+        assertEquals("<html> <br/> Owned Animals: <br/>Cat <br/> <br/>Owned Upgrades:  <br/>OnePerClick <br/> <br/></html>", game.getOwnedString());
     }
 
     @Test
     void getAvailStringTest() {
-        assertEquals("Available Animals: Capybara Cat Dog Available Upgrades: OnePerClick FivePerClick TwentyPerClick ", game.getAvailString());
+        assertEquals("<html> Available Animals: <br/>Capybara <br/>Cat <br/>Dog <br/> <br/>Available Upgrades:  <br/>OnePerClick <br/>FivePerClick <br/>TwentyPerClick <br/></html>", game.getAvailString());
     }
 
     @Test
@@ -104,7 +103,7 @@ public class GameTest {
         game.buyUpgrade("OnePerClick");
         JSONObject json = game.toJson();
         assertEquals("Gom", json.getString("name"));
-        assertEquals(9940, json.getDouble("score"));
+        assertEquals(9890, json.getDouble("score"));
         assertEquals(6, json.getDouble("perClick"));
         assertEquals(10, json.getDouble("perSec"));
     }

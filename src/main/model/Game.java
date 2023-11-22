@@ -6,6 +6,7 @@ import persistence.Writable;
 
 import java.util.*;
 
+// represents a game object
 public class Game implements Writable {
     private String name;
     private double perClick;
@@ -22,12 +23,12 @@ public class Game implements Writable {
 
     //Upgrades and Animals
 
-    public final Upgrade onePerClickU = new Upgrade("OnePerClick", 10, 0, 1, 0,1.4,null);
+    public final Upgrade onePerClickU = new Upgrade("OnePerClick", 100, 0, 1, 0,1.4,null);
     public final Upgrade fivePerClickU = new Upgrade("FivePerClick", 5000, 0, 5, 5000, 1.4, null);
     public final Upgrade twentyPerClickU = new Upgrade("TwentyPerClick", 10000, 0, 5, 10000, 1.4, null);
-    public final Upgradable cat = new Upgradable("Cat", 1, 1, 0, 0, 1.2, null);
-    public final Upgradable dog = new Upgradable("Dog", 200, 2, 0, 0, 1.2, null);
-    public final Upgradable capybara = new Upgradable("Capybara", 200, 2, 0,  500,1.2, null);
+    public final Upgradable cat = new Upgradable("Cat", 10, 1, 0, 0, 1.4, null);
+    public final Upgradable dog = new Upgradable("Dog", 200, 2, 0, 0, 1.4, null);
+    public final Upgradable capybara = new Upgradable("Capybara", 500, 5, 0,  500,1.4, null);
 
     //MODIFIES: this
     //EFFECTS: constructs game object and inits the available upgrade and animal list
@@ -116,12 +117,14 @@ public class Game implements Writable {
         } else if (!animals.containsKey(buyAnimal)
                 && score >= buyAnimal.getCost() * quantity && availAnimals.get(buyAnimal)) {
             score -= buyAnimal.getCost() * quantity;
+            buyAnimal.setCost((int) (buyAnimal.getCost() * buyAnimal.getScalingFactor()));
             animals.put(buyAnimal, quantity);
             System.out.println(buyAnimal.getName() + " bought");
         } else if (animals.containsKey(buyAnimal)
                 && score >= buyAnimal.getCost() * quantity && availAnimals.get(buyAnimal)) {
             score -= buyAnimal.getCost() * quantity;
             animals.replace(buyAnimal, animals.get(buyAnimal) + quantity);
+            buyAnimal.setCost((int) (buyAnimal.getCost() * buyAnimal.getScalingFactor()));
             System.out.println(buyAnimal.getName() + " x" + quantity + " bought");
         } else if (!availAnimals.get(buyAnimal)) {
             System.out.println("animal not unlocked");
@@ -130,6 +133,7 @@ public class Game implements Writable {
         }
     }
 
+    // EFFECTS: finds animal with same string name
     public Upgradable findAnimal(String animalName) {
         Upgradable buyAnimal = null;
         Upgradable temp = new Upgradable(animalName, 0, 0, 0, 0, 0, null);
@@ -141,6 +145,7 @@ public class Game implements Writable {
         return buyAnimal;
     }
 
+    // EFEFCTS: finds upgrade with same string name
     public Upgrade findUpgrade(String upgradeName) {
         Upgrade buyUpgrade = null;
         Upgrade temp = new Upgrade(upgradeName, 0, 0, 0, 0, 0, null);

@@ -3,6 +3,7 @@ package model;
 import org.json.JSONObject;
 import persistence.Writable;
 
+// represents an upgrade object
 public class Upgrade implements Writable {
     private String name;
     private int cost;

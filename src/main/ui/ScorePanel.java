@@ -3,6 +3,7 @@ package ui;
 import model.Game;
 
 import javax.swing.*;
+import java.awt.*;
 
 // ui for the score panel
 public class ScorePanel extends JPanel {
@@ -21,11 +22,12 @@ public class ScorePanel extends JPanel {
     public ScorePanel(ZooGame2 zooGame2, Game game) {
         this.zooGame2 = zooGame2;
         this.game = game;
-
-        this.playerName = new JLabel("Player name: ");
-        this.add(playerName);
+//
+//        this.playerName = new JLabel("Player name: ");
+//        this.add(playerName);
 
         this.score = new JLabel("Score: ");
+        this.score.setFont(new Font("Calibre", Font.BOLD, 48));
         this.add(score);
 
         this.scorePerSecond = new JLabel("Score Per Second: ");
@@ -33,12 +35,6 @@ public class ScorePanel extends JPanel {
 
         this.scorePerClick = new JLabel("Score Per Click: ");
         this.add(scorePerClick);
-
-        this.ownedStuff = new JLabel("Owned Animals: ");
-        this.add(ownedStuff);
-
-        this.availStuff = new JLabel("Owned Upgrades: ");
-        this.add(availStuff);
     }
 
     // EFFECTS: updates the panel
@@ -53,7 +49,5 @@ public class ScorePanel extends JPanel {
         score.setText("Score: " + game.getScoreInt());
         scorePerSecond.setText("Score Per Second: " +  + game.getPerSec());
         scorePerClick.setText("Score per click: " + game.getPerClick());
-        ownedStuff.setText(game.getOwnedString());
-        availStuff.setText(game.getAvailString());
     }
 }
