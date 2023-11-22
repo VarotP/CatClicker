@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Stream;
 
-// reads json file and converts to game object
+// reads json from file and creates game object
 public class JsonReader {
     //Upgrades and Animals
     private final String source;
@@ -47,7 +47,8 @@ public class JsonReader {
     //EFFECTS: parses json object and creates game object
     private Game parseGameFile(JSONObject jsonObject) {
         String gameName = jsonObject.getString("name");
-        Game thisGame = new Game(gameName, ticks);
+        Game thisGame = new Game(ticks);
+        thisGame.setName(gameName);
         buildGame(thisGame, jsonObject);
         return thisGame;
     }
@@ -62,6 +63,7 @@ public class JsonReader {
         game.setAvailUpgrades(getAvailUpgradesJson(jsonObject.getJSONArray("availUpgrades")));
     }
 
+    // EFFECTS: returns animals as a hashmap to build game object
     private HashMap<Upgradable, Integer> getAnimalsJson(JSONArray jsonArray) {
         HashMap<Upgradable, Integer> myHashMap = new HashMap<>();
         for (Object json : jsonArray) {
@@ -80,6 +82,7 @@ public class JsonReader {
         return myHashMap;
     }
 
+    // EFFECTS: returns avail animals as hashmap to build game object
     private HashMap<Upgradable, Boolean> getAvailAnimalsJson(JSONArray jsonArray) {
         HashMap<Upgradable, Boolean> myHashMap = new HashMap<>();
         for (Object json : jsonArray) {
@@ -98,6 +101,7 @@ public class JsonReader {
         return myHashMap;
     }
 
+    // EFFECTS: returns upgrades as hashmap to build game object
     private HashSet<Upgrade> getUpgradesJson(JSONArray jsonArray) {
         HashSet<Upgrade> myHashSet = new HashSet<>();
         for (Object json : jsonArray) {
@@ -115,6 +119,7 @@ public class JsonReader {
         return myHashSet;
     }
 
+    // EFFECTS: returns avail upgrades as hashmap to build game object
     private HashMap<Upgrade, Boolean> getAvailUpgradesJson(JSONArray jsonArray) {
         HashMap<Upgrade, Boolean> myHashMap = new HashMap<>();
         for (Object json : jsonArray) {

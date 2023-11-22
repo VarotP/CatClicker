@@ -15,16 +15,18 @@ import persistence.JsonReader;
 import persistence.JsonWriter;
 
 
+import javax.swing.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Timer;
 
 import static java.lang.System.exit;
 
-// handles starting, running, and saving of the game
-public class ZooGame {
+
+public class ZooGame extends JFrame {
     //fields
     boolean keepGoing = true;
     private Game game;
@@ -35,6 +37,11 @@ public class ZooGame {
     private static final String JSON_STORE = "./data/testSave.json";
     public static final int TICKS_PER_SECOND = 10;
 
+//    private GamePanel gp;
+//    private ScorePanel sp;
+//    private ShopPanel shp;
+//    private Timer t;
+
     //graphic fields
     TextGraphics scoreGraphic;
     TextGraphics availUpgradeGraphic;
@@ -44,30 +51,20 @@ public class ZooGame {
 
     //Upgrades and Animals
 
-    //EFFECTS: runs the game
-    public void runGame() throws InterruptedException, IOException {
+    public ZooGame() {
         jsonReader = new JsonReader(JSON_STORE, TICKS_PER_SECOND);
         jsonWriter = new JsonWriter(JSON_STORE);
-        mainMenu();
-        exit(0); // game is over, we can exit the app
-    }
-
-    //EFFECTS: starts the screen and keeps the game running
-    private void startGame(Game game) throws IOException, InterruptedException {
-        startScreen(game);
-        while (keepGoing) {   // (*)
-            tick();                                                     // update the game
-            Thread.sleep(1000L / TICKS_PER_SECOND);                // (**)
+        try {
+            runGame();
+        } catch (Exception e) {
+            System.out.println(e);
         }
     }
 
-
-    //EFFECTS: initializes initial game state
-    private void startScreen(Game game) throws IOException {
-        Terminal terminal = new DefaultTerminalFactory().setInitialTerminalSize(
-                new TerminalSize(150, 50)).createTerminal();
-        screen = new TerminalScreen(terminal);
-        screen.startScreen();
+    //EFFECTS: runs the game
+    public void runGame() throws InterruptedException, IOException {
+        mainMenu();
+        exit(0); // game is over, we can exit the app
     }
 
     //MODIFIES: this
@@ -91,13 +88,33 @@ public class ZooGame {
         System.out.println("See you again!");
     }
 
+
+    //EFFECTS: starts the screen and keeps the game running
+    private void startGame(Game game) throws IOException, InterruptedException {
+        startScreen(game);
+        while (keepGoing) {   // (*)
+            tick();                                                     // update the game
+            Thread.sleep(1000L / TICKS_PER_SECOND);                // (**)
+        }
+    }
+
+
+    //EFFECTS: initializes initial game state
+    private void startScreen(Game game) throws IOException {
+        Terminal terminal = new DefaultTerminalFactory().setInitialTerminalSize(
+                new TerminalSize(150, 50)).createTerminal();
+        screen = new TerminalScreen(terminal);
+        screen.startScreen();
+    }
+
     //MODIFIES: this
     //EFFECTS: processes user command
     private void processCommand(String command) throws IOException, InterruptedException {
         if (command.equals("n")) {
             System.out.println("Enter your name");
             String name = input.next();
-            game = new Game(name, TICKS_PER_SECOND);
+            game = new Game(TICKS_PER_SECOND);
+            game.setName(name);
             startGame(game);
         } else if (command.equals("l")) {
             loadGame();
@@ -121,6 +138,20 @@ public class ZooGame {
 //        }
     }
 
+    //EFFECTS: display menu for saving or not saving game
+    private void endGame() {
+        String command = null;
+        input = new Scanner(System.in);
+        System.out.println("Save Game? y = yes, n = no");
+        command = input.next();
+        command = command.toLowerCase();
+        if (command.equals("y")) {
+            saveGame();
+            System.out.println("Game successfully saved!");
+        }
+        System.out.println("See you again!");
+    }
+
     //MODIFIES: save file
     //EFFECTS: saves game state to file as json object
     private void saveGame() {
@@ -132,7 +163,6 @@ public class ZooGame {
         } catch (FileNotFoundException e) {
             System.out.println("Unable to write to file: " + JSON_STORE);
         }
-
     }
 
     //MODIFIES: this
@@ -157,7 +187,7 @@ public class ZooGame {
             //Close game
             if (stroke.getKeyType() == KeyType.Escape) {
                 screen.close();
-                saveGame();
+                endGame();
                 exit(0);
             }
 

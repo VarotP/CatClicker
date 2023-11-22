@@ -23,17 +23,17 @@ public class Game implements Writable {
 
     //Upgrades and Animals
 
-    private final Upgrade onePerClickU = new Upgrade("OnePerClick", 10, 0, 1, 0,1.4,null);
-    private final Upgrade fivePerClickU = new Upgrade("FivePerClick", 5000, 0, 5, 5000, 1.4, null);
-    private final Upgrade twentyPerClickU = new Upgrade("TwentyPerClick", 10000, 0, 5, 10000, 1.4, null);
-    private final Upgradable cat = new Upgradable("Cat", 50, 1, 0, 0, 1.2, null);
-    private final Upgradable dog = new Upgradable("Dog", 200, 2, 0, 0, 1.2, null);
-    private final Upgradable capybara = new Upgradable("Capybara", 200, 2, 0,  500,1.2, null);
+    public final Upgrade onePerClickU = new Upgrade("OnePerClick", 100, 0, 1, 0,1.4,null);
+    public final Upgrade fivePerClickU = new Upgrade("FivePerClick", 5000, 0, 5, 5000, 1.4, null);
+    public final Upgrade twentyPerClickU = new Upgrade("TwentyPerClick", 10000, 0, 5, 10000, 1.4, null);
+    public final Upgradable cat = new Upgradable("Cat", 10, 1, 0, 0, 1.4, null);
+    public final Upgradable dog = new Upgradable("Dog", 200, 2, 0, 0, 1.4, null);
+    public final Upgradable capybara = new Upgradable("Capybara", 500, 5, 0,  500,1.4, null);
 
     //MODIFIES: this
     //EFFECTS: constructs game object and inits the available upgrade and animal list
-    public Game(String name, int ticks) {
-        this.name = name;
+    public Game(int ticks) {
+        this.name = "";
         this.perClick = 1;
         this.perSec = 0;
         this.score = 0;
@@ -61,12 +61,13 @@ public class Game implements Writable {
     //EFFECTS: adds up all the money per sec and ocassionally spawns specials,
     // also checks for unlocks and makes them available to player
     public void tick() {
-        checkUnlocks();
+        double perSecSum = 0;
         for (Upgradable animal : animals.keySet()) {
             // score += each animals's per second multiplied by their count
-            perSec = (animal.getPerSec() * animals.get(animal) / ticks);
+            perSecSum += (animal.getPerSec() * animals.get(animal) / ticks);
             score += (animal.getPerSec() * animals.get(animal) / ticks);
         }
+        perSec = perSecSum;
     }
 
     //MODIFIES: This
@@ -116,12 +117,14 @@ public class Game implements Writable {
         } else if (!animals.containsKey(buyAnimal)
                 && score >= buyAnimal.getCost() * quantity && availAnimals.get(buyAnimal)) {
             score -= buyAnimal.getCost() * quantity;
+            buyAnimal.setCost((int) (buyAnimal.getCost() * buyAnimal.getScalingFactor()));
             animals.put(buyAnimal, quantity);
             System.out.println(buyAnimal.getName() + " bought");
         } else if (animals.containsKey(buyAnimal)
                 && score >= buyAnimal.getCost() * quantity && availAnimals.get(buyAnimal)) {
             score -= buyAnimal.getCost() * quantity;
             animals.replace(buyAnimal, animals.get(buyAnimal) + quantity);
+            buyAnimal.setCost((int) (buyAnimal.getCost() * buyAnimal.getScalingFactor()));
             System.out.println(buyAnimal.getName() + " x" + quantity + " bought");
         } else if (!availAnimals.get(buyAnimal)) {
             System.out.println("animal not unlocked");
@@ -130,6 +133,7 @@ public class Game implements Writable {
         }
     }
 
+    // EFFECTS: finds animal with same string name
     public Upgradable findAnimal(String animalName) {
         Upgradable buyAnimal = null;
         Upgradable temp = new Upgradable(animalName, 0, 0, 0, 0, 0, null);
@@ -141,16 +145,28 @@ public class Game implements Writable {
         return buyAnimal;
     }
 
+    // EFEFCTS: finds upgrade with same string name
+    public Upgrade findUpgrade(String upgradeName) {
+        Upgrade buyUpgrade = null;
+        Upgrade temp = new Upgrade(upgradeName, 0, 0, 0, 0, 0, null);
+        for (Upgrade u : availUpgrades.keySet()) {
+            if (u.equals(temp)) {
+                buyUpgrade = u;
+            }
+        }
+        return buyUpgrade;
+    }
+
     //MODIFIES: this
     //EFFECT: sets unlocked to true in hashmap when score >= unlockedAt for each upgrade/upgradable
-    private void checkUnlocks() {
+    public void checkUnlocks() {
         for (Upgradable u : availAnimals.keySet()) {
-            if (u.getUnlockedAt() >= score) {
+            if (score >= u.getUnlockedAt()) {
                 availAnimals.replace(u, true);
             }
         }
         for (Upgrade u : availUpgrades.keySet()) {
-            if (u.getUnlockedAt() >= score) {
+            if (score >= u.getUnlockedAt()) {
                 availUpgrades.replace(u, true);
             }
         }
@@ -158,27 +174,34 @@ public class Game implements Writable {
 
     //EFFECTS: returns owned items as a string
     public String getOwnedString() {
-        StringBuilder newString = new StringBuilder("Owned Animals: ");
+        StringBuilder newString = new StringBuilder("<html> <br/> Owned Animals: <br/>");
         for (Upgradable u : animals.keySet()) {
-            newString.append(u.getName()).append(" ");
+            newString.append(u.getName()).append(" <br/>");
         }
+        newString.append(" <br/>");
         newString.append("Owned Upgrades: ");
+        newString.append(" <br/>");
         for (Upgrade u : upgrades) {
-            newString.append(u.getName()).append(" ");
+            newString.append(u.getName()).append(" <br/>");
         }
+        newString.append(" <br/>");
+        newString.append("</html>");
         return newString.toString();
     }
 
     //EFFECTS: returns available items as string
     public String getAvailString() {
-        StringBuilder newString = new StringBuilder("Available Animals: ");
+        StringBuilder newString = new StringBuilder("<html> Available Animals: <br/>");
         for (Upgradable u : availAnimals.keySet()) {
-            newString.append(u.getName()).append(" ");
+            newString.append(u.getName()).append(" <br/>");
         }
+        newString.append(" <br/>");
         newString.append("Available Upgrades: ");
+        newString.append(" <br/>");
         for (Upgrade u : availUpgrades.keySet()) {
-            newString.append(u.getName()).append(" ");
+            newString.append(u.getName()).append(" <br/>");
         }
+        newString.append("</html>");
         return newString.toString();
     }
 
@@ -262,8 +285,8 @@ public class Game implements Writable {
         this.score = score;
     }
 
-    public double getPerSec() {
-        return perSec * ticks;
+    public int getPerSec() {
+        return (int) Math.round(perSec * ticks);
     }
 
     public void setPerSec(double perSec) {
