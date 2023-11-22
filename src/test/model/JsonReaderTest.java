@@ -1,4 +1,4 @@
-package persistance;
+package model;
 
 import model.Game;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,9 +26,9 @@ public class JsonReaderTest {
     void readTest() {
         Game newGame = new Game( 10);
         try {
-            assertEquals(0, reader.read().getScoreInt());
+            assertEquals(2, reader.read().getScoreInt());
             assertEquals(0, reader.read().getPerSec());
-            assertEquals(0, reader.read().getScoreInt());
+            assertEquals(1, reader.read().getPerClick());
         } catch (IOException e) {
             fail();
         }

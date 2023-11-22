@@ -1,5 +1,5 @@
 {
-    "score": 0,
+    "score": 2.0740740740744785,
     "availUpgrades": [
         {
             "cost": 100,
@@ -29,9 +29,17 @@
             "perClick": 5
         }
     ],
-    "perSec": 0,
+    "perSec": 0.037037037037037035,
     "name": "",
-    "animals": [],
+    "animals": [{
+        "cost": 14,
+        "quantity": 1,
+        "perSec": 1,
+        "name": "Cat",
+        "unlockedAt": 0,
+        "scalingFactor": 1.4,
+        "perClick": 0
+    }],
     "availAnimals": [
         {
             "cost": 500,
@@ -43,7 +51,7 @@
             "perClick": 0
         },
         {
-            "cost": 10,
+            "cost": 14,
             "perSec": 1,
             "name": "Cat",
             "unlockedAt": 0,
@@ -61,6 +69,13 @@
             "perClick": 0
         }
     ],
-    "upgrades": [],
-    "perClick": 1
+    "upgrades": [{
+        "cost": 100,
+        "perSec": 0,
+        "name": "OnePerClick",
+        "unlockedAt": 0,
+        "scalingFactor": 1.4,
+        "perClick": 1
+    }],
+    "perClick": 2
 }

@@ -1,5 +1,5 @@
 {
-    "score": 2.48148148148189,
+    "score": 0.8518518518518514,
     "availUpgrades": [
         {
             "cost": 100,
@@ -69,13 +69,6 @@
             "perClick": 0
         }
     ],
-    "upgrades": [{
-        "cost": 100,
-        "perSec": 0,
-        "name": "OnePerClick",
-        "unlockedAt": 0,
-        "scalingFactor": 1.4,
-        "perClick": 1
-    }],
-    "perClick": 2
+    "upgrades": [],
+    "perClick": 1
 }

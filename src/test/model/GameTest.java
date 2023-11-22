@@ -136,4 +136,14 @@ public class GameTest {
 
     }
 
+    @Test
+    void findUpradeAndCheckUnlockTest() {
+        assertEquals(game.onePerClickU, game.findUpgrade("OnePerClick"));
+        game.setScore(500);
+        game.checkUnlocks();
+        assertEquals(game.getAvailAnimals().get(game.findAnimal("Capybara")), true);
+        assertEquals("", game.getName());
+    }
+
+
 }

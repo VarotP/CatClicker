@@ -1,4 +1,4 @@
-package persistance;
+package model;
 
 import model.Game;
 import org.junit.jupiter.api.BeforeEach;
