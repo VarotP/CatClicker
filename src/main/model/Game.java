@@ -89,7 +89,7 @@ public class Game implements Writable {
             System.out.println("upgrade not found");
         } else if (upgrades.contains(buyUpgrade)) {
             System.out.println("upgrade already bought");
-        } else if (score >= buyUpgrade.getCost() && availUpgrades.get(buyUpgrade)) {
+        } else if (score >= buyUpgrade.getCost()) {
             score -= buyUpgrade.getCost();
             upgrades.add(buyUpgrade);
             updatePerClick();
@@ -115,13 +115,13 @@ public class Game implements Writable {
         if (buyAnimal == null) {
             System.out.println("animal not found");
         } else if (!animals.containsKey(buyAnimal)
-                && score >= buyAnimal.getCost() * quantity && availAnimals.get(buyAnimal)) {
+                && score >= buyAnimal.getCost() * quantity) {
             score -= buyAnimal.getCost() * quantity;
             buyAnimal.setCost((int) (buyAnimal.getCost() * buyAnimal.getScalingFactor()));
             animals.put(buyAnimal, quantity);
             System.out.println(buyAnimal.getName() + " bought");
         } else if (animals.containsKey(buyAnimal)
-                && score >= buyAnimal.getCost() * quantity && availAnimals.get(buyAnimal)) {
+                && score >= buyAnimal.getCost() * quantity) {
             score -= buyAnimal.getCost() * quantity;
             animals.replace(buyAnimal, animals.get(buyAnimal) + quantity);
             buyAnimal.setCost((int) (buyAnimal.getCost() * buyAnimal.getScalingFactor()));
