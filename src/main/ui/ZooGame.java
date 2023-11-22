@@ -180,7 +180,6 @@
 //
 //    //MODIFIES: this
 //    //EFFECTS: Handles user input (clicks)
-//    @SuppressWarnings("methodlength")
 //    private void handleUserInput() throws IOException {
 //        KeyStroke stroke = screen.pollInput();
 //        if (stroke != null) {
