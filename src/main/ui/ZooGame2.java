@@ -160,7 +160,7 @@ public class ZooGame2 extends JFrame {
 
     //MODIFIES: save file
     //EFFECTS: saves game state to file as json object
-    private void saveGame() {
+    public void saveGame() {
         try {
             jsonWriter.open();
             jsonWriter.write(game);

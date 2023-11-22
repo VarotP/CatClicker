@@ -60,6 +60,7 @@ class UpgradeTest {
         assertTrue(testUpgrade.equals(testUpgrade2));
         assertFalse(testUpgrade.equals(testUpgrade3));
         assertEquals(110182, testUpgrade.hashCode());
+        assertFalse(testUpgrade.equals(null));
     }
 
     @Test

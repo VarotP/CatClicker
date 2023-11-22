@@ -4,7 +4,7 @@ import model.Game;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import persistence.JsonWriter;
-import ui.ZooGame;
+//import ui.ZooGame;
 import ui.ZooGame2;
 
 import java.io.FileNotFoundException;
@@ -20,7 +20,9 @@ public class JsonWriterTest {
     @BeforeEach
     void setup() {
         zoogame = new ZooGame2();
-        game = new Game( 10);
+        game = new Game(10);
+        zoogame.newGame();
+        zoogame.saveGame();
         writer = new JsonWriter("./data/testOutput2.json");
     }
 
