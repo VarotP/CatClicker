@@ -14,15 +14,12 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class JsonWriterTest {
     JsonWriter writer;
     JsonWriter writer2;
-    ZooGame2 zoogame;
+
     Game game;
 
     @BeforeEach
     void setup() {
-        zoogame = new ZooGame2();
         game = new Game(10);
-        zoogame.newGame();
-        zoogame.saveGame();
         writer = new JsonWriter("./data/testOutput2.json");
     }
 
