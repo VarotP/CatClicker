@@ -1,31 +1,23 @@
 package ui;
 
+import model.EventLog;
+import model.Event;
 import model.Game;
 import persistence.JsonReader;
 import persistence.JsonWriter;
-import ui.buttons.Button;
-import ui.buttons.UpgradableButton;
-import ui.buttons.UpgradeButton;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 // "main" game controller
 public class ZooGame2 extends JFrame {
 
     public static final int WIDTH = 1000;
     public static final int HEIGHT = 700;
-
     private static final int INTERVAL = 27;
     private Game game;
 //    private GamePanel gp;
@@ -38,6 +30,7 @@ public class ZooGame2 extends JFrame {
     private JsonReader jsonReader;
     private static final String JSON_STORE = "./data/testSave.json";
     private Timer timer;
+    private EventLog eventLog = EventLog.getInstance();
 
     // MODIFIES: this
     // EFFECTS: constructor
@@ -62,11 +55,12 @@ public class ZooGame2 extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 newGame();
+                menuframe.setVisible(false);
 //                menuframe.dispatchEvent(new WindowEvent(menuframe, WindowEvent.WINDOW_CLOSING));
             }
         });
         menuPanel.add(newGameButton);
-        addMainMenuButtons(menuPanel);
+        addMainMenuButtons(menuPanel, menuframe);
 
         menuframe.add(menuPanel);
         menuframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -75,12 +69,13 @@ public class ZooGame2 extends JFrame {
     }
 
     // EFFECTS; creates main menu buttons and adds to the menu
-    private void addMainMenuButtons(JPanel menuPanel) {
+    private void addMainMenuButtons(JPanel menuPanel, JFrame menuframe) {
         JButton loadGameButton = new JButton("Load Game");
         loadGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 loadGame();
+                menuframe.setVisible(false);
             }
         });
         menuPanel.add(loadGameButton);
@@ -194,21 +189,32 @@ public class ZooGame2 extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 saveGame();
+                for (Event i : eventLog) {
+                    System.out.println(i.getDate() + " " + i.getDescription());
+                }
                 System.exit(0); // Exits the application
             }
         });
 
+        createExitButton(exitButtons);
+
+        exitButtons.add(saveButton);
+
+
+        add(exitButtons, BorderLayout.PAGE_START);
+    }
+
+    private void createExitButton(JPanel exitButtons) {
         JButton exitButton = new JButton("Exit without Saving");
         exitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                for (Event i : eventLog) {
+                    System.out.println(i.getDate() + " " + i.getDescription());
+                }
                 System.exit(0); // Exits the application
             }
         });
-
-        exitButtons.add(saveButton);
         exitButtons.add(exitButton);
-
-        add(exitButtons, BorderLayout.PAGE_START);
     }
 }

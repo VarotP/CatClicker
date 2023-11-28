@@ -18,3 +18,11 @@
     - As a user, I want to be able to view the list of owned upgrades on a particular save.
     - As a user, I want to be able to save my game to automatically when I close the file
     - As a user, I want to be able to load my game from file (or new game if I choose)
+
+## Instructions for Grader
+
+- You can generate the first required action related to the user story "adding multiple Xs to a Y" by buying an animal or an upgrade from the shop in the game.
+- You can generate the second required action related to the user story "adding multiple Xs to a Y" by clicking the Buy ___ button which will change the number of animals being bought at a time.
+- You can locate my visual component by looking at the data package.
+- You can save the state of my application by clicking the save game button when in game.
+- You can reload the state of my application by clicking the load game button in the main menu.

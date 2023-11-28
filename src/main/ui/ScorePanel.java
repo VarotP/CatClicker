@@ -35,6 +35,12 @@ public class ScorePanel extends JPanel {
 
         this.scorePerClick = new JLabel("Score Per Click: ");
         this.add(scorePerClick);
+
+        this.ownedStuff = new JLabel(game.getOwnedString());
+        this.add(ownedStuff);
+
+        this.availStuff = new JLabel(game.getAvailString());
+        this.add(availStuff);
     }
 
     // EFFECTS: updates the panel
@@ -49,5 +55,7 @@ public class ScorePanel extends JPanel {
         score.setText("Score: " + game.getScoreInt());
         scorePerSecond.setText("Score Per Second: " +  + game.getPerSec());
         scorePerClick.setText("Score per click: " + game.getPerClick());
+        ownedStuff.setText(game.getOwnedString());
+        availStuff.setText(game.getAvailString());
     }
 }

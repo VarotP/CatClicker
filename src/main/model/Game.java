@@ -13,6 +13,7 @@ public class Game implements Writable {
     private double score;
     private double perSec;
     private final double ticks;
+    private EventLog eventLog = EventLog.getInstance();
 
     // animal and count
     private HashMap<Upgradable, Integer> animals;
@@ -86,18 +87,18 @@ public class Game implements Writable {
             }
         }
         if (buyUpgrade == null) {
-            System.out.println("upgrade not found");
+            eventLog.logEvent(new Event("Buy upgrade: upgrade not found"));
         } else if (upgrades.contains(buyUpgrade)) {
-            System.out.println("upgrade already bought");
+            eventLog.logEvent(new Event("Buy upgrade: upgrade already bought"));
         } else if (score >= buyUpgrade.getCost()) {
             score -= buyUpgrade.getCost();
             upgrades.add(buyUpgrade);
             updatePerClick();
-            System.out.println(buyUpgrade.getName() + " bought");
+            eventLog.logEvent(new Event("Buy upgrade: " + buyUpgrade.getName() + " bought"));
         } else if (!availUpgrades.get(buyUpgrade)) {
-            System.out.println("upgrade not unlocked");
+            eventLog.logEvent(new Event("Buy upgrade: upgrade not unlocked"));
         } else {
-            System.out.println("not enough money");
+            eventLog.logEvent(new Event("Buy upgrade: not enough money"));
         }
     }
 
@@ -113,23 +114,23 @@ public class Game implements Writable {
     public void buyAnimal(String animalName, Integer quantity) {
         Upgradable buyAnimal = findAnimal(animalName);
         if (buyAnimal == null) {
-            System.out.println("animal not found");
+            eventLog.logEvent(new Event("Buy animal: animal not found"));
         } else if (!animals.containsKey(buyAnimal)
                 && score >= buyAnimal.getCost() * quantity) {
             score -= buyAnimal.getCost() * quantity;
             buyAnimal.setCost((int) (buyAnimal.getCost() * buyAnimal.getScalingFactor()));
             animals.put(buyAnimal, quantity);
-            System.out.println(buyAnimal.getName() + " bought");
+            eventLog.logEvent(new Event("Buy animal: " + buyAnimal.getName() + " bought"));
         } else if (animals.containsKey(buyAnimal)
                 && score >= buyAnimal.getCost() * quantity) {
             score -= buyAnimal.getCost() * quantity;
             animals.replace(buyAnimal, animals.get(buyAnimal) + quantity);
             buyAnimal.setCost((int) (buyAnimal.getCost() * buyAnimal.getScalingFactor()));
-            System.out.println(buyAnimal.getName() + " x" + quantity + " bought");
+            eventLog.logEvent(new Event("Buy animal: " + buyAnimal.getName() + " x" + quantity + " bought"));
         } else if (!availAnimals.get(buyAnimal)) {
-            System.out.println("animal not unlocked");
+            eventLog.logEvent(new Event("Buy animal: animal not unlocked"));
         } else {
-            System.out.println("not enough money");
+            eventLog.logEvent(new Event("Buy animal: not enough money"));
         }
     }
 
@@ -161,13 +162,15 @@ public class Game implements Writable {
     //EFFECT: sets unlocked to true in hashmap when score >= unlockedAt for each upgrade/upgradable
     public void checkUnlocks() {
         for (Upgradable u : availAnimals.keySet()) {
-            if (score >= u.getUnlockedAt()) {
+            if (score >= u.getUnlockedAt() && !availAnimals.get(u)) {
                 availAnimals.replace(u, true);
+                eventLog.logEvent(new Event(u.getName() + " unlocked"));
             }
         }
         for (Upgrade u : availUpgrades.keySet()) {
-            if (score >= u.getUnlockedAt()) {
+            if (score >= u.getUnlockedAt() && !availUpgrades.get(u)) {
                 availUpgrades.replace(u, true);
+                eventLog.logEvent(new Event(u.getName() + " unlocked"));
             }
         }
     }
