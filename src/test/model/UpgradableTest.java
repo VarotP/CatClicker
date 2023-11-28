@@ -63,6 +63,7 @@ class UpgradableTest {
         assertTrue(testupgrade.equals(testupgrade));
         assertTrue(testupgrade.equals(testupgrade2));
         assertFalse(testupgrade.equals(null));
+        assertFalse(testupgrade.equals(new Upgrade("lol", 10, 1, 0, 0, 0, null)));
         assertFalse(testupgrade.equals(testupgrade3));
     }
 
