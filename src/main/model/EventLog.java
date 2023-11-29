@@ -21,7 +21,7 @@ public class EventLog implements Iterable<Event> {
 	 */
     private EventLog() {
         events = new ArrayList<Event>();
-	}
+    }
 	
 	/**
 	 * Gets instance of EventLog - creates it
