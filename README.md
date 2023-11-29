@@ -1,4 +1,4 @@
-# Irwin's Enterprise
+# Cat Clicker
 ## Create your animal empire
 
 
@@ -26,3 +26,12 @@
 - You can locate my visual component by looking at the data package.
 - You can save the state of my application by clicking the save game button when in game.
 - You can reload the state of my application by clicking the load game button in the main menu.
+
+### Phase 4: Task 3
+- In my original design of this game, I had a different design for the associations in the model class. 
+- Instead of having a quantity or amount field I had it where everytime you bought something from the shop it would add a new upgradable object to the list
+- I realised this was going to be problematic for my game in phase 2 so I actually just refactored it then.
+- I also changed the implementation of storing the upgrades using hashmaps and sets instead because now we only needed a single upgradable object per type
+- However, now that I've finished phase 4, and looking at the UML diagram I've created myself, I could certainly reduce the coupling a lot
+- Especially in the ui panels, it actually is a pretty easy fix to just pass the game object from the zoogame class.
+- Other than that, I could also implement the observer design pattern for the shop panel to update only when a certain score is reached instead of checking on every tick, which could cause more lag.
